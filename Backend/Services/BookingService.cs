@@ -5,8 +5,6 @@ namespace Backend.Services;
 public class BookingService
 {
     private List<Booking> bookings = new List<Booking>();
-    private List<Resource> resources = new List<Resource>();
-
     public Booking CreateBooking(int userId, int resourceId, int bookingId, DateTime startTime, DateTime endTime)
     {
         var booking = new Booking
