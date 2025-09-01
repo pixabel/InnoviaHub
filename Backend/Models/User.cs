@@ -1,6 +1,6 @@
-using System.ComponentModel;
+using System;
 
-namespace InnoviaHub
+namespace InnoviaHub.Models
 {
     public class User
     {
