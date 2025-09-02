@@ -1,46 +1,57 @@
 using Microsoft.AspNetCore.Mvc;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder();
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
-
-var connection = String.Empty;
 if (builder.Environment.IsDevelopment())
 {
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+    DotNetEnv.Env.Load();
 }
-else
+
+builder.Configuration
+    .AddJsonFile("appsettings.Development.json", optional: true)
+    .AddEnvironmentVariables();
+
+var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+
+if (string.IsNullOrWhiteSpace(connection))
 {
-    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+    throw new Exception("Connection string 'AZURE_SQL_CONNECTIONSTRING' is missing.");
 }
 
 builder.Services.AddDbContext<PersonDbContext>(options =>
     options.UseSqlServer(connection));
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "InnoviaHub API V1");
+        options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello world!");
 
 app.MapGet("/Person", (PersonDbContext context) =>
 {
-    return context.Person.ToList();
+    return Results.Ok(context.Person.ToList());
 });
 
-app.MapPost("/Person", (Person person, PersonDbContext context) =>
+app.MapPost("/Person", ([FromBody] Person person, PersonDbContext context) =>
 {
-    context.Add(person);
+    context.Person.Add(person);
     context.SaveChanges();
+    return Results.Created($"/Person/{person.Id}", person);
 });
 
 app.Run();
