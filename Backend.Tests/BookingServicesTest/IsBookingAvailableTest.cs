@@ -1,4 +1,6 @@
 ﻿namespace Backend.Tests;
+
+using InnoviaHub.Models;
 using Backend.Services;
 using Xunit;
 public class IsBookingAvailableTest
@@ -31,7 +33,15 @@ public class IsBookingAvailableTest
         var endTimeBooking = new DateTime(2025, 09, 01, 11, 0, 0);
 
         // Skapar en bokning som blockerar tiden
-       bookingService.CreateBooking(userId, resourceId, bookingId, startTimeBooking, endTimeBooking);
+        var booking = new Booking
+        {
+            BookingId = bookingId,
+            ResourceId = resourceId,
+            UserId = userId,
+            StartTime = startTimeBooking,
+            EndTime = endTimeBooking
+        };
+        bookingService.CreateBooking(booking);
 
         var startTimeTest = new DateTime(2025, 09, 01, 10, 30, 0);
         var endTimeTest = new DateTime(2025, 09, 01, 11, 30, 0);
