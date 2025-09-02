@@ -1,7 +1,7 @@
 using InnoviaHub.Models;
 using Microsoft.AspNetCore.Mvc;
-using InnoviaHub.Data;
 using Backend.Services;
+using Backend.Data;
 
 
 namespace InnoviaHub.Controllers
@@ -10,10 +10,10 @@ namespace InnoviaHub.Controllers
     [Route("api/[controller]")]
     public class BookingController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly InnoviaHubDB _context;
         private readonly BookingService _bookingService;
 
-        public BookingController(AppDbContext context, BookingService bookingService)
+        public BookingController(InnoviaHubDB context, BookingService bookingService)
         {
             _context = context;
             _bookingService = bookingService;
