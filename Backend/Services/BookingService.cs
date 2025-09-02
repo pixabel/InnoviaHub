@@ -5,17 +5,13 @@ namespace Backend.Services;
 public class BookingService
 {
     private List<Booking> bookings = new List<Booking>();
-    public Booking CreateBooking(int userId, int resourceId, int bookingId, DateTime startTime, DateTime endTime)
+
+    // Sends one object instead of 5 separate values
+    public Booking CreateBooking(Booking booking)
     {
-        var booking = new Booking
-        {
-            UserId = userId,
-            ResourceId = resourceId,
-            BookingId = bookingId,
-            StartTime = startTime,
-            EndTime = endTime,
-            DateOfBooking = DateTime.Now
-        };
+        // set booking date/time
+        booking.DateOfBooking = DateTime.Now;
+        // add booking to list
         bookings.Add(booking);
         return booking;
     }
@@ -51,6 +47,26 @@ public class BookingService
             }
         }
         return false; // No overlap found
+    }
+
+    public List<Booking> GetAllBookings()
+    {
+        return bookings;
+    }
+
+    public bool UpdateBooking(int id, Booking updatedBooking)
+    {
+        var existingBooking = bookings.FirstOrDefault(b => b.BookingId == id);
+        if (existingBooking == null)
+            return false;
+
+        existingBooking.UserId = updatedBooking.UserId;
+        existingBooking.ResourceId = updatedBooking.ResourceId;
+        existingBooking.StartTime = updatedBooking.StartTime;
+        existingBooking.EndTime = updatedBooking.EndTime;
+        existingBooking.BookingType = updatedBooking.BookingType;
+
+        return true;
     }
 
     public bool DeleteBooking(int bookingId)

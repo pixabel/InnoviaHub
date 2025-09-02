@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Backend.Services;
 using Backend.Data;
 using InnoviaHub.Models;
 
@@ -24,6 +25,9 @@ if (string.IsNullOrWhiteSpace(connection))
 
 builder.Services.AddDbContext<InnoviaHubDB>(options =>
     options.UseSqlServer(connection));
+    
+builder.Services.AddSingleton<BookingService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
