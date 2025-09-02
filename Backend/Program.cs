@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Backend.Data;
+using InnoviaHub.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,7 @@ if (string.IsNullOrWhiteSpace(connection))
     throw new Exception("Connection string 'AZURE_SQL_CONNECTIONSTRING' is missing.");
 }
 
-builder.Services.AddDbContext<PersonDbContext>(options =>
+builder.Services.AddDbContext<InnoviaHubDB>(options =>
     options.UseSqlServer(connection));
 
 builder.Services.AddEndpointsApiExplorer();
@@ -42,33 +44,58 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello world!");
 
-app.MapGet("/Person", (PersonDbContext context) =>
+//users
+
+app.MapGet("/users", (InnoviaHubDB db) => db.User.ToList());
+
+app.MapPost("/users", async ([FromBody] User user, InnoviaHubDB db) =>
 {
-    return Results.Ok(context.Person.ToList());
+    db.User.Add(user);
+    await db.SaveChangesAsync();
+    return Results.Created($"/users/{user.UserId}", user);
 });
 
-app.MapPost("/Person", ([FromBody] Person person, PersonDbContext context) =>
+//Resources
+
+app.MapGet("/resources", (InnoviaHubDB db) => db.Resource.ToList());
+
+app.MapPost("/resources", async ([FromBody] Resource resource, InnoviaHubDB db) =>
 {
-    context.Person.Add(person);
-    context.SaveChanges();
-    return Results.Created($"/Person/{person.Id}", person);
+    db.Resource.Add(resource);
+    await db.SaveChangesAsync();
+    return Results.Created($"/resources/{resource.ResourceId}", resource);
+});
+
+//Bookings
+
+app.MapGet("/bookings", (InnoviaHubDB db) =>
+    db.Booking
+      .Include(b => b.UserId)
+      .Include(b => b.ResourceId)
+      .ToList());
+
+app.MapPost("/bookings", async ([FromBody] Booking booking, InnoviaHubDB db) =>
+{
+    db.Booking.Add(booking);
+    await db.SaveChangesAsync();
+    return Results.Created($"/bookings/{booking.BookingId}", booking);
 });
 
 app.Run();
 
-public class Person
-{
-    public int Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-}
+//public class Person
+//{
+//    public int Id { get; set; }
+//    public string FirstName { get; set; }
+//    public string LastName { get; set; }
+//}
 
-public class PersonDbContext : DbContext
-{
-    public PersonDbContext(DbContextOptions<PersonDbContext> options)
-        : base(options)
-    {
-    }
-
-    public DbSet<Person> Person { get; set; }
-}
+//public class PersonDbContext : DbContext
+//{
+//    public PersonDbContext(DbContextOptions<PersonDbContext> options)
+//        : base(options)
+//    {
+//    }
+//
+//    public DbSet<Person> Person { get; set; }
+//}
