@@ -2,7 +2,7 @@ namespace InnoviaHub.Models
 {
     public enum BookingType
     {
-        MeetingRooom,
+        MeetingRoom,
         Desk,
         VRHeadset,
         AIServer
