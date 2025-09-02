@@ -1,5 +1,5 @@
-namespace Backend.Tests;
 using Backend.Services;
+using InnoviaHub.Models;
 using Xunit;
 
 public class IsBookingOverlappingTest
@@ -9,28 +9,24 @@ public class IsBookingOverlappingTest
     {
         // Arrange
         var bookingService = new BookingService();
-        var userId = 1;
-        var resourceId = 1;
-        var bookingId = 1;
-        bookingService.CreateBooking(
-            userId,
-            resourceId,
-            bookingId,
-            new DateTime(2025, 09, 01, 10, 0, 0),
-            new DateTime(2025, 09, 01, 12, 0, 0)
-            );
-        // To simulate a booking between 10-12
+        var booking = new Booking
+        {
+            BookingId = 1,
+            UserId = 1,
+            ResourceId = 1,
+            StartTime = new DateTime(2025, 09, 01, 10, 0, 0),
+            EndTime = new DateTime(2025, 09, 01, 12, 0, 0)
+        };
+        bookingService.CreateBooking(booking);
 
         var testStart = new DateTime(2025, 09, 01, 12, 0, 0);
         var testEnd = new DateTime(2025, 09, 01, 13, 0, 0);
 
         // Act
-        var result = bookingService.IsBookingOverlapping(resourceId, testStart, testEnd);
+        var result = bookingService.IsBookingOverlapping(booking.ResourceId, testStart, testEnd);
 
         // Assert
         Assert.False(result);
-        // Tells us booking is not overlapping and can therefore be added
-
     }
 
     [Fact]
@@ -38,26 +34,23 @@ public class IsBookingOverlappingTest
     {
         // Arrange
         var bookingService = new BookingService();
-         var userId = 1;
-        var resourceId = 1;
-        var bookingId = 1;
-        bookingService.CreateBooking(
-            userId,
-            resourceId,
-            bookingId,
-            new DateTime(2025, 09, 01, 10, 0, 0),
-            new DateTime(2025, 09, 01, 12, 0, 0)
-            );
-        // To simulate a booking between 10-12
+        var booking = new Booking
+        {
+            BookingId = 1,
+            UserId = 1,
+            ResourceId = 1,
+            StartTime = new DateTime(2025, 09, 01, 10, 0, 0),
+            EndTime = new DateTime(2025, 09, 01, 12, 0, 0)
+        };
+        bookingService.CreateBooking(booking);
 
         var testStart = new DateTime(2025, 09, 01, 11, 0, 0);
         var testEnd = new DateTime(2025, 09, 01, 13, 0, 0);
 
         // Act
-        var result = bookingService.IsBookingOverlapping(resourceId, testStart, testEnd);
+        var result = bookingService.IsBookingOverlapping(booking.ResourceId, testStart, testEnd);
 
         // Assert
         Assert.True(result);
-        // Tells us booking IS overlapping and can therefore NOT be added
     }
 }

@@ -1,26 +1,33 @@
 namespace Backend.Tests;
 using Backend.Services;
+using InnoviaHub.Models;
 using Xunit;
 public class IsBookingAddedTest
 
 {
     [Fact]
-    public void Should_ReturnTrue_WhenBookingIsAdded()
+public void Should_ReturnTrue_WhenBookingIsAdded()
+{
+    // Arrange
+    var bookingService = new BookingService();
+    var booking = new Booking
     {
-        // Arrange
-        var bookingService = new BookingService();
-        var bookingId = 1;
-        var startTime = new DateTime(2025, 09, 01, 10, 0, 0);
-        var endTime = new DateTime(2025, 09, 01, 11, 0, 0);
-        var resourceId = 1;
-        var userId = 1;
+        BookingId = 1,
+        StartTime = new DateTime(2025, 09, 01, 10, 0, 0),
+        EndTime = new DateTime(2025, 09, 01, 11, 0, 0),
+        ResourceId = 1,
+        UserId = 1
+    };
 
-        // Act
-        bookingService.CreateBooking(userId, resourceId, bookingId, startTime, endTime);
-        // Simulate adding a booking to list
-        var result = bookingService.IsBookingAdded(bookingId, startTime, endTime, resourceId);
+    // Act
+    bookingService.CreateBooking(booking);
+    var result = bookingService.IsBookingAdded(
+        booking.BookingId,
+        booking.StartTime,
+        booking.EndTime,
+        booking.ResourceId);
 
-        // Assert
-        Assert.True(result);
-    }
+    // Assert
+    Assert.True(result);
+}
 }
