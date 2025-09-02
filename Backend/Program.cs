@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ if (string.IsNullOrWhiteSpace(connection))
 
 builder.Services.AddDbContext<PersonDbContext>(options =>
     options.UseSqlServer(connection));
+    
+builder.Services.AddSingleton<BookingService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
