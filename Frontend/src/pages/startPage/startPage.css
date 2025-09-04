@@ -1,0 +1,15 @@
+.headerAndNav {
+   border-bottom: 1px solid #858585;
+}
+
+@media (min-width: 768px) {
+    .headerAndNav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .headerAndNav nav{
+        margin-top: 2em;
+    }
+}
