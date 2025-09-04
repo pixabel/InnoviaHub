@@ -1,0 +1,8 @@
+.overviewCard {
+  background-color: #f6f5f7;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 45%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
