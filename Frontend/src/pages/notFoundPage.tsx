@@ -26,7 +26,7 @@ function NotFoundPage() {
             
             {/* Ögon */}
             <circle cx="26" cy="17" r="3" fill="#333"/>
-            <circle cx="38" cy="17" r="3" fill="#333"/>
+            <circle cx="38" cy="17" r="2" fill="#333"/>
             
             {/* Antenn */}
             <line x1="32" y1="4" x2="32" y2="8" stroke="#333" strokeWidth="2"/>
