@@ -1,14 +1,13 @@
-using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace InnoviaHub.Models
 {
-    public class User
+    public class User : IdentityUser
 {
-    public int UserId { get; set; }
+    // Removed Id, Email and PasswordHash
+    // since they are inherited from IdentityUser
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-    public required string Email { get; set; }
-    public string PasswordHash { get; set; }
     public bool IsAdmin { get; set; }
 }
 }

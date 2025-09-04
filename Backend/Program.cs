@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using DotNetEnv;
+using Microsoft.AspNetCore.Identity; 
 using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
@@ -25,10 +24,15 @@ if (string.IsNullOrWhiteSpace(connection))
 
 builder.Services.AddDbContext<InnoviaHubDB>(options =>
     options.UseSqlServer(connection));
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<InnoviaHubDB>()
+    .AddDefaultTokenProviders();
+
     
 builder.Services.AddSingleton<BookingService>();
-
-
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -45,45 +49,45 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.MapControllers();
 app.MapGet("/", () => "Hello world!");
 
-//users
+// //users
 
-app.MapGet("/users", (InnoviaHubDB db) => db.User.ToList());
+// app.MapGet("/users", (InnoviaHubDB db) => db.User.ToList());
 
-app.MapPost("/users", async ([FromBody] User user, InnoviaHubDB db) =>
-{
-    db.User.Add(user);
-    await db.SaveChangesAsync();
-    return Results.Created($"/users/{user.UserId}", user);
-});
+// app.MapPost("/users", async ([FromBody] User user, InnoviaHubDB db) =>
+// {
+//     db.User.Add(user);
+//     await db.SaveChangesAsync();
+//     return Results.Created($"/users/{user.UserId}", user);
+// });
 
-//Resources
+// //Resources
 
-app.MapGet("/resources", (InnoviaHubDB db) => db.Resource.ToList());
+// app.MapGet("/resources", (InnoviaHubDB db) => db.Resource.ToList());
 
-app.MapPost("/resources", async ([FromBody] Resource resource, InnoviaHubDB db) =>
-{
-    db.Resource.Add(resource);
-    await db.SaveChangesAsync();
-    return Results.Created($"/resources/{resource.ResourceId}", resource);
-});
+// app.MapPost("/resources", async ([FromBody] Resource resource, InnoviaHubDB db) =>
+// {
+//     db.Resource.Add(resource);
+//     await db.SaveChangesAsync();
+//     return Results.Created($"/resources/{resource.ResourceId}", resource);
+// });
 
-//Bookings
+// //Bookings
 
-app.MapGet("/bookings", (InnoviaHubDB db) =>
-    db.Booking
-      .Include(b => b.UserId)
-      .Include(b => b.ResourceId)
-      .ToList());
+// app.MapGet("/bookings", (InnoviaHubDB db) =>
+//     db.Booking
+//       .Include(b => b.UserId)
+//       .Include(b => b.ResourceId)
+//       .ToList());
 
-app.MapPost("/bookings", async ([FromBody] Booking booking, InnoviaHubDB db) =>
-{
-    db.Booking.Add(booking);
-    await db.SaveChangesAsync();
-    return Results.Created($"/bookings/{booking.BookingId}", booking);
-});
+// app.MapPost("/bookings", async ([FromBody] Booking booking, InnoviaHubDB db) =>
+// {
+//     db.Booking.Add(booking);
+//     await db.SaveChangesAsync();
+//     return Results.Created($"/bookings/{booking.BookingId}", booking);
+// });
 
 app.Run();
 
