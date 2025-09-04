@@ -1,5 +1,6 @@
 using InnoviaHub.DTOs;
 using InnoviaHub.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoviaHub.Controllers
@@ -16,26 +17,27 @@ namespace InnoviaHub.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterUserDTO dto)
+        public async Task<IActionResult> Register(RegisterUserDTO dto)
         {
             var user = new User
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                IsAdmin = dto.IsAdmin
+                UserName = dto.Email,
+                IsAdmin = false
             };
 
-            var createdUser = _authService.Register(user, dto.Password);
+            var createdUser = await _authService.Register(user, dto.Password);
             return Ok(createdUser);
 
         }
 
 
         [HttpPost("login")]
-        public IActionResult Login(LoginUserDTO dto)
+        public async Task<IActionResult> Login(LoginUserDTO dto)
         {
-            var token = _authService.Login(dto.Email, dto.Password);
+            var token = await _authService.Login(dto.Email, dto.Password);
             if (token == null)
                 return Unauthorized("Credentials not valid");
 
