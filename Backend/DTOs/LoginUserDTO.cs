@@ -1,5 +1,8 @@
-public class LoginUserDTO
+namespace InnoviaHub.DTOs
 {
-    public required string Email { get; set; }
-    public required string Password { get; set; }
+    public class LoginUserDTO
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+    }
 }
