@@ -39,13 +39,13 @@ const Login = () => {
           isAdmin: decoded.role === "Admin"
       };
 
-      // Spara korrekt user i localStorage
+      // Save user to localStorage
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Triggerar custom event så Navbar kan uppdatera sig
+      // Trigger custom event to update navbar
       window.dispatchEvent(new Event("userUpdated"));
 
-      // Rensa inputfält
+      // Clear inputfields
       setEmail("");
       setPassword("");
 
