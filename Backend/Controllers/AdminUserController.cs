@@ -2,13 +2,15 @@
 using InnoviaHub.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using InnoviaHub.DTOs;
 using Backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InnoviaHub.Controllers
 {
     [ApiController]
-    [Route ("api/[controller]")]
+    [Route("api/[controller]")]
+    // // Only users with the "Admin" role can access these endpoints
+    [Authorize(Roles = "Admin")]
     public class AdminUserController : ControllerBase
     {
         private readonly AdminUserService _adminService;
@@ -38,11 +40,7 @@ namespace InnoviaHub.Controllers
         [HttpPut("users/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDTO dto)
         {
-            //Kontrollera att användare som gör dett är admin
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null || !currentUser.IsAdmin)
-                return Forbid();
-
+            // Removed admin check since authorization is handled by the [Authorize(Roles = "Admin")] attribute
             var success = await _adminService.UpdateUserAsync(id, dto);
             if (!success)
                 return NotFound();
