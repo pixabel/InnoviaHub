@@ -20,10 +20,3 @@
   gap: 30px;
   padding: 30px;
 }
-
-/* move later */
-.loginRegister{
-    display: flex;
-    width: 50%;
-    margin: auto;
-}

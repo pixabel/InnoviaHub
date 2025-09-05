@@ -3,8 +3,8 @@ import Navbar from "../../components/navbar/navbar";
 import OverviewCard from "../../components/dashboard/overview";
 import BookingCard from "../../components/dashboard/booking";
 //Only to test login and register component
-import Login from "../../components/login/register/login";
-import Register from "../../components/login/register/register";
+// import Login from "../../components/login/register/login";
+// import Register from "../../components/login/register/register";
 //----------------------------
 import "./startPage.css";
 
@@ -19,10 +19,10 @@ const StartPage = () => {
       </div>
       <div className="mainContent">
         {/* will be moved later   */}
-        <div className="loginRegister">
+        {/* <div className="loginRegister">
           <Register />
           <Login />
-        </div>
+        </div> */}
         {/* ----------------- */}
         <div className="dashboard">
           <OverviewCard />
