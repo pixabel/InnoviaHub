@@ -52,6 +52,16 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = ClaimTypes.Role // 👈 viktigt
     };
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -89,8 +99,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -106,65 +114,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowReactDev");
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapGet("/", () => "Hello world!");
 
-// //users
-
-// app.MapGet("/users", (InnoviaHubDB db) => db.User.ToList());
-
-// app.MapPost("/users", async ([FromBody] User user, InnoviaHubDB db) =>
-// {
-//     db.User.Add(user);
-//     await db.SaveChangesAsync();
-//     return Results.Created($"/users/{user.UserId}", user);
-// });
-
-// //Resources
-
-// app.MapGet("/resources", (InnoviaHubDB db) => db.Resource.ToList());
-
-// app.MapPost("/resources", async ([FromBody] Resource resource, InnoviaHubDB db) =>
-// {
-//     db.Resource.Add(resource);
-//     await db.SaveChangesAsync();
-//     return Results.Created($"/resources/{resource.ResourceId}", resource);
-// });
-
-// //Bookings
-
-// app.MapGet("/bookings", (InnoviaHubDB db) =>
-//     db.Booking
-//       .Include(b => b.UserId)
-//       .Include(b => b.ResourceId)
-//       .ToList());
-
-// app.MapPost("/bookings", async ([FromBody] Booking booking, InnoviaHubDB db) =>
-// {
-//     db.Booking.Add(booking);
-//     await db.SaveChangesAsync();
-//     return Results.Created($"/bookings/{booking.BookingId}", booking);
-// });
-
 app.Run();
-
-//public class Person
-//{
-//    public int Id { get; set; }
-//    public string FirstName { get; set; }
-//    public string LastName { get; set; }
-//}
-
-//public class PersonDbContext : DbContext
-//{
-//    public PersonDbContext(DbContextOptions<PersonDbContext> options)
-//        : base(options)
-//    {
-//    }
-//
-//    public DbSet<Person> Person { get; set; }
-//}

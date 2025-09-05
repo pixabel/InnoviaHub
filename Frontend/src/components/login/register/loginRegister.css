@@ -1,0 +1,59 @@
+.main-content {
+    font-family: "Inter", sans-serif;
+    margin: 5em auto;
+    width: 15em;
+}
+
+.login-container, .register-container {
+    background-color: #a0b2a6;
+    border-radius: 16px;
+    padding: 0.5em 2em 2em 2em;
+    background-color: #a0b2a6;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+
+}
+
+.login-form input, .register-form input {
+    width: 100%;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.login-form input:focus,
+.login-form input:hover,
+.register-form input:focus,
+.register-form input:hover {
+    border-color: #719cd5;
+    outline: none;
+    background-color: #e2e2e2;
+}
+
+.login-form button, .register-form button, .sendToRegister  {
+    width: 100%;
+    padding: 0.5em;
+    background-color: #719cd5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.login-form button:focus,
+.login-form button:hover,
+.register-form button:focus,
+.register-form button:hover,
+.sendToRegister {
+    background-color: #5a7bb8;
+}
+
+.error-msg {
+    color: red;
+    font-weight: bold;
+}
