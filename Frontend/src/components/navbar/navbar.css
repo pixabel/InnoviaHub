@@ -12,10 +12,12 @@
     font-family: "Inter", sans-serif;
 }
 
+
+
 .nav-links li {
     list-style: none;
     font-size: 0.7em;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .nav-links a {

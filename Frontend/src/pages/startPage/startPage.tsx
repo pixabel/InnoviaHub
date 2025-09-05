@@ -13,13 +13,9 @@ const StartPage = () => {
       </div>
       <div className="mainContent">     
        <div className="dashboard">
-            <div className="overview-section">
               <OverviewCard />
-            </div>
-            <div className="booking-section">
               <BookingCard />
-            </div>
-        </div>
+        </div> 
       </div>
     </div>
   );

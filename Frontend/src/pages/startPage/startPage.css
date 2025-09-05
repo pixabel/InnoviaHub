@@ -13,3 +13,10 @@
         margin-top: 2em;
     }
 }
+
+.dashboard {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 30px;
+}
