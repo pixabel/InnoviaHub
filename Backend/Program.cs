@@ -32,6 +32,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
     
 builder.Services.AddSingleton<BookingService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
