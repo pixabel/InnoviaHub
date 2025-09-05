@@ -49,7 +49,7 @@ const Login = () => {
       setEmail("");
       setPassword("");
 
-      navigate("/book");
+      navigate("/");
     })
     .catch(error => {
       console.error("Login error:", error);
