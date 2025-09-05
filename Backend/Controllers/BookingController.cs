@@ -2,6 +2,7 @@ using InnoviaHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Services;
 using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace InnoviaHub.Controllers
@@ -46,7 +47,7 @@ namespace InnoviaHub.Controllers
                 return NotFound();
 
             return NoContent();
-            
+
         }
 
         // PUT 
@@ -57,8 +58,7 @@ namespace InnoviaHub.Controllers
                 return NotFound();
 
             return NoContent();
-        }
-        
+        }       
 
     }
 }
