@@ -38,11 +38,10 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 
 ## Setup & Installation
 
-### prerequisites
+### Prerequisites
 
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Node.js](https://nodejs.org/) (Recommended: LTS version)
-- [Yarn](https://yarnpkg.com/) or npm
 
 ### Backend Setup
 
