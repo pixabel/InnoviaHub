@@ -1,69 +1,102 @@
-# React + TypeScript + Vite
+# InnoviaHub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+InnoviaHub is a full-stack web application, built to streamline booking office resources and user managment.
+Built with a React frontend and a .NET 9.0 backend, it offers secure authentication, JWT-based sessions, and API endpoints for managing users and various resources.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **User Registration & Authentication**: Secure sign-up and login with JWT tokens.
+- **Admin Controls**: Manage users and resources via dedicated admin endpoints.
+- **Resource Booking**: Users can book and manage available office resources via the dashboard.
+- **Responsive UI**: Built with React and styled with CSS modules.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Backend
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- ASP.NET Core
+- SignalR
+- Sensor API
+- JWT Token
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Frontend
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- React.js or Vue.js
+- Fetch API
+
+### Data Management
+
+- Entity Framework Core
+- SQL Server
+
+### DevOps & Infrastructure
+
+- GitHub
+- Trello
+- Azure / DigitalOcean
+- Postman / Swagger
+
+## Setup & Installation
+
+### Prerequiusites
+
+- [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Node.js](https://nodejs.org/) (Recommended: LTS version)
+- [Yarn](https://yarnpkg.com/) or npm
+
+### Backend Setup
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/Dilemma98/InnoviaHub.git
+cd InnoviaHub/Backend ``
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Restore Dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+dotnet restore
 ```
+
+3. **Build the project:**
+
+```bash
+dotnet build
+```
+
+4. **Run the application:**
+
+```bash
+dotnet run
+```
+
+The backend will be accessible at <http://localhost:5271>.
+
+### Frontend Setup
+
+1. **Navigate to the frontend directory:**
+
+```bash
+cd ../Frontend
+```
+
+2. **Install dependencies:**
+
+```bash
+npm install
+```
+
+3. **Start the development server:**
+
+```bash
+npm run dev
+```
+
+The frontend will be accessible at <http://localhost:5173/>.
+
+### API Documentation
+
+Documentation of the API endpoints is avaiable at Swagger UI:
+
+<http://localhost:5271/index.html>
