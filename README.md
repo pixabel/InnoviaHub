@@ -21,7 +21,7 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 
 ### Frontend
 
-- React.js or Vue.js
+- React.js 
 - Fetch API
 
 ### Data Management
