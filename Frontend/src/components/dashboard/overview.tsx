@@ -5,6 +5,7 @@ const OverviewCard = () => {
 
     // Statisk tillgänglighet 
     // Implementer SignalR för realtidsuppdatering?
+
     const [desksAvailable] = useState(12);
     const [aiServerAvailable] = useState(1);
 
