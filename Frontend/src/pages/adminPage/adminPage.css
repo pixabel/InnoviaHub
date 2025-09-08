@@ -1,0 +1,21 @@
+.adminPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.headerAndNav {
+  flex-shrink: 0;
+}
+
+.admin-layout {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.admin-content {
+  padding: 2rem;
+  flex-grow: 1;
+  overflow: auto;
+}
