@@ -1,7 +1,6 @@
 import Header from "../../components/header/header";
 import Navbar from "../../components/navbar/navbar";
-import Login from "../../components/login/register/login";
-import Register from "../../components/login/register/register";
+import LoginPage from "../signInPage/signIn";
 import "../../pages/bookingPage/bookResource.css";
 import { useEffect, useState } from "react";
 import ChooseResource from "../../components/bookingFlow/chooseResource";
@@ -17,8 +16,6 @@ interface User {
 const BookingPage = () => {
   // State for user
   const [user, setUser] = useState<User | null>(null);
-  // State for if registerform should show
-  const [showRegister, setShowRegister] = useState(false);
   // State for which step in booking process user are
   const [currentStep, setCurrentStep] = useState(1);
   // State for which resource user has chosen
@@ -29,7 +26,7 @@ const BookingPage = () => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
 
-    // Listen to event if user should update
+    // Listen for updates from login/logout
     const handleUserUpdate = () => {
       const updated = localStorage.getItem("user");
       setUser(updated ? JSON.parse(updated) : null);
@@ -41,46 +38,17 @@ const BookingPage = () => {
 
   return (
     <div className="bookingPage">
-      <div className="headerAndNav">
-        <Header />
-        <Navbar />
-      </div>
-
       <div className="mainContent">
-        {/* If user nog signed in, show login/register */}
+        {/* If user not signed in, show login/register */}
         {!user ? (
-          <div className="loginRegister">
-            {showRegister ? (
-              <>
-                <div className="switchAuth">
-                  Har du redan ett konto?
-                  <button
-                    className="switchAuthBtn"
-                    onClick={() => setShowRegister(false)}
-                  >
-                    Logga in
-                  </button>
-                </div>
-                <Register />
-              </>
-            ) : (
-              <>
-                <div className="switchAuth">
-                  Har du inget konto?
-                  <button
-                    className="switchAuthBtn"
-                    onClick={() => setShowRegister(true)}
-                  >
-                    Skapa konto
-                  </button>
-                </div>
-                <Login />
-              </>
-            )}
-          </div>
+          <LoginPage />
         ) : (
           <>
-          {/* If user is signed in, show bookingflow */}
+            <div className="headerAndNav">
+              <Header />
+              <Navbar />
+            </div>
+            {/* If user is signed in, show bookingflow */}
             {currentStep === 1 && (
               <ChooseResource
                 selectedResource={selectedResource}

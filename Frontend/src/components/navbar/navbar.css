@@ -1,3 +1,20 @@
+.loginBtn{
+    background-color: #67c467;
+    border: #67c467;
+    color: white;
+    padding: 0.6em;
+    border-radius: 0.5em;
+    font-size: 0.9em;
+}
+.logoutBtn{
+    background-color: #ff4848dc;
+    border: #ff4848dc;
+    color: white;
+    padding: 0.6em;
+    border-radius: 0.5em;
+    font-size: 0.9em;
+    cursor: pointer;
+}
 .nav-links {
     display: flex;        
     flex-direction: row;     
