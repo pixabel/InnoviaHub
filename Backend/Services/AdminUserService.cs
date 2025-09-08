@@ -9,7 +9,7 @@ namespace Backend.Services
     {
         private readonly UserManager<User> _userManager;
 
-        public AdminUserService (UserManager<User> userManager)
+        public AdminUserService(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
@@ -27,15 +27,45 @@ namespace Backend.Services
         public async Task<bool> UpdateUserAsync(string id, UpdateUserDTO dto)
         {
             var user = await _userManager.FindByIdAsync(id);
-
-            if(user == null)
-                return false;
+            if (user == null) return false;
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
-            user.IsAdmin = dto.IsAdmin;
+            user.Email = dto.Email;
+            user.UserName = dto.Email;
 
-            var result = await _userManager.UpdateAsync(user);
+            // Uppdatera användarens info först
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) return false;
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if (dto.IsAdmin && !currentRoles.Contains("Admin"))
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!removeResult.Succeeded) return false;
+
+                var addResult = await _userManager.AddToRoleAsync(user, "Admin");
+                if (!addResult.Succeeded) return false;
+            }
+            else if (!dto.IsAdmin && currentRoles.Contains("Admin"))
+            {
+                var removeResult = await _userManager.RemoveFromRoleAsync(user, "Admin");
+                if (!removeResult.Succeeded) return false;
+
+                var addResult = await _userManager.AddToRoleAsync(user, "Medlem");
+                if (!addResult.Succeeded) return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return false;
+
+            var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;
         }
     }

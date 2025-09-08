@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import StartPage from "./pages/startPage/startPage";
 import AdminPage from "./pages/adminPage/adminPage";
+import MemberTable from "./components/Admin/MemberTable/memberTable";
 import BookingPage from "./pages/bookingPage/bookResource";
 import MyBookings from "./pages/myBookings/myBookings";
 import NotFoundPage from "./pages/notFoundPage";
@@ -9,7 +10,9 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<StartPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin" element={<AdminPage />}>
+          <Route path="members" element={<MemberTable />} />
+        </Route>
         <Route path="/book" element={<BookingPage />} />
         <Route path="/myBookings" element={<MyBookings />} />
         {/* NotFoundPage */}
