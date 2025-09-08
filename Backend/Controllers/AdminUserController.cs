@@ -40,13 +40,33 @@ namespace InnoviaHub.Controllers
         [HttpPut("users/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDTO dto)
         {
-            // Removed admin check since authorization is handled by the [Authorize(Roles = "Admin")] attribute
-            var success = await _adminService.UpdateUserAsync(id, dto);
-            if (!success)
+            try
+            {
+                var success = await _adminService.UpdateUserAsync(id, dto);
+                if (!success)
+                    return NotFound();
+
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ett oväntat fel inträffade.");
+            }
+
+        }
+
+        [HttpDelete("users/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var result = await _adminService.DeleteUserAsync(id);
+            if (!result)
                 return NotFound();
 
             return NoContent();
-
         }
     }
 }
