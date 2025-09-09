@@ -61,9 +61,15 @@ const BookingPage = () => {
                 selectedResource={selectedResource}
                 setSelectedResource={setSelectedResource}
                 onContinue={() => setCurrentStep(3)}
+                // Send onReturn as prop to send user back to step 1
+                onReturn={() => setCurrentStep(1) }
               />
             )}
-            {currentStep === 3 && <ConfirmBooking />}
+            {currentStep === 3 && (
+              <ConfirmBooking 
+              // Send onReturn as prop to send user back to step 2
+              onReturn={() => setCurrentStep(2)} />
+            )}
           </>
         )}
       </div>

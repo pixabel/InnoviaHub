@@ -49,6 +49,21 @@ select {
 .continueBtn:hover {
     background-color: #4e7d74;
 }
+.goBackBtn{
+    background-color: #c06d78;
+    border: #c06d78;
+    color: white;
+    border-radius: 0.3em;
+    margin-top: 1em;
+    padding: 0.2em;
+    width: 20%;
+    margin-left: 80%;
+    cursor: pointer;
+}
+
+.goBackBtn:hover{
+    background-color: #a6505c;
+}
 
 /* Media queries för större skärmar */
 @media (min-width: 768px) {
