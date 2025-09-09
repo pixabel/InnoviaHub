@@ -3,11 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
-
 interface TokenPayload {
-    unique_name?: string;
-    role?: string;
-    [key: string]: any;
+  unique_name?: string;
+  role?: string;
+  [key: string]: any;
 }
 
 const Login = () => {
@@ -25,38 +24,40 @@ const Login = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     })
-    .then(res => {
-      if (!res.ok) throw new Error("Fel användarnamn eller lösenord");
-      return res.json();
-    })
-    .then(data => {
-      const token = data.token;
-      localStorage.setItem("token", token);
+      .then((res) => {
+        if (!res.ok) throw new Error("Fel användarnamn eller lösenord");
+        return res.json();
+      })
+      .then((data) => {
+        const token = data.token;
+        localStorage.setItem("token", token);
 
-      const decoded = jwtDecode<TokenPayload>(token);
-      const user = {
+        const decoded = jwtDecode<TokenPayload>(token);
+        const user = {
           email: decoded.unique_name ?? "",
-          isAdmin: decoded.role === "Admin"
-      };
+          isAdmin: decoded.role === "Admin",
+          firstName: decoded.given_name ?? "",
+          lastName: decoded.family_name ?? "",
+        };
 
-      // Save user to localStorage
-      localStorage.setItem("user", JSON.stringify(user));
+        // Save user to localStorage
+        localStorage.setItem("user", JSON.stringify(user));
 
-      // Trigger custom event to update navbar
-      window.dispatchEvent(new Event("userUpdated"));
+        // Trigger custom event to update navbar
+        window.dispatchEvent(new Event("userUpdated"));
 
-      // Clear inputfields
-      setEmail("");
-      setPassword("");
+        // Clear inputfields
+        setEmail("");
+        setPassword("");
 
-      navigate("/");
-    })
-    .catch(error => {
-      console.error("Login error:", error);
-      setEmail("");
-      setPassword("");
-      setErrorMsg(error.message);
-    });
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        setEmail("");
+        setPassword("");
+        setErrorMsg(error.message);
+      });
   }
 
   return (
@@ -74,7 +75,7 @@ const Login = () => {
                 name="email"
                 required
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="form-group">
@@ -85,7 +86,7 @@ const Login = () => {
                 name="password"
                 required
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <button type="submit">Logga in</button>

@@ -52,40 +52,26 @@ public class AuthService
     // Generates a JWT token for the logged in user
     private string GenerateJwtToken(User user)
     {
-        //Create new handler thats responsible for generating jwt tokens
         var tokenHandler = new JwtSecurityTokenHandler();
-
-        // Converts secret key to byte array
         var key = Encoding.ASCII.GetBytes(jwtSecret);
 
-        // Defines the tokens contents and settings
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            // ClaimsIndentity holds information about the user
             Subject = new ClaimsIdentity(new[]
             {
-                // Add email as name claim
-                new Claim(ClaimTypes.Name, user.Email!),
-                // Add isAdmin as role claim
-                // Enables role-based authorization
-                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
-            }),
-            // Token is valid for 2 hours
+            new Claim(ClaimTypes.Name, user.Email!),
+            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User"),
+            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? ""),
+            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? "")
+        }),
             Expires = DateTime.UtcNow.AddHours(2),
-
-            // Signing credentials specify how token is signed
-            // SymmetricSecurityKey + HMAC-SHA256 ensures token cant be tampered with
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             )
         };
-        
-        // Create token object using descriptor
-        var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        // Serialize token to string
-        // This is whats returned to the client for authentication
+        var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 }

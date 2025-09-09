@@ -1,35 +1,48 @@
 import "./bookingFlow.css";
+import "./calendar.css";
 import StepBar from "./stepBar";
+import Calendar from "react-calendar";
+import { useState } from "react";
 
-// Same props as for chooseResource
-interface ChooseResourceProps {
-    selectedResource: string;
-    setSelectedResource: (id: string) => void;
-    onContinue: () => void;
-    onReturn: () => void;
+interface ChooseDateTimeProps {
+  selectedResource: string;
+  setSelectedResource: (id: string) => void;
+  setSelectedDate: (date: Date | null) => void; // ny prop
+  onContinue: () => void;
+  onReturn: () => void;
 }
 
-const ChooseDateTime = ({selectedResource, onContinue, onReturn} : ChooseResourceProps) => {
-    // Logic to send user to next step in bookingFlow
+const ChooseDateTime = ({ selectedResource, setSelectedDate, onContinue, onReturn }: ChooseDateTimeProps) => {
+  const [selectedLocalDate, setSelectedLocalDate] = useState<Date | null>(null);
+
   const continueBookingBtn = () => {
-    if (!selectedResource) return;
+    if (!selectedResource || !selectedLocalDate) return;
+    setSelectedDate(selectedLocalDate); // skicka datum uppåt
     onContinue();
   };
-  // Logic to send user back one step in bookingFlow
-  const returnBtn = () => {
-    onReturn();
-  }
+
   return (
     <div className="mainContentChooseDateTime">
-        <StepBar currentStep={2} />
-        <div className="chooseDateTime">
-            <h1 className="componentHeader">Välj tid för {selectedResource}:</h1>
-            {/* Later, this is where a list of available times will be listed */}
-         <button className="continueBtn" onClick={continueBookingBtn}>
+      <StepBar currentStep={2} />
+      <div className="chooseDateTime">
+        <h1 className="componentHeader">Välj dag för bokning:</h1>
+        <Calendar
+          className="calendar"
+          onChange={(date) => setSelectedLocalDate(date as Date)}
+          value={selectedLocalDate}
+        />
+        {selectedLocalDate && (
+          <div className="infoText">
+            <p><b>{selectedResource}</b><br/>
+            <hr/>
+            Lediga tider för {selectedLocalDate.toLocaleDateString()}:</p>
+          </div>
+        )}
+        <button className="continueBtn" onClick={continueBookingBtn}>
           Fortsätt
         </button>
-        <button className="goBackBtn" onClick={returnBtn}>Tillbaka</button>
-        </div>
+        <button className="goBackBtn" onClick={onReturn}>Tillbaka</button>
+      </div>
     </div>
   );
 };

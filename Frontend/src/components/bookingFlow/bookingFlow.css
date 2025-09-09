@@ -3,7 +3,7 @@
 .mainContentChooseDateTime,
 .mainContentConfirmBooking {
     font-family: 'Inter', sans-serif;
-    width: 90%; /* Anpassar bredden efter skärm på mobil */
+    width: 100%; /* Anpassar bredden efter skärm på mobil */
     max-width: 25em; /* Maxbredd för större skärmar */
     margin: 2em auto;
     padding: 0 1em; /* Lite luft på små skärmar */
@@ -64,6 +64,13 @@ select {
 .goBackBtn:hover{
     background-color: #a6505c;
 }
+
+.bookingInfo{
+    border: 1px solid grey;
+    padding: 0.5em 0 0.5em 1.5em;
+    border-radius: 1em;
+}
+
 
 /* Media queries för större skärmar */
 @media (min-width: 768px) {
