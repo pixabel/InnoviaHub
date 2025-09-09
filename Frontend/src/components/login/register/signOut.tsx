@@ -14,20 +14,8 @@ const SignOutBtn = () => {
   };
   return (
     <div>
-      <button
-        style={{
-          backgroundColor: "#d5718c",
-          color: "white",
-          padding: "0.8em",
-          border: "#d5718c",
-          borderRadius: "0.5em",
-          cursor: "pointer",
-          fontWeight: "bold",
-          fontSize: "0.8em"
-        }}
-        onClick={handleSignOut}
-      >
-        Logga ut
+      <button className="logoutBtn" onClick={handleSignOut}>
+        <i className="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
   );

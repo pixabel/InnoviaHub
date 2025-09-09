@@ -6,7 +6,9 @@ import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [user, setUser] = useState<{ isAdmin: boolean; email: string } | null>(null);
+  const [user, setUser] = useState<{ isAdmin: boolean; email: string } | null>(
+    null
+  );
   const updateUser = () => {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -30,18 +32,33 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <ul className="nav-links">
-        <li><Link to="/">Startsida</Link></li>
-        <li><Link to="/book">Boka Resurser</Link></li>
-        {/* If signed in */}
-        {user && 
-        <li><Link to="/myBookings">Mina Bokningar</Link></li>}
-        {/* If admin */}
-        {isAdmin && (
-          <li><Link to="/admin">Admin</Link></li>
+        <li>
+          <Link to="/">Startsida</Link>
+        </li>
+        <li>
+          <Link to="/book">Boka Resurser</Link>
+        </li>
+        {!user ? (
+          <li>
+            <Link to="/login">
+              <i className="fa-solid fa-right-to-bracket loginBtn"></i>
+            </Link>
+          </li>
+        ) : (
+          <>
+            <li>
+              <Link to="/myBookings">Mina Bokningar</Link>
+            </li>
+            {isAdmin && (
+              <li>
+                <Link to="/admin">Admin</Link>
+              </li>
+            )}
+            <li>
+              <SignOutBtn />
+            </li>
+          </>
         )}
-         {user && <li>
-          <SignOutBtn />
-        </li>}
       </ul>
     </nav>
   );

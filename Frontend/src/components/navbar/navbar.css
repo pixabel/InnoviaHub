@@ -1,22 +1,36 @@
+.loginBtn{
+    background-color: #67c467;
+    border: #67c467;
+    color: white;
+    padding: 0.6em;
+    border-radius: 0.5em;
+    font-size: 0.9em;
+}
+.logoutBtn{
+    background-color: #ff4848dc;
+    border: #ff4848dc;
+    color: white;
+    padding: 0.6em;
+    border-radius: 0.5em;
+    font-size: 0.9em;
+    cursor: pointer;
+}
 .nav-links {
     display: flex;        
     flex-direction: row;     
-    gap: 1.4em;             
-    justify-content: flex-start; 
+    gap: 1em;             
+    justify-content: center; 
     align-items: center;     
     padding: 0;             
     margin-left: 1em;    
-    margin-top: -0.7em;
-    margin-right: 2em;      
+    margin-top: -0.7em;    
     list-style: none;
     font-family: "Inter", sans-serif;
 }
 
-
-
 .nav-links li {
     list-style: none;
-    font-size: 0.7em;
+    font-size: 0.6em;
     font-weight: 600;
 }
 
@@ -27,23 +41,15 @@
     color:#585858; 
 }
 
-.fa-solid{  
-    font-size: 1.5em;
-    color: #585858
-}
-
-.menu{
-    margin-left: 1em; 
-}
-
 /* Små / mellan mobiler */
 @media (min-width: 400px) and (max-width: 419px) {
     .nav-links {
-        gap: 1.8em;            
+        gap: 1.8em;
+             
     }
 
     .nav-links li {
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
 }
 
@@ -55,50 +61,32 @@
     }
 
     .nav-links li {
-        font-size: 0.9em;
+        font-size: 0.7em;
     }
 
-    .fa-solid{  
-        display: none;
-    }
-
-    .menu{
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-    }
 }
 
 /* Tablets / mindre desktops */
 @media (min-width: 691px) and (max-width: 1023px) {
     .nav-links {
-        gap: 2.5em;               
+        gap: 2.5em;
+        justify-content: flex-end;
     }
 
     .nav-links li {
-        font-size: 1em;
+        font-size: 0.7em;
+        margin-right: 1em;
     }
-
-    .fa-solid{  
-        display: none;
-    }
-
 }
 
 /* Stora desktops */
 @media (min-width: 1024px) {
     .nav-links {
-        gap: 3.8em;                    
+        gap: 3em;  
+        margin-right: 0.8em;                  
     }
 
     .nav-links li {
-        font-size: 1.2em;
-    }
-
-    .fa-solid{  
-        display: none;
-    }
-
-    .menu{
-        margin-right: 2em;
+        font-size: 1em;
     }
 }

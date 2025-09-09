@@ -5,10 +5,9 @@
 }
 
 .login-container, .register-container {
-    background-color: #a0b2a6;
+    background-color: #f0f0f0;
     border-radius: 16px;
     padding: 0.5em 2em 2em 2em;
-    background-color: #a0b2a6;
     width: 80%;
     margin: auto;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
@@ -30,13 +29,13 @@
 .register-form input:hover {
     border-color: #719cd5;
     outline: none;
-    background-color: #e2e2e2;
+    background-color: #c9c9c96d;
 }
 
 .login-form button, .register-form button, .sendToRegister  {
     width: 100%;
     padding: 0.5em;
-    background-color: #719cd5;
+    background-color: #6199e3;
     color: white;
     border: none;
     border-radius: 8px;
@@ -50,10 +49,37 @@
 .register-form button:focus,
 .register-form button:hover,
 .sendToRegister {
-    background-color: #5a7bb8;
+    background-color: #5579bb;
 }
 
 .error-msg {
     color: red;
     font-weight: bold;
+}
+
+.loginRegister{
+    min-height: 500px; /* justera så det täcker register-rutan */
+    transition: min-height 0.2s ease;
+}
+.switchAuth {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    font-size: 1.1em;
+    margin-top: 2em;
+    overflow: hidden;
+}
+
+.switchAuthBtn{
+    margin-left: 1em;
+    background-color:#61988e;
+    border: #61988e;
+    padding: 0.6em;
+    border-radius: 1em;
+    cursor: pointer;
+    color: white;
+}
+.switchAuthBtn:hover{
+    background-color: #4b7c73;
 }

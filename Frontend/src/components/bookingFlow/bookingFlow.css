@@ -1,0 +1,77 @@
+/* Grundläggande styling för alla steg */
+.mainContentChooseResource,
+.mainContentChooseDateTime,
+.mainContentConfirmBooking {
+    font-family: 'Inter', sans-serif;
+    width: 90%; /* Anpassar bredden efter skärm på mobil */
+    max-width: 25em; /* Maxbredd för större skärmar */
+    margin: 2em auto;
+    padding: 0 1em; /* Lite luft på små skärmar */
+}
+
+.componentHeader {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.chooseResource,
+.chooseDateTime,
+.confirmBooking {
+    border: 1px solid rgb(137, 137, 137);
+    display: flex;
+    flex-direction: column;
+    padding: 1.2em;
+    border-radius: 1em;
+  
+}
+
+select {
+    padding: 0.8em;
+    border-radius: 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 0.5em;
+    border: 1px solid #ccc;
+}
+
+.continueBtn {
+    background-color: #61988E;
+    border: none;
+    border-radius: 0.3em;
+    color: white;
+    padding: 0.8em;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.continueBtn:hover {
+    background-color: #4e7d74;
+}
+
+/* Media queries för större skärmar */
+@media (min-width: 768px) {
+    .mainContentChooseResource,
+    .mainContentChooseDateTime,
+    .mainContentConfirmBooking {
+        width: 50%;
+    }
+    .componentHeader {
+        font-size: 1.4em;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mainContentChooseResource,
+    .mainContentChooseDateTime,
+    .mainContentConfirmBooking {
+        width: 25em;
+    }
+    .componentHeader {
+        font-size: 1.4em;
+    }
+    select {
+        font-size: 0.8em;
+    }
+}
