@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
 using InnoviaHub.Models;
-using Backend.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
@@ -112,6 +111,14 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+// Seed timeslots to database
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
+    SeedData.SeedTimeslots(context);
+}
+
 
 app.UseHttpsRedirection();
 app.UseCors("AllowReactDev");
