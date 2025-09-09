@@ -21,7 +21,7 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 
 ### Frontend
 
-- React.js or Vue.js
+- React.js
 - Fetch API
 
 ### Data Management
@@ -33,8 +33,8 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 
 - GitHub
 - Trello
-- Azure / DigitalOcean
-- Postman / Swagger
+- Azure
+- Swagger
 
 ## Setup & Installation
 
@@ -42,14 +42,13 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
 
-
 ### Backend Setup
 
 1. **Clone the repository:**
 
 ```bash
 git clone https://github.com/Dilemma98/InnoviaHub.git
-cd InnoviaHub/Backend ``
+cd InnoviaHub/Backend 
 ```
 
 2. **Restore Dependencies**
