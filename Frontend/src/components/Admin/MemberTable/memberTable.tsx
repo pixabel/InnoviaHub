@@ -99,10 +99,10 @@ const MemberTable: React.FC = () => {
       const token = localStorage.getItem("token");
 
       const dto = {
-        FirstName: editFormData.firstName,
-        LastName: editFormData.lastName,
-        Email: editFormData.email,
-        IsAdmin: editFormData.role === "Admin",
+        firstName: editFormData.firstName,
+        lastName: editFormData.lastName,
+        email: editFormData.email,
+        isAdmin: editFormData.role === "Admin",
       };
 
       const response = await fetch(`http://localhost:5271/api/AdminUser/users/${id}`, {
