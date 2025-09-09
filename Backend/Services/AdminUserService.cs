@@ -14,9 +14,17 @@ namespace Backend.Services
             _userManager = userManager;
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<List<UserListDTO>> GetAllUsersAsync()
         {
-            return await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
+            return users.Select(u => new UserListDTO
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Role = u.IsAdmin ? "Admin" : "Medlem"
+            }).ToList();
         }
 
         public async Task<User?> GetUserByIdAsync(string id)
@@ -25,40 +33,21 @@ namespace Backend.Services
         }
 
         public async Task<bool> UpdateUserAsync(string id, UpdateUserDTO dto)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return false;
+{
+    var user = await _userManager.FindByIdAsync(id);
+    if (user == null) return false;
 
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
-            user.Email = dto.Email;
-            user.UserName = dto.Email;
+    user.FirstName = dto.FirstName;
+    user.LastName = dto.LastName;
+    user.Email = dto.Email;
+    user.UserName = dto.Email;
+    user.IsAdmin = dto.IsAdmin;
 
-            // Uppdatera användarens info först
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded) return false;
+    var updateResult = await _userManager.UpdateAsync(user);
+    if (!updateResult.Succeeded) return false;
 
-            var currentRoles = await _userManager.GetRolesAsync(user);
-
-            if (dto.IsAdmin && !currentRoles.Contains("Admin"))
-            {
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                if (!removeResult.Succeeded) return false;
-
-                var addResult = await _userManager.AddToRoleAsync(user, "Admin");
-                if (!addResult.Succeeded) return false;
-            }
-            else if (!dto.IsAdmin && currentRoles.Contains("Admin"))
-            {
-                var removeResult = await _userManager.RemoveFromRoleAsync(user, "Admin");
-                if (!removeResult.Succeeded) return false;
-
-                var addResult = await _userManager.AddToRoleAsync(user, "Medlem");
-                if (!addResult.Succeeded) return false;
-            }
-
-            return true;
-        }
+    return true;
+}
 
         public async Task<bool> DeleteUserAsync(string id)
         {
