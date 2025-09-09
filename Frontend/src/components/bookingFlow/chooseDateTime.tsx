@@ -6,14 +6,19 @@ interface ChooseResourceProps {
     selectedResource: string;
     setSelectedResource: (id: string) => void;
     onContinue: () => void;
+    onReturn: () => void;
 }
 
-const ChooseDateTime = ({selectedResource, onContinue} : ChooseResourceProps) => {
+const ChooseDateTime = ({selectedResource, onContinue, onReturn} : ChooseResourceProps) => {
     // Logic to send user to next step in bookingFlow
   const continueBookingBtn = () => {
     if (!selectedResource) return;
     onContinue();
   };
+  // Logic to send user back one step in bookingFlow
+  const returnBtn = () => {
+    onReturn();
+  }
   return (
     <div className="mainContentChooseDateTime">
         <StepBar currentStep={2} />
@@ -23,6 +28,7 @@ const ChooseDateTime = ({selectedResource, onContinue} : ChooseResourceProps) =>
          <button className="continueBtn" onClick={continueBookingBtn}>
           Fortsätt
         </button>
+        <button className="goBackBtn" onClick={returnBtn}>Tillbaka</button>
         </div>
     </div>
   );
