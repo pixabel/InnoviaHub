@@ -3,10 +3,10 @@
 .mainContentChooseDateTime,
 .mainContentConfirmBooking {
     font-family: 'Inter', sans-serif;
-    width: 100%; /* Anpassar bredden efter skärm på mobil */
-    max-width: 25em; /* Maxbredd för större skärmar */
+    width: 90%;
+    max-width: 25em;
     margin: 2em auto;
-    padding: 0 1em; /* Lite luft på små skärmar */
+    padding: 0 1em;
 }
 
 .componentHeader {

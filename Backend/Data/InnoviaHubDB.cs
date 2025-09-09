@@ -11,6 +11,7 @@ namespace Backend.Data
         }
         public DbSet<Resource> Resource { get; set; }
         public DbSet<Booking> Booking { get; set; }
+        public DbSet<Timeslot> Timeslots { get; set; }
           // Add resources to dataase
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
