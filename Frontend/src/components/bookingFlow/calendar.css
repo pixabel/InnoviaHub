@@ -1,0 +1,121 @@
+.calendar {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+  font-family: 'Inter', sans-serif;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.react-calendar__navigation button {
+  background-color: #cbbfbb;
+  color: black;
+  border: none;
+  padding: 0.7em 1em;
+  border-radius: 8px;
+  margin: 0 0.3em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #a49996;
+}
+
+/* Weekdays */
+.react-calendar__month-view__weekdays {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* Month days container */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.2em;
+}
+
+/* Days */
+.react-calendar__tile {
+  background: #fff;
+  border-radius: 8px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+/* Makes neighboring monthdays grey */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #ccc;
+  background-color: #f9f9f9;
+}
+
+.react-calendar__tile:hover {
+  background: #61988e67;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.react-calendar__tile--active {
+  background: #61988e;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.react-calendar__tile--now {
+  background: #99999996;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.infoText {
+  margin-top: 0.2em;
+}
+
+/* Större skärmar */
+@media (min-width: 1024px) {
+  .calendar {
+    width: 80%;
+    max-width: 1200px;
+    padding: 2em;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 0.8rem;
+    padding: 0.1em 1.2em;
+    margin: 0 0.5em;
+  }
+
+  .react-calendar__month-view__weekdays__weekday {
+    font-size: 1rem;
+  }
+
+  .react-calendar__tile {
+    font-size: 1.1rem;
+  }
+}

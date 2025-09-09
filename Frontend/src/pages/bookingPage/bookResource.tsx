@@ -11,22 +11,21 @@ import ConfirmBooking from "../../components/bookingFlow/confirmBooking";
 interface User {
   email: string;
   isAdmin: boolean;
+  firstName: string;
+  lastName: string;
 }
 
 const BookingPage = () => {
-  // State for user
   const [user, setUser] = useState<User | null>(null);
-  // State for which step in booking process user are
   const [currentStep, setCurrentStep] = useState(1);
-  // State for which resource user has chosen
   const [selectedResource, setSelectedResource] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   // Fetch user from localStorage when page loads
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
 
-    // Listen for updates from login/logout
     const handleUserUpdate = () => {
       const updated = localStorage.getItem("user");
       setUser(updated ? JSON.parse(updated) : null);
@@ -39,7 +38,6 @@ const BookingPage = () => {
   return (
     <div className="bookingPage">
       <div className="mainContent">
-        {/* If user not signed in, show login/register */}
         {!user ? (
           <LoginPage />
         ) : (
@@ -48,7 +46,7 @@ const BookingPage = () => {
               <Header />
               <Navbar />
             </div>
-            {/* If user is signed in, show bookingflow */}
+
             {currentStep === 1 && (
               <ChooseResource
                 selectedResource={selectedResource}
@@ -56,19 +54,24 @@ const BookingPage = () => {
                 onContinue={() => setCurrentStep(2)}
               />
             )}
+
             {currentStep === 2 && (
               <ChooseDateTime
                 selectedResource={selectedResource}
                 setSelectedResource={setSelectedResource}
+                setSelectedDate={setSelectedDate}
                 onContinue={() => setCurrentStep(3)}
-                // Send onReturn as prop to send user back to step 1
-                onReturn={() => setCurrentStep(1) }
+                onReturn={() => setCurrentStep(1)}
               />
             )}
-            {currentStep === 3 && (
-              <ConfirmBooking 
-              // Send onReturn as prop to send user back to step 2
-              onReturn={() => setCurrentStep(2)} />
+
+            {currentStep === 3 && selectedDate && (
+              <ConfirmBooking
+                selectedResource={selectedResource}
+                selectedDate={selectedDate}
+                onReturn={() => setCurrentStep(2)}
+                user={user}
+              />
             )}
           </>
         )}
