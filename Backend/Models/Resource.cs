@@ -9,6 +9,6 @@ namespace InnoviaHub.Models
         public int Capacity { get; set; } // e.g 4 rooms, 1 VR headset
 
         // To connect to Timeslots
-        public ICollection<Timeslot> Timeslots { get; set; } = new List<Timeslot>();
+        // public ICollection<Timeslot> Timeslots { get; set; } = new List<Timeslot>();
     }
 }

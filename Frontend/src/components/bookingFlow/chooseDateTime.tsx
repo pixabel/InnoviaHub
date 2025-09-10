@@ -3,7 +3,8 @@ import "./calendar.css";
 import StepBar from "./stepBar";
 import ShowAvailableTimeslots from "./showTimeslots";
 import Calendar from "react-calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 
 interface ChooseDateTimeProps {
   selectedResourceName: string;
@@ -13,6 +14,8 @@ interface ChooseDateTimeProps {
   setSelectedDate: (date: Date | null) => void;
   onContinue: () => void;
   onReturn: () => void;
+  timeslots: Timeslot[];
+  fetchTimeslots: () => void;
 }
 
 type Timeslot = {
@@ -34,6 +37,12 @@ const ChooseDateTime = ({
 }: ChooseDateTimeProps) => {
   const [selectedLocalDate, setSelectedLocalDate] = useState<Date | null>(null);
   
+  useEffect(() => {
+    if (selectedLocalDate) {
+      fetchTimeslots();
+    }
+  }, [selectedLocalDate, selectedResourceId]);
+
   const continueBookingBtn = () => {
     if (!selectedResourceId || !selectedLocalDate || !selectedTimeslot){
       return;
@@ -41,6 +50,25 @@ const ChooseDateTime = ({
     setSelectedDate(selectedLocalDate);
     onContinue();
   };
+
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+
+  const fetchTimeslots = () => {
+    if (!selectedResourceId || !selectedLocalDate) return;
+
+    const formattedDate = `${selectedLocalDate.getFullYear()}-${(selectedLocalDate.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${selectedLocalDate.getDate().toString().padStart(2, "0")}`;
+
+    fetch(`http://localhost:5271/api/Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
+        return res.json();
+      })
+      .then((data) => setTimeslots(data))
+      .catch((err) => console.error(err));
+  };
+
 
   return (
     <div className="mainContentChooseDateTime">
@@ -57,14 +85,16 @@ const ChooseDateTime = ({
             <p>
               <b>{selectedResourceName}</b>
               <br />
-              <hr />
               Lediga tider för {selectedLocalDate.toLocaleDateString()}:
-            </p>
+            </p>             
+            <hr />
             <ShowAvailableTimeslots
               resourceId={selectedResourceId ?? undefined}
               date={selectedLocalDate}
               selectedTimeslot={selectedTimeslot}
               setSelectedTimeslot={setSelectedTimeslot}
+              timeslots={timeslots}
+              refreshTimeslots={fetchTimeslots}
             />
           </div>
         )}

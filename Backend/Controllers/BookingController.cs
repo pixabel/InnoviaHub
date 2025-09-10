@@ -2,7 +2,8 @@ using InnoviaHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Services;
 using Backend.Data;
-using Microsoft.AspNetCore.Authorization;
+using InnoviaHub.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 
 namespace InnoviaHub.Controllers
@@ -13,11 +14,16 @@ namespace InnoviaHub.Controllers
     {
         private readonly InnoviaHubDB _context;
         private readonly BookingService _bookingService;
+        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingController(InnoviaHubDB context, BookingService bookingService)
+
+
+        public BookingController(InnoviaHubDB context, BookingService bookingService, IHubContext<BookingHub> hubContext)
         {
             _context = context;
             _bookingService = bookingService;
+            _hubContext = hubContext;
+
         }
 
 
@@ -30,12 +36,21 @@ namespace InnoviaHub.Controllers
 
         // POST api
         [HttpPost]
-        public ActionResult<Booking> CreateBooking(Booking booking)
+        // public ActionResult<Booking> CreateBooking(Booking booking)
+        public async Task<ActionResult<Booking>> CreateBooking([FromBody] Booking booking)
         {
+
             if (!_bookingService.IsBookingAvailable(booking.ResourceId, booking.StartTime, booking.EndTime))
-                return Conflict("Booking overlaps with an existing one.");
+            return Conflict("Booking overlaps with an existing one.");
 
             _bookingService.CreateBooking(booking);
+
+            await _hubContext.Clients.All.SendAsync("RecieveBookingUpdate", new BookingUpdate
+            {
+                ResourceId = booking.ResourceId,
+                Date = booking.StartTime.Date
+            });
+
             return Ok(booking);
         }
 
