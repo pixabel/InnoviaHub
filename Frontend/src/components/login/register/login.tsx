@@ -38,13 +38,14 @@ const Login = () => {
 
         const decoded = jwtDecode<TokenPayload>(token);
         const user = {
-          id: Number(decoded.sub),
+          id: decoded.sub,
           email: decoded.unique_name ?? "",
           isAdmin: decoded.role === "Admin",
           firstName: decoded.given_name ?? "",
           lastName: decoded.family_name ?? "",
         };
-        console.log(user);
+        console.log("Decoded token:", decoded);
+
 
         // Save user to localStorage
         localStorage.setItem("user", JSON.stringify(user));

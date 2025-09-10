@@ -64,6 +64,7 @@ const ConfirmBooking = ({
       bookingType: getBookingTypeForResource(selectedResourceId),
       startTime: new Date(selectedTimeslot.startTime).toISOString(),
       endTime: new Date(selectedTimeslot.endTime).toISOString(),
+      userId: user.id
     };
 
     fetch(`http://localhost:5271/api/Booking`, {

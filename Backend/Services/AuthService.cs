@@ -59,10 +59,11 @@ public class AuthService
         {
             Subject = new ClaimsIdentity(new[]
             {
-            new Claim(ClaimTypes.Name, user.Email!),
-            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User"),
-            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? ""),
-            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? "")
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Email!),
+                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User"),
+                new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? ""),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? "")
         }),
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(

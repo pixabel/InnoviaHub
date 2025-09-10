@@ -28,6 +28,13 @@ namespace InnoviaHub.Controllers
             return _bookingService.GetAllBookings();
         }
 
+        [HttpGet("user/{userId}")]
+        public ActionResult<List<Booking>> GetBookingsByUser(string userId)
+        {
+            var bookings = _bookingService.GetBookingsByUser(userId);
+            return Ok(bookings);
+        }
+
         // POST api
         [HttpPost]
         public ActionResult<Booking> CreateBooking(Booking booking)

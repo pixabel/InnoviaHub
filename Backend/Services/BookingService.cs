@@ -9,11 +9,23 @@ public class BookingService
     // Sends one object instead of 5 separate values
     public Booking CreateBooking(Booking booking)
     {
+        // Create new id if not recieved from frontend
+        booking.BookingId = bookings.Count == 0 ? 1 : bookings.Max(b => b.BookingId) + 1;
+
+        // Make sure userId exists
+        if (string.IsNullOrEmpty(booking.UserId))
+            throw new ArgumentException("UserId must be provided when creating a booking.");
+
         // set booking date/time
         booking.DateOfBooking = DateTime.Now;
         // add booking to list
         bookings.Add(booking);
         return booking;
+    }
+
+    public List<Booking> GetBookingsByUser(string userId)
+    {
+        return bookings.Where(b => b.UserId == userId).ToList();
     }
 
     public bool IsBookingAvailable(int resourceId, DateTime startTime, DateTime endTime)
@@ -28,7 +40,7 @@ public class BookingService
 
     public bool ExistingBookings(int bookingId, int resourceId, DateTime startTime, DateTime endTime)
     {
-       return bookings.Any(b => b.BookingId == bookingId && b.ResourceId == resourceId && b.StartTime == startTime && b.EndTime == endTime);
+        return bookings.Any(b => b.BookingId == bookingId && b.ResourceId == resourceId && b.StartTime == startTime && b.EndTime == endTime);
     }
 
     public bool IsBookingAdded(int bookingId, DateTime startTime, DateTime endTime, int resourceId)
