@@ -22,7 +22,7 @@
     flex-direction: column;
     padding: 1.2em;
     border-radius: 1em;
-  
+
 }
 
 select {
@@ -49,7 +49,8 @@ select {
 .continueBtn:hover {
     background-color: #4e7d74;
 }
-.goBackBtn{
+
+.goBackBtn {
     background-color: #c06d78;
     border: #c06d78;
     color: white;
@@ -61,38 +62,75 @@ select {
     cursor: pointer;
 }
 
-.goBackBtn:hover{
+.goBackBtn:hover {
     background-color: #a6505c;
 }
 
-.bookingInfo{
+.bookingInfo {
     border: 1px solid grey;
     padding: 0.5em 0 0.5em 1.5em;
     border-radius: 1em;
 }
 
+.confirmation-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.confirmation-popup p {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+}
+
+.confirmation-popup button {
+    margin-top: 1rem;
+    background-color: #c06d78;
+    border: #c06d78;
+    color: white;
+    border-radius: 0.3em;
+    padding: 0.5em;
+    cursor: pointer;
+    font-size: 1em;
+}
+
 
 /* Media queries för större skärmar */
 @media (min-width: 768px) {
+
     .mainContentChooseResource,
     .mainContentChooseDateTime,
     .mainContentConfirmBooking {
         width: 50%;
     }
+
     .componentHeader {
         font-size: 1.4em;
     }
 }
 
 @media (min-width: 1024px) {
+
     .mainContentChooseResource,
     .mainContentChooseDateTime,
     .mainContentConfirmBooking {
         width: 25em;
     }
+
     .componentHeader {
         font-size: 1.4em;
     }
+
     select {
         font-size: 0.8em;
     }

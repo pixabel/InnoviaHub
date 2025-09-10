@@ -116,7 +116,40 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
-    SeedData.SeedTimeslots(context);
+
+    var resources = context.Resource.ToList();
+    var today = DateTime.Today;
+    var endDate = today.AddMonths(2);
+
+    foreach (var resource in resources)
+    {
+        var currentDate = today;
+
+        while (currentDate <= endDate)
+        {
+            // Check if timeslots already exists for resource and day
+            if (!context.Timeslots.Any(t => t.ResourceId == resource.ResourceId && t.StartTime.Date == currentDate))
+            {
+                var startTime = currentDate.AddHours(8);
+                var endTime = currentDate.AddHours(17);
+
+                while (startTime < endTime)
+                {
+                    context.Timeslots.Add(new Timeslot
+                    {
+                        ResourceId = resource.ResourceId,
+                        StartTime = startTime
+                    });
+                    startTime = startTime.AddMinutes(30); // 30-minuters intervaller
+                }
+            }
+
+            currentDate = currentDate.AddDays(1);
+        }
+    }
+
+
+    context.SaveChanges();
 }
 
 

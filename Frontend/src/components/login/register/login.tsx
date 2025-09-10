@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 interface TokenPayload {
+  // User id
+  sub: string;
+  // User name
   unique_name?: string;
+  // User role
   role?: string;
   [key: string]: any;
 }
@@ -34,11 +38,13 @@ const Login = () => {
 
         const decoded = jwtDecode<TokenPayload>(token);
         const user = {
+          id: Number(decoded.sub),
           email: decoded.unique_name ?? "",
           isAdmin: decoded.role === "Admin",
           firstName: decoded.given_name ?? "",
           lastName: decoded.family_name ?? "",
         };
+        console.log(user);
 
         // Save user to localStorage
         localStorage.setItem("user", JSON.stringify(user));
