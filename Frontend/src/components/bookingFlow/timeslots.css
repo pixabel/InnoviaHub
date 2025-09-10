@@ -1,0 +1,23 @@
+li{
+   list-style: none;
+}
+.timeslotHolder{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+.timeslotItem{
+    background-color: #dadada;
+    padding: 0.5em;
+    border-radius: 1em;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.timeslotItem:hover{
+    background-color:#61988e67;
+}
+.timeslotItem.selected{
+    background-color: #61988e;;
+}

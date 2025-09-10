@@ -2,27 +2,31 @@ import "./bookingFlow.css";
 import StepBar from "./stepBar";
 import { useEffect, useState } from "react";
 
-// Type for resource
+// Typ för resource — vi mappar API-svaret i useEffect så naming mismatch inte sabbar allt
 type Resource = {
   id: number;
   resourceName: string;
 };
 
-// Props from bookReource
 interface ChooseResourceProps {
-  selectedResource: string;
-  setSelectedResource: (id: string) => void;
+  selectedResourceId: number | null;
+  setSelectedResourceId: (id: number | null) => void;
+  selectedResourceName: string;
+  setSelectedResourceName: (name: string) => void;
   onContinue: () => void;
 }
 
-const ChooseResource = ({ selectedResource, setSelectedResource, onContinue }: ChooseResourceProps) => {
-  // State for all fetched resources
+const ChooseResource = ({
+  selectedResourceId,
+  setSelectedResourceId,
+  setSelectedResourceName,
+  onContinue,
+}: ChooseResourceProps) => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Logic to send user to next step in bookingFlow
   const continueBookingBtn = () => {
-    if (!selectedResource) {
+    if (!selectedResourceId) {
       setError("Välj en resurs innan du fortsätter");
       return;
     }
@@ -31,14 +35,20 @@ const ChooseResource = ({ selectedResource, setSelectedResource, onContinue }: C
   };
 
   useEffect(() => {
-    // Fetch resources when component mounts
     fetch("http://localhost:5271/api/Resource")
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta resurser för tillfället");
         return res.json();
       })
-      .then(data => setResources(data))
-      .catch(err => setError(err.message));
+      .then((data: any[]) => {
+        // Map response to { id, resourceName } to become more robust
+        const mapped = data.map((r) => ({
+          id: r.resourceId ?? r.id,
+          resourceName: r.resourceName ?? r.name ?? r.resourceName ?? "",
+        }));
+        setResources(mapped);
+      })
+      .catch((err) => setError(err.message));
   }, []);
 
   return (
@@ -46,17 +56,24 @@ const ChooseResource = ({ selectedResource, setSelectedResource, onContinue }: C
       <StepBar currentStep={1} />
       <div className="chooseResource">
         <h1 className="componentHeader">Välj resurs</h1>
+
         <select
-          value={selectedResource}
-          onChange={(e) => setSelectedResource(e.target.value)}
+          value={selectedResourceId ?? ""}
+          onChange={(e) => {
+            const id = Number(e.target.value);
+            const resource = resources.find((r) => r.id === id);
+            setSelectedResourceId(Number.isNaN(id) ? null : id);
+            setSelectedResourceName(resource ? resource.resourceName : "");
+          }}
         >
           <option value="">-- Välj en resurs --</option>
-          {resources.map(res => (
-            <option key={res.id} value={res.id}>
+          {resources.map((res) => (
+            <option key={res.id} value={String(res.id)}>
               {res.resourceName}
             </option>
           ))}
         </select>
+
         {error && <p style={{ color: "red", marginTop: "0.5em" }}>{error}</p>}
         <button className="continueBtn" onClick={continueBookingBtn}>
           Fortsätt
