@@ -26,6 +26,7 @@ interface ConfirmBookingProps {
   selectedTimeslot: Timeslot;
   onReturn: () => void;
   user: User;
+  refreshTimeslots: () => void; 
 }
 
 const ConfirmBooking = ({
@@ -35,6 +36,7 @@ const ConfirmBooking = ({
   selectedDate,
   selectedTimeslot,
   user,
+  refreshTimeslots
 }: ConfirmBookingProps) => {
   const returnBtn = () => {
     onReturn();
@@ -55,8 +57,35 @@ const ConfirmBooking = ({
     }
   };
 
-  const [bookingError, setBookingError] = useState("");
+  // const [bookingError, setBookingError] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // const CompleteBooking = () => {
+  //   const bookingData = {
+  //     resourceId: selectedResourceId,
+  //     bookingType: getBookingTypeForResource(selectedResourceId),
+  //     startTime: new Date(selectedTimeslot.startTime).toISOString(),
+  //     endTime: new Date(selectedTimeslot.endTime).toISOString(),
+  //   };
+
+  //   fetch(`http://localhost:5271/api/Booking`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(bookingData),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error("Något gick fel vid bokning");
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       console.log("Bokning skapad: ", data);
+  //       setShowConfirmation(true); // <-- visa popup
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       setBookingError(err.message);
+  //     });
+  // };
 
   const CompleteBooking = () => {
     const bookingData = {
@@ -67,24 +96,27 @@ const ConfirmBooking = ({
       userId: user.id
     };
 
-    fetch(`http://localhost:5271/api/Booking`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookingData),
+  fetch(`http://localhost:5271/api/Booking`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(bookingData),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        if (res.status === 409) {
+          throw new Error("Denna tid är redan bokad");
+        }
+        throw new Error("Något gick fel vid bokning");
+      }
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Något gick fel vid bokning");
-        return res.json();
-      })
-      .then((data) => {
+    .then((data) => {
         console.log("Bokning skapad: ", data);
-        setShowConfirmation(true); // <-- visa popup
-      })
-      .catch((err) => {
-        console.log(err);
-        setBookingError(err.message);
-      });
-  };
+        setShowConfirmation(true); // show popup
+        refreshTimeslots(); // refreshes timeslots in parent
+    })
+};
+
 
   return (
     <div className="mainContentConfirmBooking">

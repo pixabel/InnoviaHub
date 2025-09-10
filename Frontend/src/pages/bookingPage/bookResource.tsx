@@ -53,6 +53,24 @@ const BookingPage = () => {
     return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
 
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+
+  const fetchTimeslots = () => {
+    if (!selectedResourceId || !selectedDate) return;
+
+    const formattedDate = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${selectedDate.getDate().toString().padStart(2, "0")}`;
+
+    fetch(`http://localhost:5271/api/Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
+        return res.json();
+      })
+      .then((data) => setTimeslots(data))
+      .catch((err) => console.error(err));
+  };
+
   return (
     <div className="bookingPage">
       <div className="mainContent">
@@ -84,6 +102,8 @@ const BookingPage = () => {
                 setSelectedDate={setSelectedDate}
                 onContinue={() => setCurrentStep(3)}
                 onReturn={() => setCurrentStep(1)}
+                timeslots={timeslots}           
+                fetchTimeslots={fetchTimeslots}  
               />
             )}
 
@@ -95,6 +115,7 @@ const BookingPage = () => {
                 selectedTimeslot={selectedTimeslot!}
                 onReturn={() => setCurrentStep(2)}
                 user={user!} 
+                refreshTimeslots={fetchTimeslots}
               />
             )}
           </>
