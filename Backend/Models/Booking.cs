@@ -7,7 +7,7 @@ namespace InnoviaHub.Models
     {
         [Key]
         public int BookingId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public int ResourceId { get; set; }
         //To connect Booking to Resource
         public BookingType BookingType { get; set; }

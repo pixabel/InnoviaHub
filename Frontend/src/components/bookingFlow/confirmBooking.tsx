@@ -88,12 +88,13 @@ const ConfirmBooking = ({
   // };
 
   const CompleteBooking = () => {
-  const bookingData = {
-    resourceId: selectedResourceId,
-    bookingType: getBookingTypeForResource(selectedResourceId),
-    startTime: new Date(selectedTimeslot.startTime).toISOString(),
-    endTime: new Date(selectedTimeslot.endTime).toISOString(),
-  };
+    const bookingData = {
+      resourceId: selectedResourceId,
+      bookingType: getBookingTypeForResource(selectedResourceId),
+      startTime: new Date(selectedTimeslot.startTime).toISOString(),
+      endTime: new Date(selectedTimeslot.endTime).toISOString(),
+      userId: user.id
+    };
 
   fetch(`http://localhost:5271/api/Booking`, {
     method: "POST",

@@ -1,0 +1,52 @@
+.mainContentMyBookings{
+    width: 90%;
+    margin-top: 1em;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #e8e8e8;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.myBookingsHeader{
+    margin-left: 1.3em;
+}
+
+.myBookedResources{
+    margin-top: 2em;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+}
+
+.bookedResourceItem{
+    width: 9em;
+    background-color: white;
+    border: 1px solid black;
+    padding: 1em;
+    border-radius: 0.5em;
+}
+
+.bookingDateTimeInfo{
+    display: flex;
+    gap: 0.5em;
+}
+
+.unBookBtn{
+    background-color: #d5718c;
+    border: 0.5px solid black;
+    padding: 0.4em;
+    border-radius: 0.5em;
+    margin-top: 0.7em;
+    margin-left: 8.2em;
+    cursor: pointer;
+    color:black;
+    font-size: 0.75em;
+}
+
+.unBookBtn:hover{
+    background-color: #b15b72;
+}

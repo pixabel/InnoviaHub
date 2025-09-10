@@ -1,7 +1,7 @@
 import Header from "../../components/header/header";
 import Navbar from "../../components/navbar/navbar";
 import LoginPage from "../signInPage/signIn";
-import "../../pages/bookingPage/bookResource.css";
+
 import { useEffect, useState } from "react";
 import ChooseResource from "../../components/bookingFlow/chooseResource";
 import ChooseDateTime from "../../components/bookingFlow/chooseDateTime";
