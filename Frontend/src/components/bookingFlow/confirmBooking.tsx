@@ -57,35 +57,8 @@ const ConfirmBooking = ({
     }
   };
 
-  // const [bookingError, setBookingError] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  // const CompleteBooking = () => {
-  //   const bookingData = {
-  //     resourceId: selectedResourceId,
-  //     bookingType: getBookingTypeForResource(selectedResourceId),
-  //     startTime: new Date(selectedTimeslot.startTime).toISOString(),
-  //     endTime: new Date(selectedTimeslot.endTime).toISOString(),
-  //   };
-
-  //   fetch(`http://localhost:5271/api/Booking`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(bookingData),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("Något gick fel vid bokning");
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       console.log("Bokning skapad: ", data);
-  //       setShowConfirmation(true); // <-- visa popup
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setBookingError(err.message);
-  //     });
-  // };
 
   const CompleteBooking = () => {
     const bookingData = {
