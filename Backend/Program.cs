@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
-using InnoviaHub.Hubs; 
+using InnoviaHub.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +36,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddAuthentication(options =>
 {
-        options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultAuthenticateScheme = "JwtBearer";
     options.DefaultChallengeScheme = "JwtBearer";
 })
 .AddJwtBearer("JwtBearer", options =>
@@ -94,7 +94,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddSingleton<BookingService>();
+builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddControllers();
@@ -125,24 +125,30 @@ using (var scope = app.Services.CreateScope())
 
     foreach (var resource in resources)
     {
+
+        var existingDates = context.Timeslots
+            .Where(t => t.ResourceId == resource.ResourceId && t.StartTime >= today && t.StartTime <= endDate)
+            .Select(t => t.StartTime.Date)
+            .Distinct()
+            .ToHashSet();
+
         var currentDate = today;
 
         while (currentDate <= endDate)
         {
-            // Check if timeslots already exists for resource and day
-            if (!context.Timeslots.Any(t => t.ResourceId == resource.ResourceId && t.StartTime.Date == currentDate))
+            if (!existingDates.Contains(currentDate))
             {
                 var startTime = currentDate.AddHours(8);
-                var endTime = currentDate.AddHours(17);
+                var endTimeDay = currentDate.AddHours(17);
 
-                while (startTime < endTime)
+                while (startTime < endTimeDay)
                 {
                     context.Timeslots.Add(new Timeslot
                     {
                         ResourceId = resource.ResourceId,
                         StartTime = startTime
                     });
-                    startTime = startTime.AddMinutes(30); // 30-minuters intervaller
+                    startTime = startTime.AddMinutes(30);
                 }
             }
 
@@ -150,8 +156,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-
     context.SaveChanges();
+
 }
 
 
