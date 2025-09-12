@@ -21,7 +21,11 @@ interface User {
   lastName: string;
 }
 
-const MyBookingsComponent = () => {
+interface MyBookingsProps {
+  className?: string; // 👈 gör className optional
+}
+
+const MyBookingsComponent = ({className}: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
     const [user, setUser] = useState<User | null>(null);
   
@@ -64,7 +68,7 @@ const MyBookingsComponent = () => {
     };
     
     return(
-        <div className="mainContentMyBookings">
+        <div className={`mainContentMyBookings ${className || ""}`}>
         <h1 className="myBookingsHeader">{user?.firstName}s bokningar</h1>
         {bookings.length === 0 ? (
           <p>Du har inga bokningar för tillfället</p>
