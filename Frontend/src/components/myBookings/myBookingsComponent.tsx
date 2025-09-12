@@ -22,7 +22,7 @@ interface User {
 }
 
 interface MyBookingsProps {
-  className?: string; // 👈 gör className optional
+  className?: string;
 }
 
 const MyBookingsComponent = ({className}: MyBookingsProps) => {
@@ -37,13 +37,13 @@ const MyBookingsComponent = ({className}: MyBookingsProps) => {
     };
   
     useEffect(() => {
-      // Hämta user från localStorage
+      // Get user from localStorage
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const parsedUser: User = JSON.parse(storedUser);
         setUser(parsedUser);
   
-        // Hämta bokningar för denna user
+        // Fetch bookings for signedIn user
         fetch(`http://localhost:5271/api/Booking/user/${parsedUser.id}`)
           .then((res) => res.json())
           .then((data) => setBookings(data))
