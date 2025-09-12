@@ -41,7 +41,7 @@ const StartPage = () => {
         <div className="dashboard">
           <OverviewCard />
           
-          {/* Visa bara MyBookingsComponent om user finns */}
+          {/* Show only if user is signed in*/}
           {user && (
             <div className="myBookings">
               <MyBookingsComponent />
