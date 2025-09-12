@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // Interface för user
 interface User {
-  id: number;
+  id: string;
   email: string;
   isAdmin: boolean;
   firstName: string;
@@ -104,8 +104,10 @@ const ConfirmBooking = ({
     .then(async (res) => {
       if (!res.ok) {
         if (res.status === 409) {
+          console.log("Tid redan bokad");
           throw new Error("Denna tid är redan bokad");
         }
+        console.log(Error);
         throw new Error("Något gick fel vid bokning");
       }
       return res.json();
