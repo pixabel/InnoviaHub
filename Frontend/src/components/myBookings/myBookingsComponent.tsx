@@ -79,7 +79,6 @@ const MyBookingsComponent = ({className}: MyBookingsProps) => {
                 <h3>
                   {" "}
                   {resourceNames[booking.resourceId] || "Unknown"}{" "}
-                  {booking.resourceId}
                 </h3>
                 <div className="dateTimeInfo">
                   <div className="bookingDateTimeInfo">
