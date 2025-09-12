@@ -113,55 +113,17 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
-// Seed timeslots to database
 
+// Call the timeslotSeeder
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
-
-    var resources = context.Resource.ToList();
-    var today = DateTime.Today;
-    var endDate = today.AddMonths(2);
-
-    foreach (var resource in resources)
-    {
-
-        var existingDates = context.Timeslots
-            .Where(t => t.ResourceId == resource.ResourceId && t.StartTime >= today && t.StartTime <= endDate)
-            .Select(t => t.StartTime.Date)
-            .Distinct()
-            .ToHashSet();
-
-        var currentDate = today;
-
-        while (currentDate <= endDate)
-        {
-            if (!existingDates.Contains(currentDate))
-            {
-                var startTime = currentDate.AddHours(8);
-                var endTimeDay = currentDate.AddHours(17);
-
-                while (startTime < endTimeDay)
-                {
-                    context.Timeslots.Add(new Timeslot
-                    {
-                        ResourceId = resource.ResourceId,
-                        StartTime = startTime
-                    });
-                    startTime = startTime.AddMinutes(30);
-                }
-            }
-
-            currentDate = currentDate.AddDays(1);
-        }
-    }
-
-    context.SaveChanges();
-
+   
+   // Seed new timeslots
+    TimeslotsSeeder.SeedTimeslots(context);
 }
 
-
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseCors("AllowReactDev");
 app.UseAuthentication();
 app.UseAuthorization();

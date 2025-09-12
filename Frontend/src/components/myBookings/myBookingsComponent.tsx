@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./myBookings.css";
+import UnBookBtn from "./unBookBtn";
 
 interface Booking {
   bookingId: number;
@@ -45,7 +46,12 @@ const MyBookingsComponent = () => {
           .catch((err) => console.error("Error fetching bookings:", err));
       }
     }, []);
-  
+
+    // Function to send to UnBookBtn to update list
+    const handleDeleted = (deletedBookingId: number) => {
+    setBookings((prev) => prev.filter(b => b.bookingId !== deletedBookingId));
+  };
+
      const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       const formatted = date.toLocaleDateString("sv-SE", {
@@ -88,7 +94,9 @@ const MyBookingsComponent = () => {
                     })}
                   </div>
                 </div>
-                <button className="unBookBtn">Avboka</button>
+                <UnBookBtn 
+                bookingId={booking.bookingId}
+                onDeleted={() => handleDeleted(booking.bookingId)}  />
               </li>
             ))}
           </ul>
