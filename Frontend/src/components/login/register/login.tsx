@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 interface TokenPayload {
-  // User id
-  sub: string;
-  // User name
+  sub: string; // user id
   unique_name?: string;
-  // User role
+  given_name?: string;
+  family_name?: string;
   role?: string;
   [key: string]: any;
 }
@@ -37,23 +36,23 @@ const Login = () => {
         localStorage.setItem("token", token);
 
         const decoded = jwtDecode<TokenPayload>(token);
-        const user = {
-          id: decoded.sub,
-          email: decoded.unique_name ?? "",
-          isAdmin: decoded.role === "Admin",
-          firstName: decoded.given_name ?? "",
-          lastName: decoded.family_name ?? "",
-        };
         console.log("Decoded token:", decoded);
 
+        const user = {
+          id: decoded.sub,
+          firstName: decoded.given_name ?? "",
+          lastName: decoded.family_name ?? "",
+          email: decoded.unique_name ?? email,
+          isAdmin: decoded.role === "Admin",
+        };
 
-        // Save user to localStorage
         localStorage.setItem("user", JSON.stringify(user));
 
-        // Trigger custom event to update navbar
+        // Trigger custom event för navbar
         window.dispatchEvent(new Event("userUpdated"));
+        console.log("UserId LOGIN", user.id);
 
-        // Clear inputfields
+        // Clear input fields
         setEmail("");
         setPassword("");
 

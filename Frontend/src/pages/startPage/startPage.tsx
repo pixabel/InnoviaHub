@@ -21,7 +21,7 @@ const StartPage = () => {
       setUser(JSON.parse(storedUser));
     }
 
-    // Listen tu custom event for logout
+    // Listen to custom event for logout
     const handleUserUpdated = () => setUser(null);
     window.addEventListener("userUpdated", handleUserUpdated);
 

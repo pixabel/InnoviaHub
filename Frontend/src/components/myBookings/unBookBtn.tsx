@@ -18,7 +18,6 @@ const UnBookBtn = ({bookingId, onDeleted}: UnBookBtnProps) => {
       }
 
       if (onDeleted) onDeleted();
-      console.log("Bokning borttagen!");
     } catch (err) {
       console.error(err);
       alert("Något gick fel vid avbokning");

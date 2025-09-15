@@ -1,6 +1,16 @@
 import "./loginRegister.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+  sub: string;
+  unique_name?: string;
+  given_name?: string;
+  family_name?: string;
+  role?: string;
+  [key: string]: any;
+}
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -10,47 +20,74 @@ const Register = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
-  function handleRegister(event: React.FormEvent) {
+  async function handleRegister(event: React.FormEvent) {
     event.preventDefault();
     setErrorMsg("");
 
-    fetch("http://localhost:5271/api/Auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ firstName, lastName, email, password }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Kunde inte skapa konto");
+    try {
+      const res = await fetch("http://localhost:5271/api/Auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Registreringen misslyckades");
+      }
+
+      const registerData = await res.json();
+
+      // If backend sends token right away
+      let token = registerData.token;
+      if (!token) {
+        // Else login automatic
+        const loginRes = await fetch("http://localhost:5271/api/Auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!loginRes.ok) {
+          throw new Error("Kunde inte logga in automatiskt");
         }
 
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Konto skapas", data);
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPassword("");
+        const loginData = await loginRes.json();
+        token = loginData.token;
+      }
 
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("There was a problem creating account");
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPassword("");
+      localStorage.setItem("token", token);
 
-        setErrorMsg(error.message);
-      });
+      // Decode token to get userId
+      const decoded = jwtDecode<TokenPayload>(token);
+      const user = {
+        id: decoded.sub,
+        firstName: decoded.given_name ?? firstName,
+        lastName: decoded.family_name ?? lastName,
+        email: decoded.unique_name ?? email,
+        isAdmin: decoded.role === "Admin",
+      };
+
+      localStorage.setItem("user", JSON.stringify(user));
+      window.dispatchEvent(new Event("userUpdated"));
+
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPassword("");
+
+      navigate("/");
+    } catch (error: any) {
+      console.error("Problem vid registrering/inloggning:", error);
+      setErrorMsg(error.message || "Något gick fel");
+    }
   }
 
   return (
     <div className="main-content">
-        {errorMsg && <p className="error-msg">{errorMsg}</p>}
+      {errorMsg && <p className="error-msg">{errorMsg}</p>}
       <div className="register-container">
         <h2>Skapa konto</h2>
         <div className="register-form">
@@ -58,7 +95,7 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="firstName">Förnamn:</label>
               <input
-                type="firstName"
+                type="text"
                 id="firstName"
                 name="firstName"
                 required
@@ -67,7 +104,7 @@ const Register = () => {
               />
               <label htmlFor="lastName">Efternamn:</label>
               <input
-                type="lastName"
+                type="text"
                 id="lastName"
                 name="lastName"
                 required
@@ -94,7 +131,7 @@ const Register = () => {
               />
             </div>
             <button id="registerBtn" type="submit">
-                Skapa konto
+              Skapa konto
             </button>
           </form>
         </div>

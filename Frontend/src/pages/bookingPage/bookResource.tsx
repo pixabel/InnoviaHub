@@ -9,7 +9,7 @@ import ConfirmBooking from "../../components/bookingFlow/confirmBooking";
 
 // Interface för user
 interface User {
-  id: number;
+  id: string;
   email: string;
   isAdmin: boolean;
   firstName: string;
@@ -42,11 +42,24 @@ const BookingPage = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUser({
+        id: parsed.id,
+        firstName: parsed.firstName,
+        lastName: parsed.lastName,
+        email: parsed.email,
+        isAdmin: parsed.isAdmin,
+      });
+    }
 
     const handleUserUpdate = () => {
-      const updated = localStorage.getItem("user");
-      setUser(updated ? JSON.parse(updated) : null);
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
     };
 
     window.addEventListener("userUpdated", handleUserUpdate);
@@ -102,19 +115,19 @@ const BookingPage = () => {
                 setSelectedDate={setSelectedDate}
                 onContinue={() => setCurrentStep(3)}
                 onReturn={() => setCurrentStep(1)}
-                timeslots={timeslots}           
-                fetchTimeslots={fetchTimeslots}  
+                timeslots={timeslots}
+                fetchTimeslots={fetchTimeslots}
               />
             )}
 
-            {currentStep === 3 && selectedDate && selectedTimeslot && (
+            {currentStep === 3 && selectedDate && selectedTimeslot && user && (
               <ConfirmBooking
                 selectedResourceName={selectedResourceName}
                 selectedResourceId={selectedResourceId!}
                 selectedDate={selectedDate!}
                 selectedTimeslot={selectedTimeslot!}
                 onReturn={() => setCurrentStep(2)}
-                user={user!} 
+                user={user!}
                 refreshTimeslots={fetchTimeslots}
               />
             )}
