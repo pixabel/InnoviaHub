@@ -21,3 +21,11 @@ li{
 .timeslotItem.selected{
     background-color: #61988e;;
 }
+
+.timeslotItem.booked {
+  background-color: #ffb3b3 !important;
+  color: #555 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+

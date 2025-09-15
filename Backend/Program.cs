@@ -94,7 +94,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddSingleton<BookingService>();
+builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddControllers();
@@ -162,6 +162,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
-app.MapGet("/", () => "Hello world!");
 
 app.Run();

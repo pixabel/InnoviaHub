@@ -15,8 +15,8 @@ interface ShowAvailableTimeslotsProps {
   date: Date;
   selectedTimeslot: Timeslot | null;
   setSelectedTimeslot: (slot: Timeslot) => void;
-  timeslots: Timeslot[];         
-  refreshTimeslots: () => void; 
+  timeslots: Timeslot[];
+  refreshTimeslots: () => void;
 }
 
 const ShowAvailableTimeslots = ({
@@ -24,31 +24,11 @@ const ShowAvailableTimeslots = ({
   date,
   selectedTimeslot,
   setSelectedTimeslot,
-  timeslots,         
-  refreshTimeslots, 
 }: ShowAvailableTimeslotsProps) => {
-  // const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   if (!resourceId || !date) return;
-
-  //   const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-  //     .toString()
-  //     .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-
-  //   fetch(
-  //     `http://localhost:5271/api/Timeslot/resources/${resourceId}/timeslots?date=${formattedDate}`
-  //   )
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
-  //       return res.json();
-  //     })
-  //     .then((data) => setTimeslots(data))
-  //     .catch((err) => setError(err.message));
-  // }, [resourceId, date]);
-
-    useEffect(() => {
+  useEffect(() => {
     fetchTimeslots();
   }, [resourceId, date]);
 
@@ -66,7 +46,7 @@ const ShowAvailableTimeslots = ({
         if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
         return res.json();
       })
-      .then(() => fetchTimeslots())
+      .then((data) => setTimeslots(data))
       .catch((err) => setError(err.message));
   };
 
@@ -75,70 +55,17 @@ const ShowAvailableTimeslots = ({
       message.resourceId === resourceId &&
       new Date(message.date).toDateString() === date.toDateString()
     ) {
-      fetchTimeslots(); // re-fetch on relevant SignalR update
+      fetchTimeslots();
     }
   });
 
+  // DEBUG LOGGING
+  console.log("Rendered timeslots:", timeslots);
 
   return (
     <div>
       <h2>Tillgängliga tider</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {/* <ul className="timeslotHolder">
-        {timeslots.map((slot) => {
-          const start = new Date(slot.startTime);
-          const end = new Date(slot.endTime);
-          const startTimeStr = start.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          const endTimeStr = end.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          return (
-            <li
-              className={`timeslotItem ${
-                selectedTimeslot?.timeslotId === slot.timeslotId ? "selected" : ""
-              }`}
-              key={slot.timeslotId}
-              onClick={() => setSelectedTimeslot(slot)}
-            >
-              {startTimeStr} - {endTimeStr}
-            </li>
-          );
-        })}
-      </ul> */}
-      {/* <ul className="timeslotHolder"> */}
-        {/* {timeslots.map((slot) => {
-          const start = new Date(slot.startTime);
-          const end = new Date(slot.endTime);
-          const startTimeStr = start.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          const endTimeStr = end.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          // Add a class or disable booked slots
-          const isSelected = selectedTimeslot?.timeslotId === slot.timeslotId;
-          const isDisabled = slot.isBooked;
-
-          return (
-            <li
-              key={slot.timeslotId}
-              className={`timeslotItem ${isSelected ? "selected" : ""} ${isDisabled ? "booked" : ""}`}
-              onClick={() => {
-                if (!isDisabled) setSelectedTimeslot(slot);
-              }}
-            >
-              {startTimeStr} - {endTimeStr} {isDisabled && "(Bokad)"}
-            </li>
-          );
-        })} */
       <ul className="timeslotHolder">
         {timeslots.map((slot) => {
           const start = new Date(slot.startTime);
@@ -161,9 +88,6 @@ const ShowAvailableTimeslots = ({
           );
         })}
       </ul>
-
-
-        }
     </div>
   );
 };
