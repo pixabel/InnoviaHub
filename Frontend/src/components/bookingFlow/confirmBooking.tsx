@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // Interface för user
 interface User {
-  id: number;
+  id: string;
   email: string;
   isAdmin: boolean;
   firstName: string;
