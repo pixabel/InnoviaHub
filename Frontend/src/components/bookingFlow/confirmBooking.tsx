@@ -68,6 +68,7 @@ const ConfirmBooking = ({
       endTime: new Date(selectedTimeslot.endTime).toISOString(),
       userId: user.id
     };
+    console.log("ConfirmBooking user:", user);
 
   fetch(`http://localhost:5271/api/Booking`, {
     method: "POST",
@@ -80,8 +81,8 @@ const ConfirmBooking = ({
           console.log("Tid redan bokad");
           throw new Error("Denna tid är redan bokad");
         }
-        console.log(Error);
         throw new Error("Något gick fel vid bokning");
+        
       }
       return res.json();
     })
