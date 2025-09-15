@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // Interface för user
 interface User {
-  id: string;
+  id: number;
   email: string;
   isAdmin: boolean;
   firstName: string;
@@ -41,7 +41,7 @@ const ConfirmBooking = ({
   const returnBtn = () => {
     onReturn();
   };
-  // To get correct bookingTypeNumber for resource
+  // gets correct bookingTypeNumber for resource
   const getBookingTypeForResource = (resourceId: number) => {
     switch (resourceId) {
       case 1:
@@ -57,8 +57,8 @@ const ConfirmBooking = ({
     }
   };
 
+  // const [bookingError, setBookingError] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
-
 
   const CompleteBooking = () => {
     const bookingData = {
@@ -77,10 +77,8 @@ const ConfirmBooking = ({
     .then(async (res) => {
       if (!res.ok) {
         if (res.status === 409) {
-          console.log("Tid redan bokad");
           throw new Error("Denna tid är redan bokad");
         }
-        console.log(Error);
         throw new Error("Något gick fel vid bokning");
       }
       return res.json();

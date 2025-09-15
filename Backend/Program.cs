@@ -130,6 +130,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
-app.MapGet("/", () => "Hello world!");
 
 app.Run();
