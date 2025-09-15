@@ -89,16 +89,13 @@
 }
 
 .react-calendar__tile--now {
-  background: #99999996;
-  font-weight: 500;
-  border-radius: 8px;
+  font-weight: 700;
 }
 
 .infoText {
   margin-top: 0.2em;
 }
 
-/* Större skärmar */
 @media (min-width: 1024px) {
   .calendar {
     width: 80%;
