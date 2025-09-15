@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
-using InnoviaHub.Hubs; 
+using InnoviaHub.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +36,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddAuthentication(options =>
 {
-        options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultAuthenticateScheme = "JwtBearer";
     options.DefaultChallengeScheme = "JwtBearer";
 })
 .AddJwtBearer("JwtBearer", options =>
@@ -113,49 +113,17 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
-// Seed timeslots to database
 
+// Call the timeslotSeeder
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
-
-    var resources = context.Resource.ToList();
-    var today = DateTime.Today;
-    var endDate = today.AddMonths(2);
-
-    foreach (var resource in resources)
-    {
-        var currentDate = today;
-
-        while (currentDate <= endDate)
-        {
-            // Check if timeslots already exists for resource and day
-            if (!context.Timeslots.Any(t => t.ResourceId == resource.ResourceId && t.StartTime.Date == currentDate))
-            {
-                var startTime = currentDate.AddHours(8);
-                var endTime = currentDate.AddHours(17);
-
-                while (startTime < endTime)
-                {
-                    context.Timeslots.Add(new Timeslot
-                    {
-                        ResourceId = resource.ResourceId,
-                        StartTime = startTime
-                    });
-                    startTime = startTime.AddMinutes(30); // 30-minuters intervaller
-                }
-            }
-
-            currentDate = currentDate.AddDays(1);
-        }
-    }
-
-
-    context.SaveChanges();
+   
+   // Seed new timeslots
+    TimeslotsSeeder.SeedTimeslots(context);
 }
 
-
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseCors("AllowReactDev");
 app.UseAuthentication();
 app.UseAuthorization();

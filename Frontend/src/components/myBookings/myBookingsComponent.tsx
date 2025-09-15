@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./myBookings.css";
+import UnBookBtn from "./unBookBtn";
 
 interface Booking {
   bookingId: number;
@@ -20,7 +21,11 @@ interface User {
   lastName: string;
 }
 
-const MyBookingsComponent = () => {
+interface MyBookingsProps {
+  className?: string;
+}
+
+const MyBookingsComponent = ({className}: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
     const [user, setUser] = useState<User | null>(null);
   
@@ -32,20 +37,25 @@ const MyBookingsComponent = () => {
     };
   
     useEffect(() => {
-      // Hämta user från localStorage
+      // Get user from localStorage
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const parsedUser: User = JSON.parse(storedUser);
         setUser(parsedUser);
   
-        // Hämta bokningar för denna user
+        // Fetch bookings for signedIn user
         fetch(`http://localhost:5271/api/Booking/user/${parsedUser.id}`)
           .then((res) => res.json())
           .then((data) => setBookings(data))
           .catch((err) => console.error("Error fetching bookings:", err));
       }
     }, []);
-  
+
+    // Function to send to UnBookBtn to update list
+    const handleDeleted = (deletedBookingId: number) => {
+    setBookings((prev) => prev.filter(b => b.bookingId !== deletedBookingId));
+  };
+
      const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       const formatted = date.toLocaleDateString("sv-SE", {
@@ -58,8 +68,9 @@ const MyBookingsComponent = () => {
     };
     
     return(
-        <div className="mainContentMyBookings">
-        <h1 className="myBookingsHeader">{user?.firstName}s bokningar</h1>
+        <div className={`mainContentMyBookings ${className || ""}`}>
+        <h1 className="myBookingsHeader">Mina bokningar</h1>
+        <h2 className="h2">Här hittar du dina bokningar</h2>
         {bookings.length === 0 ? (
           <p>Du har inga bokningar för tillfället</p>
         ) : (
@@ -69,7 +80,6 @@ const MyBookingsComponent = () => {
                 <h3>
                   {" "}
                   {resourceNames[booking.resourceId] || "Unknown"}{" "}
-                  {booking.resourceId}
                 </h3>
                 <div className="dateTimeInfo">
                   <div className="bookingDateTimeInfo">
@@ -88,7 +98,9 @@ const MyBookingsComponent = () => {
                     })}
                   </div>
                 </div>
-                <button className="unBookBtn">Avboka</button>
+                <UnBookBtn 
+                bookingId={booking.bookingId}
+                onDeleted={() => handleDeleted(booking.bookingId)}  />
               </li>
             ))}
           </ul>

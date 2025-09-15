@@ -1,15 +1,35 @@
 import Header from "../../components/header/header";
 import Navbar from "../../components/navbar/navbar";
 import OverviewCard from "../../components/dashboard/overview";
-import BookingCard from "../../components/dashboard/booking";
-//Only to test login and register component
-// import Login from "../../components/login/register/login";
-// import Register from "../../components/login/register/register";
-//----------------------------
+// import BookingCard from "../../components/dashboard/booking";
 import "./startPage.css";
+import MyBookingsComponent from "../../components/myBookings/myBookingsComponent";
+import { useState, useEffect } from "react";
 
+// Interface for user
+interface User {
+  email: string;
+  isAdmin: boolean;
+}
 
 const StartPage = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+ useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Listen tu custom event for logout
+    const handleUserUpdated = () => setUser(null);
+    window.addEventListener("userUpdated", handleUserUpdated);
+
+    return () => {
+      window.removeEventListener("userUpdated", handleUserUpdated);
+    };
+  }, []);
+
 
   return (
     <div className="startPage">
@@ -18,19 +38,20 @@ const StartPage = () => {
         <Navbar />
       </div>
       <div className="mainContent">
-        {/* will be moved later   */}
-        {/* <div className="loginRegister">
-          <Register />
-          <Login />
-        </div> */}
-        {/* ----------------- */}
         <div className="dashboard">
           <OverviewCard />
-          <BookingCard />
+          
+          {/* Show only if user is signed in*/}
+          {user && (
+            <div className="myBookings">
+              <MyBookingsComponent />
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
 
 export default StartPage;
