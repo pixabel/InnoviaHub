@@ -13,6 +13,12 @@
     margin-left: 1.3em;
 }
 
+.h2{
+    margin-left: 2.7em;
+    font-size: 1em;
+    color: rgb(95, 95, 95);
+}
+
 .myBookedResources{
     margin-top: 2em;
     width: 100%;

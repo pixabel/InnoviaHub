@@ -29,14 +29,20 @@
 
 .myBookings h1 {
     font-size: 1.4em;
+    margin-left: 0.5em;
+}
+
+.myBookings .h2{
+    margin-left: 0.7em;
 }
 
 .myBookings ul {
     display: flex;
+    margin-top: 1em;
     /* Wont wrap to enable horisontal scroll instead */
     flex-wrap: nowrap;
     padding: 0;
-    gap: 1em;
+    gap: 1.5em;
     overflow-x: auto;
     max-width: 100%;
     list-style: none;
@@ -51,5 +57,5 @@
 .myBookings li {
     padding: 0.5em;
     font-size: 0.9em;
-    margin-bottom: 0.3em;
+    margin-bottom: 0.5em;
 }

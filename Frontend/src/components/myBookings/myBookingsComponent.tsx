@@ -69,7 +69,8 @@ const MyBookingsComponent = ({className}: MyBookingsProps) => {
     
     return(
         <div className={`mainContentMyBookings ${className || ""}`}>
-        <h1 className="myBookingsHeader">{user?.firstName}s bokningar</h1>
+        <h1 className="myBookingsHeader">Mina bokningar</h1>
+        <h2 className="h2">Här hittar du dina bokningar</h2>
         {bookings.length === 0 ? (
           <p>Du har inga bokningar för tillfället</p>
         ) : (
