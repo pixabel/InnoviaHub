@@ -110,8 +110,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "InnoviaHub API V1");
-        options.RoutePrefix = string.Empty;
+        options.RoutePrefix = "swagger";
     });
+
 }
 
 
@@ -119,8 +120,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
-   
-   // Seed new timeslots
+
+    // Seed new timeslots
     TimeslotsSeeder.SeedTimeslots(context);
 }
 
@@ -128,7 +129,7 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("AllowReactDev");
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapGet("/", () => "Backend is running 🚀");
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
 
