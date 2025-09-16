@@ -4,6 +4,7 @@ import MemberTable from "../../components/Admin/MemberTable/memberTable";
 import "../../pages/startPage/startPage.css";
 import Sidebar from "../../components/Admin/Sidebar/sidebar";
 import "./adminPage.css";
+import { Outlet } from "react-router-dom";
 
 const adminPage = () => {
   return (
@@ -15,7 +16,7 @@ const adminPage = () => {
       <div className="admin-layout">
         <Sidebar />
         <div className="admin-content">
-        <MemberTable />
+        <Outlet />
         </div>
       </div>
     </div>
