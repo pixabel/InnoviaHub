@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,7 +61,7 @@ namespace Backend.Migrations
                 {
                     BookingId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResourceId = table.Column<int>(type: "int", nullable: false),
                     BookingType = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -86,6 +86,22 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Resource", x => x.ResourceId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Timeslots",
+                columns: table => new
+                {
+                    TimeslotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ResourceId = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsBooked = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Timeslots", x => x.TimeslotId);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,10 +215,30 @@ namespace Backend.Migrations
                 columns: new[] { "ResourceId", "Capacity", "ResourceName", "ResourceType" },
                 values: new object[,]
                 {
-                    { 1, 4, "Mötesrum", 0 },
-                    { 2, 15, "Skrivbord", 1 },
-                    { 3, 4, "VR Headset", 2 },
-                    { 4, 1, "AI Server", 3 }
+                    { 1, 1, "Mötesrum 1", 0 },
+                    { 2, 1, "Mötesrum 2", 0 },
+                    { 3, 1, "Mötesrum 3", 0 },
+                    { 4, 1, "Mötesrum 4", 0 },
+                    { 5, 1, "Skrivbord 1", 1 },
+                    { 6, 1, "Skrivbord 2", 1 },
+                    { 7, 1, "Skrivbord 3", 1 },
+                    { 8, 1, "Skrivbord 4", 1 },
+                    { 9, 1, "Skrivbord 5", 1 },
+                    { 10, 1, "Skrivbord 6", 1 },
+                    { 11, 1, "Skrivbord 7", 1 },
+                    { 12, 1, "Skrivbord 8", 1 },
+                    { 13, 1, "Skrivbord 9", 1 },
+                    { 14, 1, "Skrivbord 10", 1 },
+                    { 15, 1, "Skrivbord 11", 1 },
+                    { 16, 1, "Skrivbord 12", 1 },
+                    { 17, 1, "Skrivbord 13", 1 },
+                    { 18, 1, "Skrivbord 14", 1 },
+                    { 19, 1, "Skrivbord 15", 1 },
+                    { 20, 1, "VR Headset 1", 2 },
+                    { 21, 1, "VR Headset 2", 2 },
+                    { 22, 1, "VR Headset 3", 2 },
+                    { 23, 1, "VR Headset 4", 2 },
+                    { 24, 1, "AI Server", 3 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -268,6 +304,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Resource");
+
+            migrationBuilder.DropTable(
+                name: "Timeslots");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

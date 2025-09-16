@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(InnoviaHubDB))]
-    [Migration("20250909124509_AddTimeslotModel")]
-    partial class AddTimeslotModel
+    [Migration("20250916112743_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -48,8 +48,9 @@ namespace Backend.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BookingId");
 
@@ -82,27 +83,167 @@ namespace Backend.Migrations
                         new
                         {
                             ResourceId = 1,
-                            Capacity = 4,
-                            ResourceName = "Mötesrum",
+                            Capacity = 1,
+                            ResourceName = "Mötesrum 1",
                             ResourceType = 0
                         },
                         new
                         {
                             ResourceId = 2,
-                            Capacity = 15,
-                            ResourceName = "Skrivbord",
-                            ResourceType = 1
+                            Capacity = 1,
+                            ResourceName = "Mötesrum 2",
+                            ResourceType = 0
                         },
                         new
                         {
                             ResourceId = 3,
-                            Capacity = 4,
-                            ResourceName = "VR Headset",
-                            ResourceType = 2
+                            Capacity = 1,
+                            ResourceName = "Mötesrum 3",
+                            ResourceType = 0
                         },
                         new
                         {
                             ResourceId = 4,
+                            Capacity = 1,
+                            ResourceName = "Mötesrum 4",
+                            ResourceType = 0
+                        },
+                        new
+                        {
+                            ResourceId = 5,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 1",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 6,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 2",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 7,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 3",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 8,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 4",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 9,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 5",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 10,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 6",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 11,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 7",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 12,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 8",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 13,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 9",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 14,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 10",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 15,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 11",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 16,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 12",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 17,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 13",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 18,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 14",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 19,
+                            Capacity = 1,
+                            ResourceName = "Skrivbord 15",
+                            ResourceType = 1
+                        },
+                        new
+                        {
+                            ResourceId = 20,
+                            Capacity = 1,
+                            ResourceName = "VR Headset 1",
+                            ResourceType = 2
+                        },
+                        new
+                        {
+                            ResourceId = 21,
+                            Capacity = 1,
+                            ResourceName = "VR Headset 2",
+                            ResourceType = 2
+                        },
+                        new
+                        {
+                            ResourceId = 22,
+                            Capacity = 1,
+                            ResourceName = "VR Headset 3",
+                            ResourceType = 2
+                        },
+                        new
+                        {
+                            ResourceId = 23,
+                            Capacity = 1,
+                            ResourceName = "VR Headset 4",
+                            ResourceType = 2
+                        },
+                        new
+                        {
+                            ResourceId = 24,
                             Capacity = 1,
                             ResourceName = "AI Server",
                             ResourceType = 3
@@ -340,9 +481,7 @@ namespace Backend.Migrations
 
                     b.HasKey("TimeslotId");
 
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("Timeslot");
+                    b.ToTable("Timeslots");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -394,22 +533,6 @@ namespace Backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Timeslot", b =>
-                {
-                    b.HasOne("InnoviaHub.Models.Resource", "Resource")
-                        .WithMany("Timeslots")
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-                });
-
-            modelBuilder.Entity("InnoviaHub.Models.Resource", b =>
-                {
-                    b.Navigation("Timeslots");
                 });
 #pragma warning restore 612, 618
         }
