@@ -8,7 +8,7 @@ type Timeslot = {
   endTime: string;
   isBooked: boolean;
   resourceId: number;
-};
+}; 
 
 interface ShowAvailableTimeslotsProps {
   resourceId: number | undefined;
