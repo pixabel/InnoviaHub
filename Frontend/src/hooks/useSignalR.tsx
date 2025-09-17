@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import connection from "../services/signalrConnection";
+import connection from "../services/signalRConnection";
 
 interface BookingUpdate {
   resourceId: number;
