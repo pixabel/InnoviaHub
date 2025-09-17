@@ -12,7 +12,7 @@ public static class SeedData
         var closingHour = 18;
 
         // Fetch all resources
-        var resources = context.Resource.ToList();
+        var resources = context.Resources.ToList();
 
         foreach (var resource in resources)
         {

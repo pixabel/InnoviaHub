@@ -19,7 +19,7 @@ public class BookingService
         booking.DateOfBooking = DateTime.Now;
 
         // Add booking to database
-        _context.Booking.Add(booking);
+        _context.Bookings.Add(booking);
 
         // Find and mark the corresponding timeslot as booked
         var timeslot = _context.Timeslots
@@ -38,24 +38,24 @@ public class BookingService
 
     public List<Booking> GetBookingsByUser(string userId)
     {
-        return _context.Booking.Where(b => b.UserId == userId).ToList();
+        return _context.Bookings.Where(b => b.UserId == userId).ToList();
     }
 
     public bool IsBookingAvailable(int resourceId, DateTime startTime, DateTime endTime)
     {
-        var bookingForResource = _context.Booking.Where(b => b.ResourceId == resourceId);
+        var bookingForResource = _context.Bookings.Where(b => b.ResourceId == resourceId);
         var bookingsOverlap = bookingForResource.Any(b => startTime < b.EndTime && endTime > b.StartTime);
         return !bookingsOverlap;
     }
 
     public List<Booking> GetAllBookings()
     {
-        return _context.Booking.ToList();
+        return _context.Bookings.ToList();
     }
 
     public bool UpdateBooking(int id, Booking updatedBooking)
     {
-        var existingBooking = _context.Booking.FirstOrDefault(b => b.BookingId == id);
+        var existingBooking = _context.Bookings.FirstOrDefault(b => b.BookingId == id);
         if (existingBooking == null)
             return false;
 
@@ -71,10 +71,10 @@ public class BookingService
 
     public bool DeleteBooking(int bookingId)
     {
-        var booking = _context.Booking.FirstOrDefault(b => b.BookingId == bookingId);
+        var booking = _context.Bookings.FirstOrDefault(b => b.BookingId == bookingId);
         if (booking != null)
         {
-            _context.Booking.Remove(booking);
+            _context.Bookings.Remove(booking);
 
             // Unmark the timeslot as booked when booking is deleted
             var timeslot = _context.Timeslots

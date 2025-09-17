@@ -19,7 +19,7 @@ namespace Backend.Services
         // Hämta alla bokningar
         public async Task<List<Booking>> GetAllBookingsAsync()
         {
-            return await _context.Booking
+            return await _context.Bookings
                 .Include(b => b.User)      // hämta även användarobjektet
                 .Include(b => b.Resource)  // hämta även resursobjektet
                 .ToListAsync();
@@ -28,7 +28,7 @@ namespace Backend.Services
         // Hämta en bokning
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
-            return await _context.Booking
+            return await _context.Bookings
                 .Include(b => b.User)
                 .Include(b => b.Resource)
                 .FirstOrDefaultAsync(b => b.BookingId == id);
@@ -38,7 +38,7 @@ namespace Backend.Services
         public async Task<Booking> CreateBookingAsync(Booking booking)
         {
             booking.DateOfBooking = DateTime.UtcNow; // sätt datumet
-            _context.Booking.Add(booking);
+            _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
             return booking;
         }
@@ -46,7 +46,7 @@ namespace Backend.Services
         // Uppdatera bokning
         public async Task<bool> UpdateBookingAsync(Booking booking)
         {
-            _context.Booking.Update(booking);
+            _context.Bookings.Update(booking);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -54,10 +54,10 @@ namespace Backend.Services
         // Ta bort bokning
         public async Task<bool> DeleteBookingAsync(int id)
         {
-            var booking = await _context.Booking.FindAsync(id);
+            var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return false;
 
-            _context.Booking.Remove(booking);
+            _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
             return true;
         }
