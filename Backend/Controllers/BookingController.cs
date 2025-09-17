@@ -121,37 +121,20 @@ namespace InnoviaHub.Controllers
             return NoContent();
         }
 
-
-        // [HttpGet("ResourceAvailability")]
-        // public ActionResult GetResourceAvailability()
-        // {
-        //     var now = DateTime.Now;
-
-        //     var resources = _context.Resources
-        //         .Include(r => r.Timeslots)
-        //         .ToList();
-
-        //     var availability = resources
-        //         .GroupBy(r => r.ResourceType)
-        //         .ToDictionary(
-        //             g => g.Key.ToString(),
-        //             g => g.Count(r =>
-        //             {
-        //                 // En resurs är ledig om det inte finns någon bokning pågående just nu
-        //                 return !_context.Bookings.Any(b =>
-        //                     b.ResourceId == r.ResourceId &&
-        //                     b.StartTime <= now && b.EndTime > now
-        //                 );
-        //             })
-        //         );
-
-        //     return Ok(availability);
-        // }
         [HttpGet("ResourceAvailability")]
         public ActionResult GetResourceAvailability()
         {
-            TimeZoneInfo swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-            var nowInSweden = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Central European Standard Time");
+            TimeZoneInfo swedishTimeZone;
+            try
+            {
+                swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+            }
+            catch
+            {
+                return StatusCode(500, "Could not find the Swedish time zone on this system.");
+            }
+
+            var nowInSweden = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishTimeZone);
 
             var resources = _context.Resources
                 .Include(r => r.Timeslots)
@@ -164,18 +147,14 @@ namespace InnoviaHub.Controllers
                     g => g.Count(r =>
                         !_context.Bookings.Any(b =>
                             b.ResourceId == r.ResourceId &&
-                            TimeZoneInfo.ConvertTime(b.StartTime, swedishTimeZone) <= nowInSweden &&
-                            TimeZoneInfo.ConvertTime(b.EndTime, swedishTimeZone) > nowInSweden
+                            b.StartTime <= nowInSweden &&
+                            b.EndTime > nowInSweden
                         )
                     )
                 );
 
             return Ok(availability);
         }
-
-
-
-
 
     }
 }
