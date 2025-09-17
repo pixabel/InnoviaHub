@@ -9,7 +9,7 @@ public class TimeslotsSeeder
         // If timeslots already exists, do nothing
         if (context.Timeslots.Any()) return;
 
-        var resources = context.Resource.ToList();
+        var resources = context.Resources.ToList();
         var today = DateTime.Today;
         var endDate = today.AddMonths(2);
 

@@ -26,7 +26,7 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetResources()
         {
-            var resources = await _context.Resource.ToListAsync();
+            var resources = await _context.Resources.ToListAsync();
             return Ok(resources);
         }
 
@@ -35,7 +35,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetResource(int id)
         {
-            var resource = await _context.Resource.FindAsync(id);
+            var resource = await _context.Resources.FindAsync(id);
             if (resource == null)
                 return NotFound(); // Return 404 if not found
 
@@ -47,7 +47,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateResource([FromQuery]Resource resource)
         {
-            _context.Resource.Add(resource);
+            _context.Resources.Add(resource);
             await _context.SaveChangesAsync();
 
             // Return 201 Created with the location of the new resource
@@ -65,7 +65,7 @@ namespace Backend.Controllers
             try
             {
                 // Find the existing resource in the database
-                var existingResource = await _context.Resource.FindAsync(id);
+                var existingResource = await _context.Resources.FindAsync(id);
                 if (existingResource == null) return NotFound(); // Return 404 if not found
 
                 // Update the resource fields
@@ -78,7 +78,7 @@ namespace Backend.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 // Handle concurrency issues
-                if (!_context.Resource.Any(r => r.ResourceId == id))
+                if (!_context.Resources.Any(r => r.ResourceId == id))
                     return NotFound();
                 else
                     throw;
@@ -92,11 +92,11 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteResource(int id)
         {
-            var resource = await _context.Resource.FindAsync(id);
+            var resource = await _context.Resources.FindAsync(id);
             if (resource == null)
                 return NotFound(); // Return 404 if resource doesn't exist
 
-            _context.Resource.Remove(resource);
+            _context.Resources.Remove(resource);
             await _context.SaveChangesAsync();
 
             return NoContent(); // Return 204 No Content on success

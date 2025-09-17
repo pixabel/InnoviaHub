@@ -14,18 +14,20 @@ namespace Backend.Controllers
         {
             _context = context;
         }
-
+ 
         [HttpGet]
         public async Task<IActionResult> GetResources()
         {
-            var resources = await _context.Resource.ToListAsync();
+            var resources = await _context.Resources
+                .Include(r => r.Timeslots)
+                .ToListAsync();
             return Ok(resources);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetResource(int id)
         {
-            var resource = await _context.Resource.FindAsync(id);
+            var resource = await _context.Resources.FindAsync(id);
             if (resource == null)
                 return NotFound();
 

@@ -9,8 +9,8 @@ namespace Backend.Data
         public InnoviaHubDB(DbContextOptions<InnoviaHubDB> options) : base(options)
         {
         }
-        public DbSet<Resource> Resource { get; set; }
-        public DbSet<Booking> Booking { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
         public DbSet<Timeslot> Timeslots { get; set; }
           // Add resources to dataase
         protected override void OnModelCreating(ModelBuilder modelBuilder)

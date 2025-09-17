@@ -4,6 +4,8 @@ using Backend.Services;
 using Backend.Data;
 using InnoviaHub.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using InnoviaHub.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace InnoviaHub.Controllers
@@ -43,12 +45,38 @@ namespace InnoviaHub.Controllers
 
         // POST api
         [HttpPost]
-        // public ActionResult<Booking> CreateBooking(Booking booking)
-        public async Task<ActionResult<Booking>> CreateBooking([FromBody] Booking booking)
+        public async Task<ActionResult<Booking>> CreateBooking([FromBody] CreateBookingDTO dto)
         {
+            Console.WriteLine($"POST Booking: ResourceId={dto.ResourceId}, UserId={dto.UserId}, Start={dto.StartTime}, End={dto.EndTime}");
 
-            if (!_bookingService.IsBookingAvailable(booking.ResourceId, booking.StartTime, booking.EndTime))
-            return Conflict("Booking overlaps with an existing one.");
+            if (!ModelState.IsValid)
+            {
+                foreach (var kvp in ModelState)
+                {
+                    var field = kvp.Key;
+                    foreach (var error in kvp.Value.Errors)
+                    {
+                        Console.WriteLine($"Model error on '{field}': {error.ErrorMessage}");
+                    }
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            // Kontrollera överlappningar
+            if (!_bookingService.IsBookingAvailable(dto.ResourceId, dto.StartTime, dto.EndTime))
+                return Conflict("Booking overlaps with an existing one.");
+
+            // Skapa bokningen
+            var booking = new Booking
+            {
+                UserId = dto.UserId,
+                ResourceId = dto.ResourceId,
+                BookingType = dto.BookingType,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                DateOfBooking = DateTime.Now
+            };
 
             _bookingService.CreateBooking(booking);
 
@@ -60,6 +88,7 @@ namespace InnoviaHub.Controllers
 
             return Ok(booking);
         }
+
 
         // DELETE
         [HttpDelete("{id}")]
@@ -80,7 +109,28 @@ namespace InnoviaHub.Controllers
                 return NotFound();
 
             return NoContent();
-        }       
+        }
+
+
+        // GET api/bookings/ResourceAvailability
+        [HttpGet("ResourceAvailability")]
+        public ActionResult GetResourceAvailability()
+        {
+            var today = DateTime.Today;
+
+            var resources = _context.Resources
+                .Include(r => r.Timeslots)
+                .ToList();
+
+            var availability = resources
+                .GroupBy(r => r.ResourceType)
+                .ToDictionary(
+                    g => g.Key.ToString(),
+                    g => g.Count(r => r.Timeslots.Any(t => t.StartTime.Date == today && !t.IsBooked))
+                );
+
+            return Ok(availability);
+        }
 
     }
 }
