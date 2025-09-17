@@ -79,8 +79,7 @@ public class BookingService
             // Unmark the timeslot as booked when booking is deleted
             var timeslot = _context.Timeslots
                 .FirstOrDefault(ts => ts.ResourceId == booking.ResourceId
-                    && ts.StartTime == booking.StartTime
-                    && ts.EndTime == booking.EndTime);
+                    && ts.StartTime <= booking.StartTime && ts.EndTime >= booking.EndTime);
 
             if (timeslot != null)
             {
@@ -92,4 +91,5 @@ public class BookingService
         }
         return false;
     }
+
 }

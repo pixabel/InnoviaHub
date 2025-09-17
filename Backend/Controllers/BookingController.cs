@@ -6,6 +6,7 @@ using InnoviaHub.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using InnoviaHub.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 
 namespace InnoviaHub.Controllers
@@ -63,9 +64,18 @@ namespace InnoviaHub.Controllers
                 return BadRequest(ModelState);
             }
 
+            TimeZoneInfo swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+
+            var startTimeInSweden = TimeZoneInfo.ConvertTime(dto.StartTime, swedishTimeZone);
+            var endTimeInSweden = TimeZoneInfo.ConvertTime(dto.EndTime, swedishTimeZone);
+
             // Kontrollera överlappningar
-            if (!_bookingService.IsBookingAvailable(dto.ResourceId, dto.StartTime, dto.EndTime))
+            if (!_bookingService.IsBookingAvailable(dto.ResourceId, startTimeInSweden, endTimeInSweden))
                 return Conflict("Booking overlaps with an existing one.");
+
+            var nowInSweden = TimeZoneInfo.ConvertTime(DateTime.Now, swedishTimeZone);
+            if (startTimeInSweden < nowInSweden)
+                return BadRequest("Start time must be in the future.");
 
             // Skapa bokningen
             var booking = new Booking
@@ -73,13 +83,13 @@ namespace InnoviaHub.Controllers
                 UserId = dto.UserId,
                 ResourceId = dto.ResourceId,
                 BookingType = dto.BookingType,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
+                StartTime = startTimeInSweden,
+                EndTime = endTimeInSweden,
                 DateOfBooking = DateTime.Now
             };
 
-            _bookingService.CreateBooking(booking);
 
+            _bookingService.CreateBooking(booking);
             await _hubContext.Clients.All.SendAsync("RecieveBookingUpdate", new BookingUpdate
             {
                 ResourceId = booking.ResourceId,
@@ -112,11 +122,35 @@ namespace InnoviaHub.Controllers
         }
 
 
-        // GET api/bookings/ResourceAvailability
+        // [HttpGet("ResourceAvailability")]
+        // public ActionResult GetResourceAvailability()
+        // {
+        //     var now = DateTime.Now;
+
+        //     var resources = _context.Resources
+        //         .Include(r => r.Timeslots)
+        //         .ToList();
+
+        //     var availability = resources
+        //         .GroupBy(r => r.ResourceType)
+        //         .ToDictionary(
+        //             g => g.Key.ToString(),
+        //             g => g.Count(r =>
+        //             {
+        //                 // En resurs är ledig om det inte finns någon bokning pågående just nu
+        //                 return !_context.Bookings.Any(b =>
+        //                     b.ResourceId == r.ResourceId &&
+        //                     b.StartTime <= now && b.EndTime > now
+        //                 );
+        //             })
+        //         );
+
+        //     return Ok(availability);
+        // }
         [HttpGet("ResourceAvailability")]
         public ActionResult GetResourceAvailability()
         {
-            var today = DateTime.Today;
+            var now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Central European Standard Time");
 
             var resources = _context.Resources
                 .Include(r => r.Timeslots)
@@ -126,11 +160,20 @@ namespace InnoviaHub.Controllers
                 .GroupBy(r => r.ResourceType)
                 .ToDictionary(
                     g => g.Key.ToString(),
-                    g => g.Count(r => r.Timeslots.Any(t => t.StartTime.Date == today && !t.IsBooked))
+                    g => g.Count(r =>
+                    {
+                        return !_context.Bookings.Any(b =>
+                            b.ResourceId == r.ResourceId &&
+                            b.StartTime <= now && b.EndTime > now
+                        );
+                    })
                 );
 
             return Ok(availability);
         }
+
+
+
 
     }
 }
