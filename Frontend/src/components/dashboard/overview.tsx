@@ -1,71 +1,80 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import "./overviewcard.css";
 
+interface ResourceStatus {
+  MeetingRoom: number;
+  Desk: number;
+  VRHeadset: number;
+  AIServer: number;
+}
+
 const OverviewCard = () => {
+  const [status, setStatus] = useState<ResourceStatus>({
+    MeetingRoom: 0,
+    Desk: 0,
+    VRHeadset: 0,
+    AIServer: 0,
+  });
 
-    // Statisk tillgänglighet 
-    // Implementer SignalR för realtidsuppdatering?
+  useEffect(() => {
+    // Hämta initial data från backend
+    fetch("http://localhost:5271/api/Booking/ResourceAvailability")
+      .then(res => res.json())
+      .then(data => setStatus(data))
+      .catch(err => console.error(err));
 
-    const [desksAvailable] = useState(12);
-    const [aiServerAvailable] = useState(1);
+    // Koppla upp SignalR
+    const connection: HubConnection = new HubConnectionBuilder()
+      .withUrl("http://localhost:5271/bookingHub")
+      .withAutomaticReconnect()
+      .build();
 
-    const renderStatus = (available: boolean) => (
-        <span className={`status ${available ? "available" : "booked"}`} />
-    );
+    connection.start()
+      .then(() => console.log("Connected to SignalR hub"))
+      .catch(err => console.error("SignalR connection error:", err));
 
-    const [vrSets] = useState(
-        Array.from({ length: 4 }, (_, i) => ({ id: i + 1, available: true }))
-    );
-    const [meetingRooms] = useState(
-        Array.from({ length: 4 }, (_, i) => ({ id: i + 1, available: true }))
-    );
+    // Lyssna på uppdateringar
+    connection.on("RecieveBookingUpdate", () => {
+      fetch("http://localhost:5271/api/Booking/ResourceAvailability")
+        .then(res => res.json())
+        .then(data => setStatus(data))
+        .catch(err => console.error(err));
+    });
 
-    return (
-        <div className="overviewCard">
-            <h2>Snabb översikt</h2>
-            <p>Här får du en snabb översikt över alla lediga skrivbord, mötesrum, VR-headset och AI-servrar.</p>
+    return () => {
+      connection.stop();
+    };
+  }, []);
 
-            <div className="overview-grid">
-            {/* Skrivbord */}
-            <div className="overview-item">
-                <h3>Lediga skrivbord</h3>
-                <span className="count">{desksAvailable}</span>
-            </div>
+  return (
+    <div className="overviewCard">
+      <h2>Snabb översikt</h2>
+      <p>Här får du en snabb översikt över alla lediga skrivbord, mötesrum, VR-headset och AI-servrar.</p>
 
-            {/* AI server */}
-            <div className="overview-item">
-                <h3>Lediga AI-servrar</h3>
-                <span className="count">{aiServerAvailable}</span>
-            </div>
-
-            {/* Mötes rum */}
-            <div className="overview-item">
-                <h3>Lediga mötesrum</h3>
-                <div className="item-list">
-                {meetingRooms.map((room) => (
-                    <div key={room.id} className="item-row">
-                    <span>Mötesrum {room.id}</span>
-                    {renderStatus(room.available)}
-                    </div>
-                ))}
-                </div>
-            </div>
-
-            {/* VR sets */}
-            <div className="overview-item">
-                <h3>Lediga VR-headset</h3>
-                <div className="item-list">
-                {vrSets.map((vr) => (
-                    <div key={vr.id} className="item-row">
-                    <span>VR-set {vr.id}</span>
-                    {renderStatus(vr.available)}
-                    </div>
-                ))}
-                </div>
-            </div>
+      <div className="overview-grid">
+        <div className="overview-item">
+          <h3>Lediga skrivbord</h3>
+          <span className="count">{status.Desk}</span>
         </div>
+
+        <div className="overview-item">
+          <h3>Lediga AI-servrar</h3>
+          <span className="count">{status.AIServer}</span>
         </div>
-    )
+
+        <div className="overview-item">
+          <h3>Lediga mötesrum</h3>
+          <span className="count">{status.MeetingRoom}</span>
+        </div>
+
+        <div className="overview-item">
+          <h3>Lediga VR-headset</h3>
+          <span className="count">{status.VRHeadset}</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default OverviewCard;
