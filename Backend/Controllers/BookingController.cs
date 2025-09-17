@@ -83,8 +83,8 @@ namespace InnoviaHub.Controllers
                 UserId = dto.UserId,
                 ResourceId = dto.ResourceId,
                 BookingType = dto.BookingType,
-                StartTime = startTimeInSweden,
-                EndTime = endTimeInSweden,
+                StartTime = dto.StartTime.ToUniversalTime(), 
+                EndTime = dto.EndTime.ToUniversalTime(),
                 DateOfBooking = DateTime.Now
             };
 
@@ -150,7 +150,8 @@ namespace InnoviaHub.Controllers
         [HttpGet("ResourceAvailability")]
         public ActionResult GetResourceAvailability()
         {
-            var now = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Central European Standard Time");
+            TimeZoneInfo swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+            var nowInSweden = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Central European Standard Time");
 
             var resources = _context.Resources
                 .Include(r => r.Timeslots)
@@ -161,16 +162,17 @@ namespace InnoviaHub.Controllers
                 .ToDictionary(
                     g => g.Key.ToString(),
                     g => g.Count(r =>
-                    {
-                        return !_context.Bookings.Any(b =>
+                        !_context.Bookings.Any(b =>
                             b.ResourceId == r.ResourceId &&
-                            b.StartTime <= now && b.EndTime > now
-                        );
-                    })
+                            TimeZoneInfo.ConvertTime(b.StartTime, swedishTimeZone) <= nowInSweden &&
+                            TimeZoneInfo.ConvertTime(b.EndTime, swedishTimeZone) > nowInSweden
+                        )
+                    )
                 );
 
             return Ok(availability);
         }
+
 
 
 
