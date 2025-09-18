@@ -59,7 +59,7 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString + "Z");
+    const date = new Date(dateString);
     const formatted = date.toLocaleDateString("sv-SE", {
       weekday: "long",
       day: "numeric",
@@ -90,13 +90,13 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
                   <br />
                 </div>
                 <div className="bookingDateTimeInfo">
-                  {new Date(booking.startTime + "Z").toLocaleTimeString([], {
+                  {new Date(booking.startTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     timeZone: "Europe/Stockholm"
                   })}
                   -
-                  {new Date(booking.endTime + "Z").toLocaleTimeString([], {
+                  {new Date(booking.endTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     timeZone: "Europe/Stockholm"

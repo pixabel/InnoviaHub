@@ -1,50 +1,62 @@
 using System;
 
-namespace Backend.Data;
-
-public class TimeslotsSeeder
+namespace Backend.Data
 {
-    public static void SeedTimeslots(InnoviaHubDB context)
+    public class TimeslotsSeeder
     {
-        // If timeslots already exists, do nothing
-        if (context.Timeslots.Any()) return;
-
-        var resources = context.Resources.ToList();
-        var today = DateTime.Today;
-        var endDate = today.AddMonths(2);
-
-        foreach (var resource in resources)
+        public static void SeedTimeslots(InnoviaHubDB context)
         {
-            var currentDate = today;
+            // If timeslots already exist, do nothing
+            if (context.Timeslots.Any()) return;
 
-            while (currentDate <= endDate)
+            var resources = context.Resources.ToList();
+            var today = DateTime.Today;
+            var endDate = today.AddMonths(2);
+
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+
+            foreach (var resource in resources)
             {
-                // Skip weekends
-                if (currentDate.DayOfWeek != DayOfWeek.Saturday &&
-                    currentDate.DayOfWeek != DayOfWeek.Sunday)
+                var currentDate = today;
+
+                while (currentDate <= endDate)
                 {
-                    var startTime = currentDate.AddHours(8);
-                    var endTimeDay = currentDate.AddHours(17);
-
-                    while (startTime < endTimeDay)
+                    // Skip weekends
+                    if (currentDate.DayOfWeek != DayOfWeek.Saturday &&
+                        currentDate.DayOfWeek != DayOfWeek.Sunday)
                     {
-                        context.Timeslots.Add(new Timeslot
+                        // Define 8am local time
+                        var localStart = new DateTime(
+                            currentDate.Year,
+                            currentDate.Month,
+                            currentDate.Day,
+                            8, 0, 0,
+                            DateTimeKind.Unspecified);
+
+                        var localEnd = localStart.AddHours(10); // 08 → 18
+
+                        // Convert to UTC
+                        var startTimeUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
+                        var endTimeUtc = TimeZoneInfo.ConvertTimeToUtc(localEnd, tz);
+
+                        while (startTimeUtc < endTimeUtc)
                         {
-                            ResourceId = resource.ResourceId,
-                            StartTime = startTime,
-                            // Two hours slots
-                            EndTime = startTime.AddHours(2)
-                        });
+                            context.Timeslots.Add(new Timeslot
+                            {
+                                ResourceId = resource.ResourceId,
+                                StartTime = startTimeUtc,
+                                EndTime = startTimeUtc.AddHours(2)
+                            });
 
-                        startTime = startTime.AddHours(2);
+                            startTimeUtc = startTimeUtc.AddHours(2);
+                        }
                     }
+
+                    currentDate = currentDate.AddDays(1);
                 }
-
-                currentDate = currentDate.AddDays(1);
             }
-        }
 
-        context.SaveChanges();
+            context.SaveChanges();
+        }
     }
 }
-

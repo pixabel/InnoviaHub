@@ -57,15 +57,15 @@ const ConfirmBooking = ({
     }
   };
 
-  // const [bookingError, setBookingError] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const CompleteBooking = () => {
     const bookingData = {
       resourceId: selectedResourceId,
       bookingType: getBookingTypeForResource(selectedResourceId),
-      startTime: new Date(selectedTimeslot.startTime).toISOString(),
-      endTime: new Date(selectedTimeslot.endTime).toISOString(),
+      // Convert selected timeslot to ISO 8601 UTC format before sending to backend
+      startTime: new Date(selectedTimeslot.startTime + "Z").toISOString(),
+      endTime: new Date(selectedTimeslot.endTime + "Z").toISOString(),
       userId: user.id
     };
     console.log("ConfirmBooking user:", user);

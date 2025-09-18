@@ -81,8 +81,8 @@ const ShowAvailableTimeslots = ({
                 if (!isDisabled) setSelectedTimeslot(slot);
               }}
             >
-              {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - 
-              {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} 
+              {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" })} - 
+              {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" })} 
               {isDisabled && " (Bokad)"}
             </li>
           );
