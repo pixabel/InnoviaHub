@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using InnoviaHub.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Threading.Tasks;
 
 
 namespace InnoviaHub.Controllers
@@ -83,7 +84,7 @@ namespace InnoviaHub.Controllers
                 UserId = dto.UserId,
                 ResourceId = dto.ResourceId,
                 BookingType = dto.BookingType,
-                StartTime = dto.StartTime.ToUniversalTime(), 
+                StartTime = dto.StartTime.ToUniversalTime(),
                 EndTime = dto.EndTime.ToUniversalTime(),
                 DateOfBooking = DateTime.Now
             };
@@ -102,10 +103,21 @@ namespace InnoviaHub.Controllers
 
         // DELETE
         [HttpDelete("{id}")]
-        public IActionResult DeleteBooking(int id)
+        public async Task<IActionResult> DeleteBooking(int id)
         {
+            var booking = _bookingService.GetAllBookings().FirstOrDefault(b => b.BookingId == id);
+            if (booking == null)
+                return NotFound();
+
             if (!_bookingService.DeleteBooking(id))
                 return NotFound();
+
+            // To update with signalR when deleteBooking
+            await _hubContext.Clients.All.SendAsync("RecieveBookingUpdate", new BookingUpdate
+            {
+                ResourceId = booking.ResourceId,
+                Date = booking.StartTime.Date
+            });
 
             return NoContent();
 
