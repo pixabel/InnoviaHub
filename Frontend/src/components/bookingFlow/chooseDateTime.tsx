@@ -52,12 +52,9 @@ const ChooseDateTime = ({
   };
 
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchTimeslots = () => {
     if (!selectedResourceId || !selectedLocalDate) return;
-
-    setLoading(true);
 
     const formattedDate = `${selectedLocalDate.getFullYear()}-${(selectedLocalDate.getMonth() + 1)
       .toString()
@@ -70,7 +67,6 @@ const ChooseDateTime = ({
       })
       .then((data) => setTimeslots(data))
       .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
   };
 
   return (

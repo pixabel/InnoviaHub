@@ -5,12 +5,6 @@ import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
 import "../../components/loading/loadingStyle.css"
 
-interface Resource {
-  resourceId: number;
-  name: string;
-  resourceType: number;
-}
-
 interface Booking {
   bookingId: number;
   userId: string;
