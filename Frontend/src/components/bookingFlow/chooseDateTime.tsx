@@ -6,7 +6,6 @@ import Calendar from "react-calendar";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../../src/config";
 
-
 interface ChooseDateTimeProps {
   selectedResourceName: string;
   selectedResourceId: number | null;
@@ -37,7 +36,7 @@ const ChooseDateTime = ({
   onReturn,
 }: ChooseDateTimeProps) => {
   const [selectedLocalDate, setSelectedLocalDate] = useState<Date | null>(null);
-  
+
   useEffect(() => {
     if (selectedLocalDate) {
       fetchTimeslots();
@@ -45,7 +44,7 @@ const ChooseDateTime = ({
   }, [selectedLocalDate, selectedResourceId]);
 
   const continueBookingBtn = () => {
-    if (!selectedResourceId || !selectedLocalDate || !selectedTimeslot){
+    if (!selectedResourceId || !selectedLocalDate || !selectedTimeslot) {
       return;
     }
     setSelectedDate(selectedLocalDate);
@@ -53,10 +52,12 @@ const ChooseDateTime = ({
   };
 
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchTimeslots = () => {
     if (!selectedResourceId || !selectedLocalDate) return;
 
+    setLoading(true);
 
     const formattedDate = `${selectedLocalDate.getFullYear()}-${(selectedLocalDate.getMonth() + 1)
       .toString()
@@ -68,9 +69,9 @@ const ChooseDateTime = ({
         return res.json();
       })
       .then((data) => setTimeslots(data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   };
-
 
   return (
     <div className="mainContentChooseDateTime">
@@ -87,9 +88,10 @@ const ChooseDateTime = ({
             <p>
               <b>{selectedResourceName}</b>
               <br />
-              Lediga tider för {selectedLocalDate.toLocaleDateString()}:
-            </p>             
+              <b>{selectedLocalDate.toLocaleDateString()} </b>
+            </p>
             <hr />
+
             <ShowAvailableTimeslots
               resourceId={selectedResourceId ?? undefined}
               date={selectedLocalDate}
@@ -100,6 +102,7 @@ const ChooseDateTime = ({
             />
           </div>
         )}
+
         <button className="continueBtn" onClick={continueBookingBtn}>
           Fortsätt
         </button>

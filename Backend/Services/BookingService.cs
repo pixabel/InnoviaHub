@@ -1,5 +1,7 @@
 using InnoviaHub.Models;
 using Backend.Data;
+using Microsoft.EntityFrameworkCore;
+using InnoviaHub.DTOs;
 
 namespace Backend.Services;
 
@@ -36,9 +38,23 @@ public class BookingService
         return booking;
     }
 
-    public List<Booking> GetBookingsByUser(string userId)
+    public List<BookingDTO> GetBookingsByUser(string userId)
     {
-        return _context.Bookings.Where(b => b.UserId == userId).ToList();
+          return _context.Bookings
+        .Include(b => b.Resource)
+        .Where(b => b.UserId == userId)
+        .Select(b => new BookingDTO
+        {
+            BookingId = b.BookingId,
+            UserId = b.UserId,
+            ResourceId = b.ResourceId,
+            ResourceName = b.Resource != null ? b.Resource.ResourceName : "Unknown",
+            BookingType = b.BookingType,
+            StartTime = b.StartTime,
+            EndTime = b.EndTime,
+            DateOfBooking = b.DateOfBooking
+        })
+        .ToList();
     }
 
     public bool IsBookingAvailable(int resourceId, DateTime startTime, DateTime endTime)
@@ -50,7 +66,10 @@ public class BookingService
 
     public List<Booking> GetAllBookings()
     {
-        return _context.Bookings.ToList();
+        return _context.Bookings
+            .Include(b => b.Resource)
+            .Include(b => b.User)
+            .ToList();
     }
 
     public bool UpdateBooking(int id, Booking updatedBooking)

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./MemberTable.css";
 import { BASE_URL } from "../../../config";
+import LoadingSpinner from "../../loading/loadingComponent";
 
 interface Member {
   id: string;
@@ -130,7 +131,7 @@ const MemberTable: React.FC = () => {
   };
 
   if (loading) {
-    return <p>Laddar medlemmar...</p>;
+    return <LoadingSpinner />;
   }
 
   if (error) {

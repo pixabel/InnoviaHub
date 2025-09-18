@@ -1,7 +1,7 @@
 import "./bookingFlow.css";
 import StepBar from "./stepBar";
 import { useState } from "react";
-import { BASE_URL } from "../../../src/config";
+import { BASE_URL } from "../../config";
 
 // Interface för user
 interface User {
