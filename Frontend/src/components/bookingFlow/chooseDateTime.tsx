@@ -4,6 +4,7 @@ import StepBar from "./stepBar";
 import ShowAvailableTimeslots from "./showTimeslots";
 import Calendar from "react-calendar";
 import { useEffect, useState } from "react";
+import { BASE_URL } from "../../../src/config";
 
 
 interface ChooseDateTimeProps {
@@ -56,11 +57,12 @@ const ChooseDateTime = ({
   const fetchTimeslots = () => {
     if (!selectedResourceId || !selectedLocalDate) return;
 
+
     const formattedDate = `${selectedLocalDate.getFullYear()}-${(selectedLocalDate.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${selectedLocalDate.getDate().toString().padStart(2, "0")}`;
 
-    fetch(`http://localhost:5271/api/Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
+    fetch(`${BASE_URL}Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
         return res.json();

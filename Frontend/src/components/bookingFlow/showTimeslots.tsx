@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./timeslots.css";
 import useSignalr from "../../hooks/useSignalR";
+import { BASE_URL } from "../../../src/config";
 
 type Timeslot = {
   timeslotId: number;
@@ -39,9 +40,7 @@ const ShowAvailableTimeslots = ({
       .toString()
       .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
-    fetch(
-      `http://localhost:5271/api/Timeslot/resources/${resourceId}/timeslots?date=${formattedDate}`
-    )
+    fetch(`${BASE_URL}/Timeslot/resources/${resourceId}/timeslots?date=${formattedDate}`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
         return res.json();

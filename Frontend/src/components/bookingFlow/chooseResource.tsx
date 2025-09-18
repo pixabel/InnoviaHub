@@ -1,6 +1,7 @@
 import "./bookingFlow.css";
 import StepBar from "./stepBar";
 import { useEffect, useState } from "react";
+import { BASE_URL } from "../../../src/config";
 
 // Typ för resource — vi mappar API-svaret i useEffect så naming mismatch inte sabbar allt
 type Resource = {
@@ -35,7 +36,7 @@ const ChooseResource = ({
   };
 
   useEffect(() => {
-    fetch("http://localhost:5271/api/Resource")
+    fetch(`${BASE_URL}/Resource`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta resurser för tillfället");
         return res.json();

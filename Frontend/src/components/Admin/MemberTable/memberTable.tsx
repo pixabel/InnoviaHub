@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./MemberTable.css";
+import { BASE_URL } from "../../../config";
 
 interface Member {
   id: string;
@@ -25,7 +26,7 @@ const MemberTable: React.FC = () => {
     const fetchMembers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5271/api/AdminUser/users", {
+        const response = await fetch(`${BASE_URL}/AdminUser/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const MemberTable: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5271/api/AdminUser/users/${id}`, {
+      const response = await fetch(`${BASE_URL}/AdminUser/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -105,7 +106,7 @@ const MemberTable: React.FC = () => {
         isAdmin: editFormData.role === "Admin",
       };
 
-      const response = await fetch(`http://localhost:5271/api/AdminUser/users/${id}`, {
+      const response = await fetch(`${BASE_URL}/AdminUser/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

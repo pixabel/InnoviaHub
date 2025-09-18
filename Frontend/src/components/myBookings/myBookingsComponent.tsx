@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./myBookings.css";
 import UnBookBtn from "./unBookBtn";
+import { BASE_URL } from "../../config";
 
 interface Booking {
   bookingId: number;
@@ -46,7 +47,7 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
     console.log(user);
 
     // Fetch bookings for signedIn user
-    fetch(`http://localhost:5271/api/Booking/user/${parsedUser.id}`)
+    fetch(`${BASE_URL}/Booking/user/${parsedUser.id}`)
         .then((res) => res.json())
         .then((data) => setBookings(data))
         .catch((err) => console.error("Error fetching bookings:", err));

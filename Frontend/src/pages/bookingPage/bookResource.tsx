@@ -1,7 +1,7 @@
 import Header from "../../components/header/header";
 import Navbar from "../../components/navbar/navbar";
 import LoginPage from "../signInPage/signIn";
-
+import { BASE_URL } from "../../config";
 import { useEffect, useState } from "react";
 import ChooseResource from "../../components/bookingFlow/chooseResource";
 import ChooseDateTime from "../../components/bookingFlow/chooseDateTime";
@@ -75,7 +75,7 @@ const BookingPage = () => {
       .toString()
       .padStart(2, "0")}-${selectedDate.getDate().toString().padStart(2, "0")}`;
 
-    fetch(`http://localhost:5271/api/Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
+    fetch(`${BASE_URL}/Timeslot/resources/${selectedResourceId}/timeslots?date=${formattedDate}`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
         return res.json();
