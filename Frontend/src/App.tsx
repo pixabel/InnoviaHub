@@ -7,6 +7,7 @@ import MyBookings from "./pages/myBookings/myBookings";
 import NotFoundPage from "./pages/notFoundPage";
 import LoginPage from "./pages/signInPage/signIn";
 import BookingsAdmin from "./components/Admin/BookingsAdmin/bookingsAdmin";
+import ResourceAdmin from "./components/Admin/ResourceAdmin/resourceAdmin";
 
 
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/admin" element={<AdminPage />}>
           <Route path="members" element={<MemberTable />} />
           <Route path="bookings" element={<BookingsAdmin />} /> 
+          <Route path="resources" element={<ResourceAdmin/>} />
 
         </Route>
         <Route path="/book" element={<BookingPage />} />

@@ -1,0 +1,81 @@
+.resource-admin {
+  padding: 20px;
+}
+
+.type-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.type-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f4f4f4;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.type-button:hover {
+  background: #eee;
+}
+
+.type-button.active {
+  background: #f97316;
+  color: white;
+  border-color: #f97316;
+}
+
+.add-resource {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.add-resource input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.add-resource button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.resource-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.resource-card h3 {
+  margin: 0 0 8px 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.actions .delete {
+  color: #ef4444;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
