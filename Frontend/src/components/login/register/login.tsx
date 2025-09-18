@@ -2,6 +2,7 @@ import "./loginRegister.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "../../../config";
 
 interface TokenPayload {
   sub: string; // user id
@@ -22,7 +23,7 @@ const Login = () => {
     event.preventDefault();
     setErrorMsg("");
 
-    fetch("http://localhost:5271/api/Auth/login", {
+    fetch(`${BASE_URL}/Auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import "./overviewcard.css";
+import { BASE_URL } from "../../config";
+
+// Replace /api to /bookinghub
+const hubUrl = BASE_URL.replace(/\/api$/, "") + "/bookinghub";
 
 interface ResourceStatus {
   MeetingRoom: number;
@@ -19,14 +23,14 @@ const OverviewCard = () => {
 
   useEffect(() => {
     // Hämta initial data från backend
-    fetch("http://localhost:5271/api/Booking/ResourceAvailability")
+    fetch(`${BASE_URL}/Booking/ResourceAvailability`)
       .then(res => res.json())
       .then(data => setStatus(data))
       .catch(err => console.error(err));
 
     // Koppla upp SignalR
     const connection: HubConnection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5271/bookingHub")
+      .withUrl(`${hubUrl}`)
       .withAutomaticReconnect()
       .build();
 
@@ -36,7 +40,7 @@ const OverviewCard = () => {
 
     // Lyssna på uppdateringar
     connection.on("RecieveBookingUpdate", () => {
-      fetch("http://localhost:5271/api/Booking/ResourceAvailability")
+      fetch(`${BASE_URL}/api/Booking/ResourceAvailability`)
         .then(res => res.json())
         .then(data => setStatus(data))
         .catch(err => console.error(err));

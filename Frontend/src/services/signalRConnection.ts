@@ -1,7 +1,11 @@
 import * as signalR from "@microsoft/signalr";
+import { BASE_URL } from "../config";
+
+// Replace /api to /bookinghub
+const hubUrl = BASE_URL.replace(/\/api$/, "") + "/bookinghub";
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:5271/bookinghub")
+    .withUrl(`${hubUrl}`)
     .withAutomaticReconnect()
     .build();
 

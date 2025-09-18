@@ -1,6 +1,7 @@
 import "./bookingFlow.css";
 import StepBar from "./stepBar";
 import { useState } from "react";
+import { BASE_URL } from "../../../src/config";
 
 // Interface för user
 interface User {
@@ -70,7 +71,7 @@ const ConfirmBooking = ({
     };
     console.log("ConfirmBooking user:", user);
 
-  fetch(`http://localhost:5271/api/Booking`, {
+  fetch(`${BASE_URL}/Booking`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(bookingData),

@@ -1,4 +1,5 @@
 import "./myBookings.css";
+import { BASE_URL } from "../../config";
 
 interface UnBookBtnProps {
   bookingId: number;
@@ -8,7 +9,7 @@ interface UnBookBtnProps {
 const UnBookBtn = ({bookingId, onDeleted}: UnBookBtnProps) => {
     const unBook = async () => {
      try {
-      const response = await fetch(`http://localhost:5271/api/Booking/${bookingId}`, {
+      const response = await fetch(`${BASE_URL}/Booking/${bookingId}`, {
         method: "DELETE",
       });
 

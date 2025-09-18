@@ -2,6 +2,7 @@ import "./loginRegister.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "../../../config";
 
 interface TokenPayload {
   sub: string;
@@ -25,7 +26,7 @@ const Register = () => {
     setErrorMsg("");
 
     try {
-      const res = await fetch("http://localhost:5271/api/Auth/register", {
+      const res = await fetch(`${BASE_URL}/Auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +45,7 @@ const Register = () => {
       let token = registerData.token;
       if (!token) {
         // Else login automatic
-        const loginRes = await fetch("http://localhost:5271/api/Auth/login", {
+        const loginRes = await fetch(`${BASE_URL}/Auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),

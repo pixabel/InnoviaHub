@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./resourceAdmin.css";
+import { BASE_URL } from "../../../config";
 
 type BookingType = "Desk" | "VRHeadset" | "MeetingRoom" | "AIServer";
 
@@ -42,7 +43,7 @@ const enumMap: Record<BookingType, number> = {
   AIServer: 3,
 };
 
-const BASE_URL = "https://backend20250901141037.azurewebsites.net/api/AdminResource";
+
 
 export default function ResourceAdmin() {
   const [selectedType, setSelectedType] = useState<BookingType>("Desk"); // vy
@@ -56,7 +57,7 @@ export default function ResourceAdmin() {
 
   async function loadResources() {
     try {
-      const res = await fetch(`${BASE_URL}`);
+      const res = await fetch(`${BASE_URL}/AdminResource`);
       const data: Resource[] = await res.json();
       setResources(data);
     } catch (error) {
@@ -76,7 +77,7 @@ export default function ResourceAdmin() {
     };
 
     try {
-      const response = await fetch(`${BASE_URL}`, {
+      const response = await fetch(`${BASE_URL}/AdminResource`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -100,7 +101,7 @@ export default function ResourceAdmin() {
   async function handleDelete(id: number) {
     if (!window.confirm("Är du säker på att du vill ta bort resursen?")) return;
     try {
-      await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+      await fetch(`${BASE_URL}/AdminResource/${id}`, { method: "DELETE" });
       loadResources();
     } catch (error) {
       console.error("Kunde inte ta bort resurs:", error);

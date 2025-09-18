@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./bookingsAdmin.css";
+import { BASE_URL } from "../../../config";
 
 type Booking = {
   bookingId: number;
@@ -13,7 +14,7 @@ const BookingsAdmin = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5271/api/adminbookings", {
+    fetch(`${BASE_URL}/adminbookings`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`, // om JWT används
       },
