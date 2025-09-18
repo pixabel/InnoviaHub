@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./resourceAdmin.css";
 import { BASE_URL } from "../../../config";
+import LoadingSpinner from "../../loading/loadingComponent";
 
 type BookingType = "Desk" | "VRHeadset" | "MeetingRoom" | "AIServer";
 
@@ -50,6 +51,7 @@ export default function ResourceAdmin() {
   const [selectedTypeForAdd, setSelectedTypeForAdd] = useState<BookingType>("Desk"); // lägg-till
   const [resources, setResources] = useState<Resource[]>([]);
   const [newResource, setNewResource] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     loadResources();
@@ -62,6 +64,8 @@ export default function ResourceAdmin() {
       setResources(data);
     } catch (error) {
       console.error("Kunde inte ladda resurser:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -95,6 +99,8 @@ export default function ResourceAdmin() {
     } catch (error) {
       console.error("Fetch failed:", error);
       alert("Kunde inte lägga till resurs, nätverksfel?");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -106,6 +112,8 @@ export default function ResourceAdmin() {
     } catch (error) {
       console.error("Kunde inte ta bort resurs:", error);
       alert("Kunde inte ta bort resurs, nätverksfel?");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -113,6 +121,7 @@ export default function ResourceAdmin() {
   const filteredResources = resources.filter(
     (res) => enumNumberToKey[res.resourceType] === selectedType
   );
+
 
   return (
     <div className="resource-admin">
@@ -153,7 +162,11 @@ export default function ResourceAdmin() {
 
         <button onClick={handleAdd}>➕ Lägg till</button>
       </div>
-
+      {loading && (
+        <div className="loading-container">
+          <LoadingSpinner />
+        </div>
+      )}
       {/* Lista över resurser */}
       <div className="resource-grid">
         {filteredResources.map((res) => (

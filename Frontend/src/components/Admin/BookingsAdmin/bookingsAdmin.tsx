@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./bookingsAdmin.css";
 import { BASE_URL } from "../../../config";
+import LoadingSpinner from "../../loading/loadingComponent";
 
 type Booking = {
   bookingId: number;
@@ -12,31 +13,46 @@ type Booking = {
 
 const BookingsAdmin = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null); // ✅ lägg till error-state
 
   useEffect(() => {
-    fetch(`${BASE_URL}/adminbookings`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`, // om JWT används
-      },
-    })
-      .then((res) => {
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/adminbookings`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
         if (!res.ok) {
           throw new Error("Fel vid hämtning av bokningar");
         }
-        return res.json();
-      })
-      .then((data) => {
+
+        const data = await res.json();
+
         const mapped = data.map((b: any) => ({
           bookingId: b.bookingId,
-          resourceName: `Resurs #${b.resourceId}`, // placeholder tills backend returnerar namn
-          memberName: `User #${b.userId}`, // placeholder tills backend returnerar namn
+          resourceName: `Resurs #${b.resourceId}`, // placeholder
+          memberName: `User #${b.userId}`,         // placeholder
           date: new Date(b.startTime).toLocaleDateString(),
           time: `${new Date(b.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${new Date(b.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
         }));
+
         setBookings(mapped);
-      })
-      .catch((err) => console.error(err));
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Något gick fel"); // ✅ funkar nu
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings(); // ✅ nu körs funktionen
   }, []);
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div className="adminContainer">

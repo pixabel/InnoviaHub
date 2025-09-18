@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import "./myBookings.css";
 import UnBookBtn from "./unBookBtn";
 import { BASE_URL } from "../../config";
+import LoadingSpinner from "../loading/loadingComponent";
+import "../../components/loading/loadingStyle.css"
+
+interface Resource {
+  resourceId: number;
+  name: string;
+  resourceType: number;
+}
 
 interface Booking {
   bookingId: number;
@@ -29,34 +37,46 @@ interface MyBookingsProps {
 const MyBookingsComponent = ({ className }: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const resourceNames: { [key: number]: string } = {
-    1: "Mötesrum",
-    2: "Skrivbord",
-    3: "VR-Headset",
-    4: "AI-Server",
-  };
+  // const resourceNames: { [key: number]: string } = {
+  //   1: "Mötesrum",
+  //   2: "Skrivbord",
+  //   3: "VR-Headset",
+  //   4: "AI-Server",
+  // };
 
   useEffect(() => {
-    // Get user from localStorage
-     const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    const parsedUser = JSON.parse(storedUser);
-    setUser(parsedUser);
-
+    const storedUser = localStorage.getItem("user");
     console.log(user);
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
 
-    // Fetch bookings for signedIn user
-    fetch(`${BASE_URL}/Booking/user/${parsedUser.id}`)
-        .then((res) => res.json())
-        .then((data) => setBookings(data))
-        .catch((err) => console.error("Error fetching bookings:", err));
+      const fetchBookings = async () => {
+        try {
+          const res = await fetch(`${BASE_URL}/Booking/user/${parsedUser.id}`);
+          if (!res.ok) throw new Error("Kunde inte hämta bokningar");
+
+          const data = await res.json();
+          setBookings(data);
+        } catch (err: any) {
+          console.error("Error fetching bookings:", err);
+          setError(err.message || "Något gick fel");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBookings();
+    } else {
+      setLoading(false);
+      setError("Ingen användare hittades. Är du inloggad?");
     }
   }, []);
 
-  // Function to send to UnBookBtn to update list
   const handleDeleted = (deletedBookingId: number) => {
-    setBookings((prev) => prev.filter(b => b.bookingId !== deletedBookingId));
+    setBookings((prev) => prev.filter((b) => b.bookingId !== deletedBookingId));
   };
 
   const formatDate = (dateString: string) => {
@@ -65,54 +85,59 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
       weekday: "long",
       day: "numeric",
       month: "numeric",
-      timeZone: "Europe/Stockholm"
+      timeZone: "Europe/Stockholm",
     });
-    // Show date for booking as e.g Måndag 1/9
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
+
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div className={`mainContentMyBookings ${className || ""}`}>
       <h1 className="myBookingsHeader">Mina bokningar</h1>
       <h2 className="h2">Här hittar du dina bokningar</h2>
-      {bookings.length === 0 ? (
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && !error && bookings.length === 0 && (
         <p>Du har inga bokningar för tillfället</p>
-      ) : (
+      )}
+      {loading && (
+        <div className="loading-container">
+          <LoadingSpinner />
+        </div>
+      )}
+      {!loading && !error && bookings.length > 0 && (
         <ul className="myBookedResources">
           {bookings.map((booking) => (
             <li className="bookedResourceItem" key={booking.bookingId}>
-              <h3>
-                {" "}
-                {resourceNames[booking.resourceId] || "Unknown"}{" "}
-              </h3>
+              <h3>{booking.resourceName || "Unknown"}</h3>
               <div className="dateTimeInfo">
-                <div className="bookingDateTimeInfo">
-                  {formatDate(booking.startTime)}
-                  <br />
-                </div>
+                <div className="bookingDateTimeInfo">{formatDate(booking.startTime)}</div>
                 <div className="bookingDateTimeInfo">
                   {new Date(booking.startTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
-                    timeZone: "Europe/Stockholm"
+                    timeZone: "Europe/Stockholm",
                   })}
                   -
                   {new Date(booking.endTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
-                    timeZone: "Europe/Stockholm"
+                    timeZone: "Europe/Stockholm",
                   })}
                 </div>
               </div>
               <UnBookBtn
                 bookingId={booking.bookingId}
-                onDeleted={() => handleDeleted(booking.bookingId)} />
+                onDeleted={() => handleDeleted(booking.bookingId)}
+              />
             </li>
           ))}
         </ul>
       )}
     </div>
+
   );
-}
+};
 
 export default MyBookingsComponent;

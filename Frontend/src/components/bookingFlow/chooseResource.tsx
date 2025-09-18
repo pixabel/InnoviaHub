@@ -25,7 +25,7 @@ const ChooseResource = ({
 }: ChooseResourceProps) => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  
   const continueBookingBtn = () => {
     if (!selectedResourceId) {
       setError("Välj en resurs innan du fortsätter");

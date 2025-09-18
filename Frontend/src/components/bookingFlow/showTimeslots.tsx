@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./timeslots.css";
 import useSignalr from "../../hooks/useSignalR";
 import { BASE_URL } from "../../../src/config";
+import LoadingSpinner from "../loading/loadingComponent";
 
 type Timeslot = {
   timeslotId: number;
@@ -9,7 +10,7 @@ type Timeslot = {
   endTime: string;
   isBooked: boolean;
   resourceId: number;
-}; 
+};
 
 interface ShowAvailableTimeslotsProps {
   resourceId: number | undefined;
@@ -28,6 +29,7 @@ const ShowAvailableTimeslots = ({
 }: ShowAvailableTimeslotsProps) => {
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchTimeslots();
@@ -40,13 +42,15 @@ const ShowAvailableTimeslots = ({
       .toString()
       .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
+    setLoading(true);
     fetch(`${BASE_URL}/Timeslot/resources/${resourceId}/timeslots?date=${formattedDate}`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta lediga tider");
         return res.json();
       })
       .then((data) => setTimeslots(data))
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   };
 
   useSignalr((message: any) => {
@@ -58,35 +62,53 @@ const ShowAvailableTimeslots = ({
     }
   });
 
-  // DEBUG LOGGING
-  console.log("Rendered timeslots:", timeslots);
-
   return (
     <div>
-      <h2>Tillgängliga tider</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <ul className="timeslotHolder">
-        {timeslots.map((slot) => {
-          const start = new Date(slot.startTime);
-          const end = new Date(slot.endTime);
-          const isSelected = selectedTimeslot?.timeslotId === slot.timeslotId;
-          const isDisabled = slot.isBooked;
+      <h2>Tillgängliga tider:</h2>
 
-          return (
-            <li
-              key={slot.timeslotId}
-              className={`timeslotItem ${isSelected ? "selected" : ""} ${isDisabled ? "booked" : ""}`}
-              onClick={() => {
-                if (!isDisabled) setSelectedTimeslot(slot);
-              }}
-            >
-              {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" })} - 
-              {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" })} 
-              {isDisabled && " (Bokad)"}
-            </li>
-          );
-        })}
-      </ul>
+      {loading && (
+        <div className="loading-container">
+          <LoadingSpinner />
+        </div>
+      )}
+
+      {!loading && error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && (
+        <ul className="timeslotHolder">
+          {timeslots.map((slot) => {
+            const start = new Date(slot.startTime);
+            const end = new Date(slot.endTime);
+            const isSelected = selectedTimeslot?.timeslotId === slot.timeslotId;
+            const isDisabled = slot.isBooked;
+
+            return (
+              <li
+                key={slot.timeslotId}
+                className={`timeslotItem ${isSelected ? "selected" : ""} ${
+                  isDisabled ? "booked" : ""
+                }`}
+                onClick={() => {
+                  if (!isDisabled) setSelectedTimeslot(slot);
+                }}
+              >
+                {start.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/Stockholm",
+                })}{" "}
+                -{" "}
+                {end.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/Stockholm",
+                })}{" "}
+                {isDisabled && " (Bokad)"}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 };
