@@ -1,11 +1,13 @@
 using InnoviaHub.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class AdminResourceController : ControllerBase
     {
         private readonly AdminResourceService _service;
