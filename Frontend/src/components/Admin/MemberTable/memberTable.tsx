@@ -130,9 +130,6 @@ const MemberTable: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   if (error) {
     return <p style={{ color: "red" }}>Fel: {error}</p>;
@@ -151,92 +148,114 @@ const MemberTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>
-                {editingId === member.id ? (
-                  <>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={editFormData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="Förnamn"
-                    />
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={editFormData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Efternamn"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <div>{member.firstName || "-"}</div>
-                    <div>{member.lastName || ""}</div>
-                  </>
-                )}
-              </td>
-              <td>
-                {editingId === member.id ? (
-                  <input
-                    type="email"
-                    name="email"
-                    value={editFormData.email}
-                    onChange={handleInputChange}
-                  />
-                ) : member.email ? (
-                  <a href={`mailto:${member.email}`}>{member.email}</a>
-                ) : (
-                  "-"
-                )}
-              </td>
-              <td>
-                {editingId === member.id ? (
-                  <select
-                    name="role"
-                    value={editFormData.role}
-                    onChange={handleInputChange}
-                  >
-                    <option value="Medlem">Medlem</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                ) : (
-                  member.role || "Medlem"
-                )}
-              </td>
-              <td>
-                {editingId === member.id ? (
-                  <>
-                    <button
-                      className="edit-btn"
-                      onClick={() => handleSaveClick(member.id)}
-                    >
-                      💾
-                    </button>
-                    <button className="delete-btn" onClick={handleCancelClick}>
-                      ✖️
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      className="edit-btn"
-                      onClick={() => handleEditClick(member)}
-                    >
-                      ✏️
-                    </button>
-                    <button className="delete-btn" onClick={() => handleDeleteClick(member.id)}>🗑️</button>
-                  </>
-                )}
+          {loading ? (
+            <tr>
+              <td colSpan={4} style={{ textAlign: "center", padding: "2rem" }}>
+                <div className="loadingContainerMembers">
+                  <LoadingSpinner />
+                </div>
               </td>
             </tr>
-          ))}
+          ) : members.length > 0 ? (
+            members.map((member) => (
+              <tr key={member.id}>
+                <td>
+                  {editingId === member.id ? (
+                    <>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={editFormData.firstName}
+                        onChange={handleInputChange}
+                        placeholder="Förnamn"
+                      />
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={editFormData.lastName}
+                        onChange={handleInputChange}
+                        placeholder="Efternamn"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div>{member.firstName || "-"}</div>
+                      <div>{member.lastName || ""}</div>
+                    </>
+                  )}
+                </td>
+                <td>
+                  {editingId === member.id ? (
+                    <input
+                      type="email"
+                      name="email"
+                      value={editFormData.email}
+                      onChange={handleInputChange}
+                    />
+                  ) : member.email ? (
+                    <a href={`mailto:${member.email}`}>{member.email}</a>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+                <td>
+                  {editingId === member.id ? (
+                    <select
+                      name="role"
+                      value={editFormData.role}
+                      onChange={handleInputChange}
+                    >
+                      <option value="Medlem">Medlem</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                  ) : (
+                    member.role || "Medlem"
+                  )}
+                </td>
+                <td>
+                  {editingId === member.id ? (
+                    <>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleSaveClick(member.id)}
+                      >
+                        💾
+                      </button>
+                      <button className="delete-btn" onClick={handleCancelClick}>
+                        ✖️
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleEditClick(member)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteClick(member.id)}
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} style={{ textAlign: "center" }}>
+                Inga medlemmar hittades
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
   );
+
 };
 
 export default MemberTable;

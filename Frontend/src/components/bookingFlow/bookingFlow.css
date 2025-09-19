@@ -104,6 +104,11 @@ select {
     font-size: 1em;
 }
 
+.loadingContainerConfirmBooking{
+    margin-top: 1em;
+    margin-left: 45%;
+}
+
 
 /* Media queries för större skärmar */
 @media (min-width: 768px) {

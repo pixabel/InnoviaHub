@@ -16,7 +16,7 @@
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-top: 15px;
 }
@@ -75,4 +75,15 @@
 .status.booked {
   background-color: #D5718C;
   padding: 2px;
+}
+
+.loadingAvailableResources .loader {
+  width: 30px;
+  height: 30px;
+}
+
+.loadingAvailableResources .loader::after,
+.loadingAvailableResources .loader::before {
+  width: 4px;
+  height: 4px;
 }

@@ -67,7 +67,7 @@ const ShowAvailableTimeslots = ({
       <h2>Tillgängliga tider:</h2>
 
       {loading && (
-        <div className="loading-container">
+        <div className="loadingContainerTimeslots">
           <LoadingSpinner />
         </div>
       )}

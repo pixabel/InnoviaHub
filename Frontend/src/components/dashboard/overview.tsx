@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import "./overviewcard.css";
 import { BASE_URL } from "../../config";
+import LoadingSpinner from "../loading/loadingComponent";
 
 // Replace /api to /bookinghub
 const hubUrl = BASE_URL.replace(/\/api$/, "") + "/bookinghub";
@@ -20,13 +21,15 @@ const OverviewCard = () => {
     VRHeadset: 0,
     AIServer: 0,
   });
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
+    setLoading(true);
     // Hämta initial data från backend
     fetch(`${BASE_URL}/Booking/ResourceAvailability`)
       .then(res => res.json())
       .then(data => setStatus(data))
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
 
     // Koppla upp SignalR
     const connection: HubConnection = new HubConnectionBuilder()
@@ -43,7 +46,7 @@ const OverviewCard = () => {
       fetch(`${BASE_URL}/api/Booking/ResourceAvailability`)
         .then(res => res.json())
         .then(data => setStatus(data))
-        .catch(err => console.error(err));
+        .catch(err => console.error(err))
     });
 
     return () => {
@@ -59,22 +62,42 @@ const OverviewCard = () => {
       <div className="overview-grid">
         <div className="overview-item">
           <h3>Lediga skrivbord</h3>
-          <span className="count">{status.Desk}</span>
+          {loading ? (
+           <div className="loadingAvailableResources">
+             <LoadingSpinner />
+           </div> )
+            : (<span className="count">{status.Desk}</span>)
+          }
         </div>
 
         <div className="overview-item">
           <h3>Lediga AI-servrar</h3>
-          <span className="count">{status.AIServer}</span>
+         {loading ? (
+            <div className="loadingAvailableResources">
+             <LoadingSpinner />
+           </div> )
+            : ( <span className="count">{status.AIServer}</span>)
+          }
         </div>
 
         <div className="overview-item">
           <h3>Lediga mötesrum</h3>
-          <span className="count">{status.MeetingRoom}</span>
+          {loading ? (
+            <div className="loadingAvailableResources">
+             <LoadingSpinner />
+           </div> )
+            : ( <span className="count">{status.MeetingRoom}</span>)
+          }
         </div>
 
         <div className="overview-item">
           <h3>Lediga VR-headset</h3>
-          <span className="count">{status.VRHeadset}</span>
+          {loading ? (
+            <div className="loadingAvailableResources">
+             <LoadingSpinner />
+           </div> )
+            : ( <span className="count">{status.VRHeadset}</span>)
+          }
         </div>
       </div>
     </div>

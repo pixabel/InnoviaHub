@@ -163,7 +163,7 @@ export default function ResourceAdmin() {
         <button onClick={handleAdd}>➕ Lägg till</button>
       </div>
       {loading && (
-        <div className="loading-container">
+        <div className="loadingContainerResources">
           <LoadingSpinner />
         </div>
       )}
