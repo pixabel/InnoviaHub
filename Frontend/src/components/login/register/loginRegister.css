@@ -83,3 +83,9 @@
 .switchAuthBtn:hover{
     background-color: #4b7c73;
 }
+
+.loadingContainerRegisterLogin{
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left: auto;
+}

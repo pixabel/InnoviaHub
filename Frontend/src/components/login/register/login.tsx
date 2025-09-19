@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../../../config";
+import LoadingSpinner from "../../loading/loadingComponent";
 
 interface TokenPayload {
   sub: string; // user id
@@ -17,11 +18,13 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   function handleLogin(event: React.FormEvent) {
     event.preventDefault();
     setErrorMsg("");
+    setLoading(true);
 
     fetch(`${BASE_URL}/Auth/login`, {
       method: "POST",
@@ -64,7 +67,10 @@ const Login = () => {
         setEmail("");
         setPassword("");
         setErrorMsg(error.message);
-      });
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   }
 
   return (
@@ -96,6 +102,11 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {loading && (
+              <div className="loadingContainerRegisterLogin">
+                <LoadingSpinner />
+              </div>
+            )}
             <button type="submit">Logga in</button>
           </form>
         </div>
