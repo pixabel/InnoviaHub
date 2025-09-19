@@ -41,10 +41,10 @@
     margin-top: 1em;
     /* Wont wrap to enable horisontal scroll instead */
     flex-wrap: nowrap;
-    padding: 0;
+    padding-left: 1.2em;
     gap: 1.5em;
     overflow-x: auto;
-    max-width: 100%;
+    max-width: 90%;
     list-style: none;
     scrollbar-width: thin;
     scrollbar-color: #888 #e8e8e8;
