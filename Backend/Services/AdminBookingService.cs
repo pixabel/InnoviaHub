@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Backend.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 using InnoviaHub.Models;
+using InnoviaHub.DTOs;
 
 namespace Backend.Services
 {
@@ -17,12 +16,23 @@ namespace Backend.Services
         }
 
         // Hämta alla bokningar
-        public async Task<List<Booking>> GetAllBookingsAsync()
+        public async Task<List<BookingDTO>> GetAllBookingsAsync()
         {
             return await _context.Bookings
-                .Include(b => b.User)      // hämta även användarobjektet
-                .Include(b => b.Resource)  // hämta även resursobjektet
-                .ToListAsync();
+                .Include(b => b.User)
+                .Include(b => b.Resource)
+                .Select(b => new BookingDTO
+                {
+                    BookingId = b.BookingId,
+                    UserId = b.UserId,
+                    MemberName = b.User.FirstName + " " + b.User.LastName, // ✅ Hämtar riktiga namn
+                    ResourceId = b.ResourceId,
+                    ResourceName = b.Resource.ResourceName,
+                    BookingType = b.BookingType,
+                    StartTime = b.StartTime,
+                    EndTime = b.EndTime,
+                    DateOfBooking = b.DateOfBooking
+                }).ToListAsync();
         }
 
         // Hämta en bokning
