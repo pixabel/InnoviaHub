@@ -47,8 +47,13 @@ const ChooseResource = ({
           id: r.resourceId ?? r.id,
           resourceName: r.resourceName ?? r.name ?? r.resourceName ?? "",
         }));
-        setResources(mapped);
-      })
+
+      // Sort resources alphabetically with natural numeric ordering (e.g. Desk 2 before Desk 10)
+      const collator = new Intl.Collator("sv", { numeric: true, sensitivity: "base" });
+      const sorted = mapped.sort((a, b) => collator.compare(a.resourceName, b.resourceName));
+
+      setResources(sorted);
+    })
       .catch((err) => setError(err.message));
   }, []);
 
