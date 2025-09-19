@@ -48,10 +48,10 @@ const BookingsAdmin = () => {
       }
     };
 
-    fetchBookings(); // ✅ nu körs funktionen
+    fetchBookings();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
@@ -68,7 +68,15 @@ const BookingsAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {bookings.length > 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan={5} style={{ textAlign: "center", padding: "2rem" }}>
+                <div className="loadingContainerBookings">
+                  <LoadingSpinner />
+                </div>
+              </td>
+            </tr>
+          ) : bookings.length > 0 ? (
             bookings.map((booking) => (
               <tr key={booking.bookingId}>
                 <td>{booking.resourceName}</td>

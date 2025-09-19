@@ -2,6 +2,7 @@ import "./bookingFlow.css";
 import StepBar from "./stepBar";
 import { useState } from "react";
 import { BASE_URL } from "../../config";
+import LoadingSpinner from "../loading/loadingComponent";
 
 // Interface för user
 interface User {
@@ -39,73 +40,67 @@ const ConfirmBooking = ({
   user,
   refreshTimeslots
 }: ConfirmBookingProps) => {
-  const returnBtn = () => {
-    onReturn();
-  };
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   // gets correct bookingTypeNumber for resource
   const getBookingTypeForResource = (resourceId: number) => {
     switch (resourceId) {
-      case 1:
-        return 0; // MeetingRoom
-      case 2:
-        return 1; // Desk
-      case 3:
-        return 2; // VRHeadset
-      case 4:
-        return 3; // AIServer
-      default:
-        return 0; // default for MeetingRoom
+      case 1: return 0; // MeetingRoom
+      case 2: return 1; // Desk
+      case 3: return 2; // VRHeadset
+      case 4: return 3; // AIServer
+      default: return 0;
     }
   };
 
-  const [showConfirmation, setShowConfirmation] = useState(false);
-
   const CompleteBooking = () => {
+    setLoading(true); // start spinner
+    
     const bookingData = {
       resourceId: selectedResourceId,
       bookingType: getBookingTypeForResource(selectedResourceId),
-      // Convert selected timeslot to ISO 8601 UTC format before sending to backend
       startTime: new Date(selectedTimeslot.startTime + "Z").toISOString(),
       endTime: new Date(selectedTimeslot.endTime + "Z").toISOString(),
       userId: user.id
     };
-    console.log("ConfirmBooking user:", user);
 
-  fetch(`${BASE_URL}/Booking`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(bookingData),
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        if (res.status === 409) {
-          throw new Error("Denna tid är redan bokad");
+    fetch(`${BASE_URL}/Booking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookingData),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          if (res.status === 409) {
+            throw new Error("Denna tid är redan bokad");
+          }
+          throw new Error("Något gick fel vid bokning");
         }
-        throw new Error("Något gick fel vid bokning");
-        
-      }
-      return res.json();
-    })
-    .then((data) => {
+        return res.json();
+      })
+      .then((data) => {
         console.log("Bokning skapad: ", data);
-        setShowConfirmation(true); // show popup
-        refreshTimeslots(); // refreshes timeslots in parent
-    })
-};
-
+        setShowConfirmation(true);
+        refreshTimeslots();
+      })
+      .catch((err) => {
+        alert(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="mainContentConfirmBooking">
       <StepBar currentStep={3} />
       <div className="confirmBooking">
         <h1 className="componentHeader">Bekräfta bokning</h1>
+        
         <div className="bookingInfo">
-          <p>
-            Bokningen avser: <b>{selectedResourceName}</b>
-          </p>
-          <p>
-            Datum för bokning: <b>{selectedDate.toLocaleDateString()}</b>
-          </p>
+          <p>Bokningen avser: <b>{selectedResourceName}</b></p>
+          <p>Datum för bokning: <b>{selectedDate.toLocaleDateString()}</b></p>
           <p>
             Tid för bokning:{" "}
             <b>
@@ -121,16 +116,16 @@ const ConfirmBooking = ({
             </b>
           </p>
           <p>
-            Bokat på:{" "}
-            <b>
-              {user ? `${user.firstName} ${user.lastName}` : "Okänd användare"}
-            </b>
+            Bokat på: <b>{user ? `${user.firstName} ${user.lastName}` : "Okänd användare"}</b>
           </p>
         </div>
-        <button className="continueBtn" onClick={CompleteBooking}>
-          Bekräfta
-        </button>
-        {showConfirmation && (
+
+        {/* Visa spinner medan bokningen skickas */}
+        {loading ? (
+          <div className="loadingContainerConfirmBooking">
+            <LoadingSpinner />
+          </div>
+        ) : showConfirmation ? (
           <div className="confirmation-popup">
             <p>Bokningen är skapad!</p>
             <button
@@ -142,8 +137,13 @@ const ConfirmBooking = ({
               Stäng
             </button>
           </div>
+        ) : (
+          <button className="continueBtn" onClick={CompleteBooking}>
+            Bekräfta
+          </button>
         )}
-        <button className="goBackBtn" onClick={returnBtn}>
+
+        <button className="goBackBtn" onClick={onReturn}>
           Tillbaka
         </button>
       </div>

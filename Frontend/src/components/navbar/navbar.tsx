@@ -51,7 +51,7 @@ const Navbar = () => {
             </li>
             {isAdmin && (
               <li>
-                <Link to="/admin">Admin</Link>
+                <Link to="/admin/members">Admin</Link>
               </li>
             )}
             <li>

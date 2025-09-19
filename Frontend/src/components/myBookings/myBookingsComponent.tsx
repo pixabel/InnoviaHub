@@ -96,7 +96,7 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
         <p>Du har inga bokningar för tillfället</p>
       )}
       {loading && (
-        <div className="loading-container">
+        <div className="loadingContainerMyBookings">
           <LoadingSpinner />
         </div>
       )}

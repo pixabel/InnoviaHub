@@ -79,3 +79,9 @@
   background: none;
   cursor: pointer;
 }
+
+.loadingContainerResources{
+  margin-top: 2em;
+  margin-bottom: 2em;
+  margin-left: 45%;
+}
