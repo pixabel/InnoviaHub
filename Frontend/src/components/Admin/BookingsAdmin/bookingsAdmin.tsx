@@ -11,10 +11,19 @@ type Booking = {
   time: string;
 };
 
+// Type to sort bookings
+type BookingWithDates = {
+  bookingId: number;
+  resourceName: string;
+  memberName: string;
+  startTime: Date;
+  endTime: Date;
+};
+
 const BookingsAdmin = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null); // ✅ lägg till error-state
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -31,18 +40,32 @@ const BookingsAdmin = () => {
 
         const data = await res.json();
 
-        const mapped = data.map((b: any) => ({
-          bookingId: b.bookingId,
-          resourceName: `Resurs #${b.resourceId}`, // placeholder
-          memberName: `User #${b.userId}`,         // placeholder
-          date: new Date(b.startTime).toLocaleDateString(),
-          time: `${new Date(b.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${new Date(b.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
-        }));
+        // Sort after date and time
+        const mapped: Booking[] = data
+          .map((b: any) => ({
+            bookingId: b.bookingId,
+            resourceName: b.resourceName,
+            memberName: b.memberName,
+            startTime: new Date(b.startTime),
+            endTime: new Date(b.endTime),
+          } as BookingWithDates))
+          .sort(
+            (a: BookingWithDates, b: BookingWithDates) =>
+              a.startTime.getTime() - b.startTime.getTime()
+          )
+          .map((b: BookingWithDates) => ({
+            bookingId: b.bookingId,
+            resourceName: b.resourceName,
+            memberName: b.memberName,
+            date: b.startTime.toLocaleDateString(),
+            time: `${b.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${b.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+          }));
+
 
         setBookings(mapped);
       } catch (err: any) {
         console.error(err);
-        setError(err.message || "Något gick fel"); // ✅ funkar nu
+        setError(err.message || "Något gick fel");
       } finally {
         setLoading(false);
       }
@@ -50,7 +73,6 @@ const BookingsAdmin = () => {
 
     fetchBookings();
   }, []);
-
 
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 

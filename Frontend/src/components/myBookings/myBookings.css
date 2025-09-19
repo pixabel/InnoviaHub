@@ -32,7 +32,7 @@
 .bookedResourceItem{
     width: 9em;
     background-color: white;
-    border: 1px solid black;
+    border: 0.01em solid rgb(121, 121, 121);
     padding: 1em;
     border-radius: 0.5em;
 }

@@ -3,7 +3,7 @@ import "./myBookings.css";
 import UnBookBtn from "./unBookBtn";
 import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
-import "../../components/loading/loadingStyle.css"
+import "../../components/loading/loadingStyle.css";
 
 interface Booking {
   bookingId: number;
@@ -35,10 +35,10 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const resourceTypeColors: { [key: string]: string } = {
-    "Mötesrum": "#ffd3a0ff",
-    "Skrivbord": "#8ec4cdff",
-    "VR-Headset": "#a48fb5ff",
-    "AI-Server": "#6BCB77",
+    "Mötesrum": "#ffd3a0de",
+    "Skrivbord": "#8ec4cdde",
+    "VR-Headset": "#a48fb5de",
+    "AI-Server": "#6BCB77de",
   };
 
   const getResourceColor = (resourceName: string) => {
@@ -121,34 +121,22 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
             return (
               <li
                 key={booking.bookingId}
-                className="bookedResourceItem"
-                // style={{
-                //   borderLeft: `6px solid ${color}`,
-                //   padding: "10px 15px",
-                //   borderRadius: "8px",
-                //   marginBottom: "10px",
-                //   backgroundColor: "#fff",
-                //   display: "flex",
-                //   flexDirection: "column",
-                //   boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                // }}
-              >
+                className="bookedResourceItem">
                 <div
-                  style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
-                >
+                  style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
                   <span
                     style={{
                       backgroundColor: color,
                       color: "black",
-                      padding: "0.5em 1em",
-                      borderRadius: "12px",
+                      padding: "0.3em 0.8em",
+                      borderRadius: "1em",
                       fontSize: "1em",
                       fontWeight: 500,
                       marginLeft: "-1.5em",
                       marginBottom: "1em",
                       whiteSpace: "nowrap",
                       border: "1px solid black",
-                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.47)"
+                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.47)"
                     }}
                   >
                     {booking.resourceName.includes("Skrivbord")
