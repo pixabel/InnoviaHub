@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../../../config";
+import LoadingSpinner from "../../loading/loadingComponent";
 
 interface TokenPayload {
   sub: string;
@@ -19,11 +20,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   async function handleRegister(event: React.FormEvent) {
     event.preventDefault();
     setErrorMsg("");
+    setLoading(true);
 
     try {
       const res = await fetch(`${BASE_URL}/Auth/register`, {
@@ -83,6 +86,8 @@ const Register = () => {
     } catch (error: any) {
       console.error("Problem vid registrering/inloggning:", error);
       setErrorMsg(error.message || "Något gick fel");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -131,6 +136,11 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {loading && (
+              <div className="loadingContainerRegisterLogin">
+                <LoadingSpinner />
+              </div>
+            )}
             <button id="registerBtn" type="submit">
               Skapa konto
             </button>
