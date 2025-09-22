@@ -5,7 +5,8 @@ import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
 
 // Replace /api to /bookinghub
-const hubUrl = BASE_URL.replace(/\/api$/, "") + "/bookinghub";
+const hubUrl = "https://backend20250901141037.azurewebsites.net/bookinghub";
+
 
 interface ResourceStatus {
   MeetingRoom: number;

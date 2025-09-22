@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import * as signalR from "@microsoft/signalr";
 import connection from "../services/signalRConnection";
 
 interface BookingUpdate {
@@ -10,27 +11,30 @@ const useSignalr = (onBookingUpdate: (update: BookingUpdate) => void) => {
   useEffect(() => {
     const startConnection = async () => {
       try {
-        if (connection.state === "Disconnected") {
+        if (connection.state === signalR.HubConnectionState.Disconnected) {
           await connection.start();
           console.log("SignalR connected");
+        } else {
+          console.log("SignalR already connecting/connected:", connection.state);
         }
 
-        // Make sure listener is only attached once
-        connection.off("RecieveBookingUpdate");
-        connection.on("RecieveBookingUpdate", (update: BookingUpdate) => {
+        // Remove previous listener
+        connection.off("ReceiveBookingUpdate");
+
+        // Add listener
+        connection.on("ReceiveBookingUpdate", (update: BookingUpdate) => {
           console.log("Received update:", update);
           onBookingUpdate(update);
         });
       } catch (err) {
-        console.error("SignalR connection error:", err);
+        console.error("SignalR connection error:", connection.state, err);
       }
     };
 
     startConnection();
 
     return () => {
-      connection.off("RecieveBookingUpdate"); // clean up listener
-      // optional: connection.stop(); // only if you want to fully stop
+      connection.off("ReceiveBookingUpdate");
     };
   }, [onBookingUpdate]);
 };
