@@ -52,6 +52,7 @@ const ChooseDateTime = ({
   };
 
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  console.log(timeslots);
 
   const fetchTimeslots = () => {
     if (!selectedResourceId || !selectedLocalDate) return;
@@ -93,8 +94,6 @@ const ChooseDateTime = ({
               date={selectedLocalDate}
               selectedTimeslot={selectedTimeslot}
               setSelectedTimeslot={setSelectedTimeslot}
-              timeslots={timeslots}
-              refreshTimeslots={fetchTimeslots}
             />
           </div>
         )}

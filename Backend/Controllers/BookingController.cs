@@ -6,8 +6,6 @@ using InnoviaHub.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using InnoviaHub.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using System.Threading.Tasks;
 
 
 namespace InnoviaHub.Controllers
@@ -70,7 +68,7 @@ namespace InnoviaHub.Controllers
             var startTimeInSweden = TimeZoneInfo.ConvertTime(dto.StartTime, swedishTimeZone);
             var endTimeInSweden = TimeZoneInfo.ConvertTime(dto.EndTime, swedishTimeZone);
 
-            // Kontrollera överlappningar
+            // Control overlapping
             if (!_bookingService.IsBookingAvailable(dto.ResourceId, startTimeInSweden, endTimeInSweden))
                 return Conflict("Booking overlaps with an existing one.");
 
@@ -78,7 +76,7 @@ namespace InnoviaHub.Controllers
             if (startTimeInSweden < nowInSweden)
                 return BadRequest("Start time must be in the future.");
 
-            // Skapa bokningen
+            // Create booking
             var booking = new Booking
             {
                 UserId = dto.UserId,
@@ -91,10 +89,11 @@ namespace InnoviaHub.Controllers
 
 
             _bookingService.CreateBooking(booking);
-            await _hubContext.Clients.All.SendAsync("RecieveBookingUpdate", new BookingUpdate
+            Console.WriteLine("📡 Sending SignalR update...");
+            await _hubContext.Clients.All.SendAsync("ReceiveBookingUpdate", new BookingUpdate
             {
                 ResourceId = booking.ResourceId,
-                Date = booking.StartTime.Date
+                Date = booking.StartTime.ToString("yyyy-MM-dd")
             });
 
             return Ok(booking);
@@ -113,10 +112,10 @@ namespace InnoviaHub.Controllers
                 return NotFound();
 
             // To update with signalR when deleteBooking
-            await _hubContext.Clients.All.SendAsync("RecieveBookingUpdate", new BookingUpdate
+            await _hubContext.Clients.All.SendAsync("ReceiveBookingUpdate", new BookingUpdate
             {
                 ResourceId = booking.ResourceId,
-                Date = booking.StartTime.Date
+                Date = booking.StartTime.ToString("yyyy-MM-dd")
             });
 
             return NoContent();

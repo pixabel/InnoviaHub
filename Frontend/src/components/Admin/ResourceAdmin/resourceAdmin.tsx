@@ -60,7 +60,7 @@ export default function ResourceAdmin() {
   async function loadResources() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${BASE_URL}/AdminResource`, {
+      const res = await fetch(`${BASE_URL}AdminResource`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function ResourceAdmin() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${BASE_URL}/AdminResource`, {
+      const response = await fetch(`${BASE_URL}AdminResource`, {
         method: "POST",
         headers: { 
           Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ export default function ResourceAdmin() {
     if (!window.confirm("Är du säker på att du vill ta bort resursen?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${BASE_URL}/AdminResource/${id}`, {
+      const res = await fetch(`${BASE_URL}AdminResource/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

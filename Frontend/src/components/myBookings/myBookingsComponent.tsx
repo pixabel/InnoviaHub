@@ -57,7 +57,7 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
 
       const fetchBookings = async () => {
         try {
-          const res = await fetch(`${BASE_URL}/Booking/user/${parsedUser.id}`);
+          const res = await fetch(`${BASE_URL}Booking/user/${parsedUser.id}`);
           if (!res.ok) throw new Error("Kunde inte hämta bokningar");
 
           const data = await res.json();

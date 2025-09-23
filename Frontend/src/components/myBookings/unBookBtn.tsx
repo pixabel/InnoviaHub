@@ -9,7 +9,7 @@ interface UnBookBtnProps {
 const UnBookBtn = ({bookingId, onDeleted}: UnBookBtnProps) => {
     const unBook = async () => {
      try {
-      const response = await fetch(`${BASE_URL}/Booking/${bookingId}`, {
+      const response = await fetch(`${BASE_URL}Booking/${bookingId}`, {
         method: "DELETE",
       });
 

@@ -28,7 +28,7 @@ const BookingsAdmin = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/adminbookings`, {
+        const res = await fetch(`${BASE_URL}adminbookings`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

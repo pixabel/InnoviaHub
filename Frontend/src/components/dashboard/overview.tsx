@@ -26,7 +26,7 @@ const OverviewCard = () => {
   useEffect(() => {
     setLoading(true);
     // Hämta initial data från backend
-    fetch(`${BASE_URL}/Booking/ResourceAvailability`)
+    fetch(`${BASE_URL}Booking/ResourceAvailability`)
       .then(res => res.json())
       .then(data => setStatus(data))
       .catch(err => console.error(err))
@@ -44,7 +44,7 @@ const OverviewCard = () => {
 
     // Lyssna på uppdateringar
     connection.on("RecieveBookingUpdate", () => {
-      fetch(`${BASE_URL}/api/Booking/ResourceAvailability`)
+      fetch(`${BASE_URL}Booking/ResourceAvailability`)
         .then(res => res.json())
         .then(data => setStatus(data))
         .catch(err => console.error(err))
