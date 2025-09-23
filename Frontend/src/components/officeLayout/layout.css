@@ -1,0 +1,126 @@
+.layoutHeader{
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+.officeGridWrapper {
+    font-family: 'Inter', sans-serif;
+    width: 60%;
+    margin: auto;
+    margin-top: 3em;
+    margin-bottom: 15em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    position: relative;
+}
+
+/* Styling to simulate windows */
+.officeGridWrapper::before,
+.officeGridWrapper::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    border-left: 0.18em solid black; 
+    height: 8em; 
+}
+
+.officeGridWrapper::before {
+    left: -2px;
+    top: 120px;
+    box-shadow: 0 200px 0 0 black, 0 400px 0 0 black;
+}
+
+.officeGridWrapper::after {
+    right: -2px;
+    top: 120px;
+    box-shadow: 0 200px 0 0 black, 0 400px 0 0 black;
+}
+
+
+.resourceGroup {
+    display: grid;
+    grid-template-columns: repeat(4, 140px);
+    gap: 3em;
+}
+
+.resource{
+    padding: 0.8em;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgb(187, 187, 187);
+}
+
+.bookingTooltip {
+    pointer-events: auto;
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 10;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.479);
+    width: 14em;
+}
+
+.resource:hover .bookingTooltip{
+    display: block;
+}
+
+.resourceGroup.skrivbord .resource {
+    border: 2px solid #8ec4cd;
+    border-radius: 1em;
+}
+.resourceGroup.skrivbord .resource:hover {
+    background-color: #8ec4cda0;
+}
+
+/* Chair for each desk */
+.resourceGroup.skrivbord .resource::after {
+    content: "";
+    position: absolute;
+    bottom: -1.8em;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1.5em;
+    height: 1em;
+    border: 0.08em solid black;
+    border-radius: 0.3em;
+    z-index: -1;
+}
+
+.resourceGroup.motesrum .resource {
+    border: 2px solid #ffd3a0;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    margin-bottom: 4em;
+    width: 10em;
+    margin-left: -1.4em;
+}
+.resourceGroup.motesrum .resource:hover {
+    background-color: #ffd3a0a0;
+}
+
+.resourceGroup.vr-headset .resource {
+    border: 2px solid #a48fb5;
+    margin-top: 4em;
+}
+
+.resourceGroup.vr-headset .resource:hover {
+    background-color: #a48fb5a0;
+}
+
+.resourceGroup.ai-server .resource {
+    border: 2px solid #6bcb78;
+    margin-top: 2em;
+}
+
+.resourceGroup.ai-server .resource:hover {
+    background-color: #6bcb78a0;
+}

@@ -59,7 +59,14 @@ export default function ResourceAdmin() {
 
   async function loadResources() {
     try {
-      const res = await fetch(`${BASE_URL}/AdminResource`);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${BASE_URL}/AdminResource`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data: Resource[] = await res.json();
       setResources(data);
     } catch (error) {
@@ -81,9 +88,13 @@ export default function ResourceAdmin() {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/AdminResource`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json" 
+      },
         body: JSON.stringify(body),
       });
 
@@ -107,7 +118,19 @@ export default function ResourceAdmin() {
   async function handleDelete(id: number) {
     if (!window.confirm("Är du säker på att du vill ta bort resursen?")) return;
     try {
-      await fetch(`${BASE_URL}/AdminResource/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${BASE_URL}/AdminResource/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error("Kunde inte ta bort resurs: " + errorText);
+      }
+      
       loadResources();
     } catch (error) {
       console.error("Kunde inte ta bort resurs:", error);
