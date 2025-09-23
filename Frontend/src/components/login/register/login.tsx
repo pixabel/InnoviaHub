@@ -26,7 +26,7 @@ const Login = () => {
     setErrorMsg("");
     setLoading(true);
 
-    fetch(`${BASE_URL}/Auth/login`, {
+    fetch(`${BASE_URL}Auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

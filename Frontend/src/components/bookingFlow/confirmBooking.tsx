@@ -3,6 +3,7 @@ import StepBar from "./stepBar";
 import { useState } from "react";
 import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
+import useSignalr from "../../hooks/useSignalR";
 
 // Interface för user
 interface User {
@@ -28,7 +29,7 @@ interface ConfirmBookingProps {
   selectedTimeslot: Timeslot;
   onReturn: () => void;
   user: User;
-  refreshTimeslots: () => void; 
+  refreshTimeslots: () => void;
 }
 
 const ConfirmBooking = ({
@@ -43,6 +44,23 @@ const ConfirmBooking = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+const channelKey = `${selectedResourceId}-${selectedDate.getFullYear()}-${selectedDate.getMonth()+1}-${selectedDate.getDate()}`;
+
+useSignalr((update: any) => {
+
+  const updateDate = new Date(update.date + "T00:00:00Z");
+  const selectedDay = new Date(selectedDate);
+
+  if (
+    update.resourceId === selectedResourceId &&
+    updateDate.getUTCFullYear() === selectedDay.getUTCFullYear() &&
+    updateDate.getUTCMonth() === selectedDay.getUTCMonth() &&
+    updateDate.getUTCDate() === selectedDay.getUTCDate()
+  ) {
+    refreshTimeslots();
+  }
+}, channelKey);
+
   // gets correct bookingTypeNumber for resource
   const getBookingTypeForResource = (resourceId: number) => {
     switch (resourceId) {
@@ -56,7 +74,7 @@ const ConfirmBooking = ({
 
   const CompleteBooking = () => {
     setLoading(true); // start spinner
-    
+
     const bookingData = {
       resourceId: selectedResourceId,
       bookingType: getBookingTypeForResource(selectedResourceId),
@@ -65,31 +83,25 @@ const ConfirmBooking = ({
       userId: user.id
     };
 
-    fetch(`${BASE_URL}/Booking`, {
+    fetch(`${BASE_URL}Booking`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bookingData),
     })
       .then(async (res) => {
         if (!res.ok) {
-          if (res.status === 409) {
-            throw new Error("Denna tid är redan bokad");
-          }
+          if (res.status === 409) throw new Error("Denna tid är redan bokad");
           throw new Error("Något gick fel vid bokning");
         }
         return res.json();
       })
       .then((data) => {
-        console.log("Bokning skapad: ", data);
-        setShowConfirmation(true);
+        console.log(data);
         refreshTimeslots();
+        setShowConfirmation(true);
       })
-      .catch((err) => {
-        alert(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch((err) => alert(err.message))
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -97,7 +109,7 @@ const ConfirmBooking = ({
       <StepBar currentStep={3} />
       <div className="confirmBooking">
         <h1 className="componentHeader">Bekräfta bokning</h1>
-        
+
         <div className="bookingInfo">
           <p>Bokningen avser: <b>{selectedResourceName}</b></p>
           <p>Datum för bokning: <b>{selectedDate.toLocaleDateString()}</b></p>
@@ -120,7 +132,6 @@ const ConfirmBooking = ({
           </p>
         </div>
 
-        {/* Visa spinner medan bokningen skickas */}
         {loading ? (
           <div className="loadingContainerConfirmBooking">
             <LoadingSpinner />

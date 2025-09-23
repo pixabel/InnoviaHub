@@ -43,8 +43,8 @@ const Layout = () => {
         const fetchResourcesAndBookings = async () => {
             try {
                 const [resRes, resBookings] = await Promise.all([
-                    fetch(`${BASE_URL}/resource`),
-                    fetch(`${BASE_URL}/booking`)
+                    fetch(`${BASE_URL}resource`),
+                    fetch(`${BASE_URL}booking`)
                 ]);
 
                 if (!resRes.ok) throw new Error("Kunde inte hämta resurser");

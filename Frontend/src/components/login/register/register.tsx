@@ -29,7 +29,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/Auth/register`, {
+      const res = await fetch(`${BASE_URL}Auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const Register = () => {
       let token = registerData.token;
       if (!token) {
         // Else login automatic
-        const loginRes = await fetch(`${BASE_URL}/Auth/login`, {
+        const loginRes = await fetch(`${BASE_URL}Auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),

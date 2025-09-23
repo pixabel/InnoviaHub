@@ -36,7 +36,7 @@ const ChooseResource = ({
   };
 
   useEffect(() => {
-    fetch(`${BASE_URL}/Resource`)
+    fetch(`${BASE_URL}Resource`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunde inte hämta resurser för tillfället");
         return res.json();
