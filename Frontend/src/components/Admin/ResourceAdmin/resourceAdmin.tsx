@@ -141,10 +141,29 @@ export default function ResourceAdmin() {
   }
 
   // Filtrera resurser för den valda vy-knappen
-  const filteredResources = resources.filter(
-    (res) => enumNumberToKey[res.resourceType] === selectedType
-  );
+  const extractNumber = (name: string): number => {
+  const match = name.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+};
 
+const filteredResources = resources
+  .filter((res) => enumNumberToKey[res.resourceType] === selectedType)
+  .sort((a, b) => {
+    const nameA = a.resourceName.toLowerCase();
+    const nameB = b.resourceName.toLowerCase();
+
+    // Extract number from name for sorting
+    const numA = extractNumber(nameA);
+    const numB = extractNumber(nameB);
+
+    // If both contain numbers, sort numerically
+    if (numA && numB) {
+      return numA - numB;
+    }
+
+    // Else, sort alfabetically
+    return nameA.localeCompare(nameB);
+  });
 
   return (
     <div className="resource-admin">
