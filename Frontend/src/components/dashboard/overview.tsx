@@ -7,10 +7,10 @@ import LoadingSpinner from "../loading/loadingComponent";
 const hubUrl = "https://backend20250901141037.azurewebsites.net/bookinghub";
 
 interface ResourceStatus {
-  MeetingRooms: boolean[];   // true = available, false = booked
-  VRHeadsets: boolean[];
-  Desk: number;
-  AIServer: number;
+  meetingRooms: boolean[];
+  vrHeadsets: boolean[];
+  desk: number;
+  aiServer: number;
 }
 
 const MEETING_ROOM_NAMES = ["Mötesrum 1", "Mötesrum 2", "Mötesrum 3", "Mötesrum 4"];
@@ -18,54 +18,67 @@ const VR_HEADSET_NAMES = ["VR-headset 1", "VR-headset 2", "VR-headset 3", "VR-he
 
 const OverviewCard = () => {
   const [status, setStatus] = useState<ResourceStatus>({
-    MeetingRooms: [true, true, true, true], // default all available
-    VRHeadsets: [true, true, true, true],   // default all available
-    Desk: 0,
-    AIServer: 0,
+    meetingRooms: [true, true, true, true],
+    vrHeadsets: [true, true, true, true],
+    desk: 0,
+    aiServer: 0,
   });
+
   const [loading, setLoading] = useState<boolean>(true);
 
-useEffect(() => {
-  setLoading(true);
-  fetch(`${BASE_URL}Booking/ResourceAvailability`)
-    .then(res => res.json())
-    .then(data => setStatus({
-      Desk: data.desk ?? 0,
-      AIServer: data.aiServer ?? 0,
-      MeetingRooms: Array.isArray(data.meetingRooms)
-        ? data.meetingRooms
-        : [true, true, true, true],
-      VRHeadsets: Array.isArray(data.vrHeadsets)
-        ? data.vrHeadsets
-        : [true, true, true, true]
-    }))
-    .catch(err => console.error(err))
-    .finally(() => setLoading(false));
+  const fetchResourceData = () => {
+    setLoading(true);
+    fetch(`${BASE_URL}Booking/ResourceAvailability`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("Fetched resource data:", data);
 
+        const totalMeetingRooms = MEETING_ROOM_NAMES.length;
+        const totalVRHeadsets = VR_HEADSET_NAMES.length;
+
+        // Skapa array med boolean där true = ledig, false = bokad
+        const meetingRoomsArray = Array.from(
+          { length: totalMeetingRooms },
+          (_, i) => i < data.MeetingRoom
+        );
+
+        const vrHeadsetsArray = Array.from(
+          { length: totalVRHeadsets },
+          (_, i) => i < data.VRHeadset
+        );
+
+        setStatus({
+          desk: data.Desk ?? 0,
+          aiServer: data.AIServer ?? 0,
+          meetingRooms: meetingRoomsArray,
+          vrHeadsets: vrHeadsetsArray,
+        });
+      })
+      .catch(err => console.error("Error fetching resource data:", err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    // Initial fetch
+    fetchResourceData();
+
+    // SignalR connection
     const connection: HubConnection = new HubConnectionBuilder()
       .withUrl(hubUrl)
       .withAutomaticReconnect()
       .build();
 
-    connection.start()
-      .then(() => console.log("Connected to SignalR hub"))
-      .catch(err => console.error("SignalR connection error:", err));
+    connection
+      .start()
+      .then(() => {
+        console.log("✅ Connected to SignalR hub");
 
-    connection.on("RecieveBookingUpdate", () => {
-      fetch(`${BASE_URL}Booking/ResourceAvailability`)
-        .then(res => res.json())
-        .then(data => setStatus({
-          Desk: data.Desk ?? 0,
-          AIServer: data.AIServer ?? 0,
-          MeetingRooms: Array.isArray(data.MeetingRooms)
-            ? data.MeetingRooms
-            : [true, true, true, true],
-          VRHeadsets: Array.isArray(data.VRHeadsets)
-            ? data.VRHeadsets
-            : [true, true, true, true]
-        }))
-        .catch(err => console.error(err));
-    });
+        connection.on("RecieveBookingUpdate", () => {
+          console.log("🔁 Booking update received via SignalR");
+          fetchResourceData();
+        });
+      })
+      .catch(err => console.error("❌ SignalR connection error:", err));
 
     return () => {
       connection.stop();
@@ -80,12 +93,12 @@ useEffect(() => {
       <div className="overview-grid">
         <div className="overview-item">
           <h3>Lediga skrivbord</h3>
-          {loading ? <LoadingSpinner /> : <span className="count">{status.Desk}</span>}
+          {loading ? <LoadingSpinner /> : <span className="count">{status.desk}</span>}
         </div>
 
         <div className="overview-item">
           <h3>Lediga AI-servrar</h3>
-          {loading ? <LoadingSpinner /> : <span className="count">{status.AIServer}</span>}
+          {loading ? <LoadingSpinner /> : <span className="count">{status.aiServer}</span>}
         </div>
 
         <div className="overview-item">
@@ -94,10 +107,10 @@ useEffect(() => {
             <LoadingSpinner />
           ) : (
             <div className="item-list">
-              {MEETING_ROOM_NAMES.map((room, i) => (
-                <div key={room} className="item-row">
-                  <span>{room}</span>
-                  <span className={`status ${(status.MeetingRooms && status.MeetingRooms[i]) ? "available" : "booked"}`}></span>
+              {MEETING_ROOM_NAMES.map((name, i) => (
+                <div key={name} className="item-row">
+                  <span>{name}</span>
+                  <span className={`status ${status.meetingRooms[i] ? "available" : "booked"}`}></span>
                 </div>
               ))}
             </div>
@@ -110,10 +123,10 @@ useEffect(() => {
             <LoadingSpinner />
           ) : (
             <div className="item-list">
-              {VR_HEADSET_NAMES.map((vr, i) => (
-                <div key={vr} className="item-row">
-                  <span>{vr}</span>
-                  <span className={`status ${(status.VRHeadsets && status.VRHeadsets[i]) ? "available" : "booked"}`}></span>
+              {VR_HEADSET_NAMES.map((name, i) => (
+                <div key={name} className="item-row">
+                  <span>{name}</span>
+                  <span className={`status ${status.vrHeadsets[i] ? "available" : "booked"}`}></span>
                 </div>
               ))}
             </div>

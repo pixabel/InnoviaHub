@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using InnoviaHub.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using InnoviaHub.Models;
+using InnoviaHub.DTOs;
 
 namespace Backend.Controllers
 {
@@ -63,43 +64,45 @@ namespace Backend.Controllers
             return NoContent();
         }
         
-        [HttpGet("ResourceAvailability")]
-        public async Task<IActionResult> GetResourceAvailability()
-        {
-            var resources = await _context.Resources
-                .Include(r => r.Timeslots)
-                .ToListAsync();
+[HttpGet("ResourceAvailability")]
+public async Task<IActionResult> GetResourceAvailability()
+{
+    var resources = await _context.Resources
+        .Include(r => r.Timeslots)
+        .ToListAsync();
 
-            var meetingRooms = resources.Where(r => r.ResourceType == BookingType.MeetingRoom).OrderBy(r => r.ResourceName).ToList();
-            var vrHeadsets = resources.Where(r => r.ResourceType == BookingType.VRHeadset).OrderBy(r => r.ResourceName).ToList();
+    bool IsAvailable(Resource r) =>
+        !r.Timeslots.Any(ts =>
+            ts.StartTime <= DateTime.UtcNow && ts.EndTime > DateTime.UtcNow && ts.IsBooked
+        );
 
-            bool IsAvailable(Resource r) =>
-                !r.Timeslots.Any(ts =>
-                    ts.StartTime <= DateTime.UtcNow && ts.EndTime > DateTime.UtcNow
-                );
+    var meetingRoomsStatus = resources
+        .Where(r => r.ResourceType == BookingType.MeetingRoom)
+        .OrderBy(r => r.ResourceName)
+        .Select(r => IsAvailable(r))
+        .ToArray();
 
-            var meetingRoomsStatus = meetingRooms.Select(r => IsAvailable(r)).ToArray();
-            var vrHeadsetsStatus = vrHeadsets.Select(r => IsAvailable(r)).ToArray();
+    var vrHeadsetsStatus = resources
+        .Where(r => r.ResourceType == BookingType.VRHeadset)
+        .OrderBy(r => r.ResourceName)
+        .Select(r => IsAvailable(r))
+        .ToArray();
 
-            int deskCount = resources.Count(r => r.ResourceType == BookingType.Desk && IsAvailable(r));
-            int aiServerCount = resources.Count(r => r.ResourceType == BookingType.AIServer && IsAvailable(r));
+    var deskCount = resources.Count(r => r.ResourceType == BookingType.Desk && IsAvailable(r));
+    var aiServerCount = resources.Count(r => r.ResourceType == BookingType.AIServer && IsAvailable(r));
 
-            // Debug output
-            foreach(var r in meetingRooms)
-            {
-                foreach(var ts in r.Timeslots)
-                {
-                    _logger.LogInformation($"Room: {r.ResourceName}, Start(UTC): {ts.StartTime}, End(UTC): {ts.EndTime}, utcNow: {DateTime.UtcNow}");
-                }
-            }
+    var dto = new ResourceAvailabilityDto
+    {
+        MeetingRooms = meetingRoomsStatus,
+        VRHeadsets = vrHeadsetsStatus,
+        Desk = deskCount,
+        AIServer = aiServerCount
+    };
 
-            return Ok(new
-            {
-                MeetingRooms = meetingRoomsStatus,
-                VRHeadsets = vrHeadsetsStatus,
-                Desk = deskCount,
-                AIServer = aiServerCount
-            });
-        }
+    return Ok(dto);
+}
+
+
+
     }
 }
