@@ -11,16 +11,14 @@
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #2e2e2e;
+  color: #493843;
 }
 
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  margin-top: 15px;
 }
-
 
 .overview-item {
   background-color: #ffffff;
@@ -44,7 +42,7 @@
 .count {
   font-size: 2rem;
   font-weight: 700;
-  color: #000000;
+  color: #493843;
 }
 
 .item-list {
@@ -68,12 +66,12 @@
 }
 
 .status.available {
-  background-color: #61988E;
+  background-color: #61988E; /* green */
   padding: 2px;
 }
 
 .status.booked {
-  background-color: #D5718C;
+  background-color: #D5718C; /* red */
   padding: 2px;
 }
 

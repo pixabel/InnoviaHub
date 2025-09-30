@@ -3,6 +3,7 @@ import "./myBookings.css";
 import UnBookBtn from "./unBookBtn";
 import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
+import { FaDesktop, FaVrCardboard, FaServer, FaDoorOpen } from "react-icons/fa";
 import "../../components/loading/loadingStyle.css";
 
 interface Booking {
@@ -16,45 +17,35 @@ interface Booking {
   dateOfBooking: string;
 }
 
-interface User {
-  id: string;
-  email: string;
-  isAdmin: boolean;
-  firstName: string;
-  lastName: string;
-}
-
 interface MyBookingsProps {
   className?: string;
 }
 
+const getResourceIcon = (resourceName: string) => {
+  if (resourceName.includes("Mötesrum")) return <FaDoorOpen size={32} color="#F7A072" />;
+  if (resourceName.includes("Skrivbord")) return <FaDesktop size={32} color="#61988E" />;
+  if (resourceName.includes("VR")) return <FaVrCardboard size={32} color="#A48FB5" />;
+  if (resourceName.includes("AI")) return <FaServer size={32} color="#6BCB77" />;
+  return <FaDesktop size={32} color="#333" />;
+};
+
+const getResourceLabel = (resourceName: string) => {
+  if (resourceName.includes("Skrivbord")) return "Skrivbord";
+  if (resourceName.includes("Mötesrum")) return "Mötesrum";
+  if (resourceName.includes("VR")) return "VR-Headset";
+  if (resourceName.includes("AI")) return "AI-Server";
+  return "Okänd";
+};
+
 const MyBookingsComponent = ({ className }: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const resourceTypeColors: { [key: string]: string } = {
-    "Mötesrum": "#ffd3a0de",
-    "Skrivbord": "#8ec4cdde",
-    "VR-Headset": "#a48fb5de",
-    "AI-Server": "#6BCB77de",
-  };
-
-  const getResourceColor = (resourceName: string) => {
-    if (resourceName.includes("Mötesrum")) return resourceTypeColors["Mötesrum"];
-    if (resourceName.includes("Skrivbord")) return resourceTypeColors["Skrivbord"];
-    if (resourceName.includes("VR")) return resourceTypeColors["VR-Headset"];
-    if (resourceName.includes("AI")) return resourceTypeColors["AI-Server"];
-    return "#6a3333ff";
-  };
-
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    console.log(user);
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
 
       const fetchBookings = async () => {
         try {
@@ -67,9 +58,12 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
               new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
           );
           setBookings(sorted);
-        } catch (err: any) {
-          console.error("Error fetching bookings:", err);
-          setError(err.message || "Något gick fel");
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError(err.message || "Något gick fel");
+          } else {
+            setError("Något gick fel");
+          }
         } finally {
           setLoading(false);
         }
@@ -115,72 +109,39 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
       )}
 
       {!loading && !error && bookings.length > 0 && (
-        <ul className="myBookedResources">
-          {bookings.map((booking) => {
-            const color = getResourceColor(booking.resourceName);
-
-            return (
-              <li
-                key={booking.bookingId}
-                className="bookedResourceItem">
-                <div
-                  style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
-                  <span
-                    style={{
-                      backgroundColor: color,
-                      color: "black",
-                      padding: "0.3em 0.8em",
-                      borderRadius: "1em",
-                      fontSize: "1em",
-                      fontWeight: 500,
-                      marginLeft: "-1.5em",
-                      marginBottom: "1em",
-                      whiteSpace: "nowrap",
-                      border: "1px solid black",
-                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.47)"
-                    }}
-                  >
-                    {booking.resourceName.includes("Skrivbord")
-                      ? "Skrivbord"
-                      : booking.resourceName.includes("Mötesrum")
-                      ? "Mötesrum"
-                      : booking.resourceName.includes("VR")
-                      ? "VR-Headset"
-                      : booking.resourceName.includes("AI")
-                      ? "AI-Server"
-                      : "Okänd"}
-                  </span>
+        <div className="myBookedResources">
+          {bookings.map((booking) => (
+            <div key={booking.bookingId} className="bookedResourceItem">
+              <div className="bookedCardHeader">
+                <div className="resourceIcon">{getResourceIcon(booking.resourceName)}</div>
+                <div className="resourceTitle">{getResourceLabel(booking.resourceName)}</div>
+              </div>
+              <div className="bookedCardBody">
+                <div className="bookingDateTimeInfo">{formatDate(booking.startTime)}</div>
+                <div className="bookingDateTimeInfo">
+                  {new Date(booking.startTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZone: "Europe/Stockholm",
+                  })}
+                  -
+                  {new Date(booking.endTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZone: "Europe/Stockholm",
+                  })}
                 </div>
-
-                <div className="dateTimeInfo">
-                  <div className="bookingDateTimeInfo">{formatDate(booking.startTime)}</div>
-                  <div className="bookingDateTimeInfo">
-                    {new Date(booking.startTime).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      timeZone: "Europe/Stockholm",
-                    })}
-                    -
-                    {new Date(booking.endTime).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      timeZone: "Europe/Stockholm",
-                    })}
-                  </div>
-                </div>
-
                 <UnBookBtn
                   bookingId={booking.bookingId}
                   onDeleted={() => handleDeleted(booking.bookingId)}
                 />
-              </li>
-            );
-          })}
-        </ul>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 };
 
 export default MyBookingsComponent;
-
