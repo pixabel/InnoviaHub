@@ -135,5 +135,6 @@ app.UseAuthorization();
 app.MapGet("/", () => "Backend is running 🚀");
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
+app.MapHub<ResourceHub>("/resourcehub");
 
 app.Run();

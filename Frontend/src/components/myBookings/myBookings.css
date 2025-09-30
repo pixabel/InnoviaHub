@@ -1,64 +1,120 @@
-.mainContentMyBookings{
-    font-family: 'Inter', sans-serig;
-    width: 90%;
-    margin-top: 1em;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #e8e8e8;
-    border-radius: 1em;
-    padding: 1em;
+.mainContentMyBookings {
+  font-family: 'Inter', sans-serif;
+  width: 95vw;
+  max-width: 700px;
+  margin: 1em auto 0 auto;
+  margin-top: 5px !important;
+  background-color: #CBBFBB;
+  border-radius: 1em;
+  padding: 1em;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-.myBookingsHeader{
-    margin-left: 1.3em;
+.myBookingsHeader {
+  margin-left: 1.3em;
 }
 
-.h2{
-    margin-left: 2.7em;
-    font-size: 1em;
-    color: rgb(95, 95, 95);
+.h2 {
+  margin-left: 2.7em;
+  font-size: 1em;
+  color: #493843;
 }
 
-.myBookedResources{
-    margin-top: 2em;
+.myBookedResources {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5em;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.bookedResourceItem {
+  background-color: white;
+  padding: 1em;
+  border-radius: 0.5em;
+  box-sizing: border-box;
+  word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 200px;
+}
+
+.bookedCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin-bottom: 0.7em;
+}
+ 
+.resourceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  border-radius: 100%;
+  width: 42px;
+  height: 42px;
+  box-shadow: 0 1px 5px rgba(49,56,70,0.08);
+}
+
+.resourceTitle {
+  font-size: 1.1em;
+  word-break: normal;
+  font-weight: 600;
+  color: #493843;
+}
+
+.bookedCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.bookingDateTimeInfo {
+  font-size: 0.95em;
+  color: #493843;
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+.unBookBtn {
+  background-color: #d5718c;
+  border: 0.5px solid black;
+  padding: 0.4em;
+  border-radius: 0.5em;
+  margin-top: 0.7em;
+  cursor: pointer;
+  color: black;
+  font-size: 0.85em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.unBookBtn:hover {
+  background-color: #b15b72;
+}
+
+.loadingContainerMyBookings {
+  margin-top: 2em;
+  margin-left: 50%;
+}
+
+/* Mobile: stack cards vertically */
+@media (max-width: 800px) {
+  .mainContentMyBookings {
+    width: 99vw;
+    max-width: 99vw;
+    padding: 0.7em;
+  }
+  .myBookedResources {
+    grid-template-columns: 1fr;
+    gap: 1em;
+  }
+  .bookedResourceItem {
     width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2em;
-}
-
-.bookedResourceItem{
-    width: 9em;
-    background-color: white;
-    border: 0.01em solid rgb(121, 121, 121);
-    padding: 1em;
-    border-radius: 0.5em;
-}
-
-.bookingDateTimeInfo{
-    display: flex;
-    gap: 0.5em;
-}
-
-.unBookBtn{
-    background-color: #d5718c;
-    border: 0.5px solid black;
-    padding: 0.4em;
-    border-radius: 0.5em;
-    margin-top: 0.7em;
-    margin-left: 8.2em;
-    cursor: pointer;
-    color:black;
-    font-size: 0.75em;
-}
-
-.unBookBtn:hover{
-    background-color: #b15b72;
-}
-
-.loadingContainerMyBookings{
-    margin-top: 2em;
-    margin-left: 50%;
+  }
 }

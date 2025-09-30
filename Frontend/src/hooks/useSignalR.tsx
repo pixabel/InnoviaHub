@@ -1,5 +1,12 @@
 import { useEffect, useRef } from "react";
-import connection from "../services/signalRConnection";
+import connection from "../services/signalRBookingConnection";
+
+interface SignalRConnection {
+  on: (event: string, callback: (update: BookingUpdate) => void) => void;
+  start: () => Promise<void>;
+  state: string;
+  _hasHandler?: boolean;
+}
 
 export interface BookingUpdate {
   resourceId: number;
@@ -20,21 +27,22 @@ const isConnectedRef = { current: false };
 
 const useSignalr = (callback: (update: BookingUpdate) => void, source = "unknown") => {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
 
   useEffect(() => {
-    console.log(`🔌 useSignalr mount, adding subscriber from ${source}`);
+    callbackRef.current = callback;
     subscribers.push(callbackRef.current);
+
+    const conn = connection as SignalRConnection;
+
+    // Add event handler if not already
+    if (!conn._hasHandler) {
+      conn.on("ReceiveBookingUpdate", broadcast);
+      conn._hasHandler = true;
+      console.log("📡 SignalR handler registered");
+    }
 
     const startConnection = async () => {
       if (!isConnectedRef.current) {
-        // Add event handler if not already 
-        if (!(connection as any)._hasHandler) {
-          connection.on("ReceiveBookingUpdate", broadcast);
-          (connection as any)._hasHandler = true;
-          console.log("📡 SignalR handler registered");
-        }
-
         if (connection.state !== "Connected") {
           try {
             await connection.start();
