@@ -10,11 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "@hookform/resolvers": "^5.2.1",
     "@microsoft/signalr": "^9.0.6",
     "@reduxjs/toolkit": "^2.9.0",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.18",
     "jwt-decode": "^4.0.0",
+    "openai": "^6.1.0",
     "react": "^19.1.1",
     "react-calendar": "^6.0.0",
     "react-dom": "^19.1.1",

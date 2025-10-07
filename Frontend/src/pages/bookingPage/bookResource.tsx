@@ -100,7 +100,6 @@ const BookingPage = () => {
               <ChooseResource
                 selectedResourceId={selectedResourceId}
                 setSelectedResourceId={setSelectedResourceId}
-                selectedResourceName={selectedResourceName}
                 setSelectedResourceName={setSelectedResourceName}
                 onContinue={() => setCurrentStep(2)}
               />
