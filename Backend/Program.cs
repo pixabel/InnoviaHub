@@ -95,6 +95,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// OpenAI Service Registration 
+builder.Services.AddHttpClient(); // så att IHttpClientFactory finns
+builder.Services.AddScoped<OpenAIRecommendationService>();
+
+
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminUserService>();

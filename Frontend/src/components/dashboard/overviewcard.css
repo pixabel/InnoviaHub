@@ -1,5 +1,5 @@
 .overviewCard {
-  background-color: #CBBFBB;
+  background-color: #eeeeee;
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
@@ -68,11 +68,11 @@
 }
 
 .status.available {
-  background-color: #61988E; /* green */
+  background-color: #61988E; 
 }
 
 .status.booked {
-  background-color: #D5718C; /* red */
+  background-color: #D5718C;
 }
 
 

@@ -5,6 +5,11 @@ import { BASE_URL } from "../../config";
 import LoadingSpinner from "../loading/loadingComponent";
 import { FaDesktop, FaVrCardboard, FaServer, FaDoorOpen } from "react-icons/fa";
 import "../../components/loading/loadingStyle.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface Booking {
   bookingId: number;
@@ -36,6 +41,8 @@ const getResourceLabel = (resourceName: string) => {
   if (resourceName.includes("AI")) return "AI-Server";
   return "Okänd";
 };
+
+const swedenTz = "Europe/Stockholm";
 
 const MyBookingsComponent = ({ className }: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -86,7 +93,7 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
       weekday: "long",
       day: "numeric",
       month: "numeric",
-      timeZone: "Europe/Stockholm",
+      timeZone: swedenTz,
     });
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
@@ -119,17 +126,9 @@ const MyBookingsComponent = ({ className }: MyBookingsProps) => {
               <div className="bookedCardBody">
                 <div className="bookingDateTimeInfo">{formatDate(booking.startTime)}</div>
                 <div className="bookingDateTimeInfo">
-                  {new Date(booking.startTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    timeZone: "Europe/Stockholm",
-                  })}
+                  {dayjs.utc(booking.startTime).tz(swedenTz).format("HH:mm")}
                   -
-                  {new Date(booking.endTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    timeZone: "Europe/Stockholm",
-                  })}
+                  {dayjs.utc(booking.endTime).tz(swedenTz).format("HH:mm")}
                 </div>
                 <UnBookBtn
                   bookingId={booking.bookingId}

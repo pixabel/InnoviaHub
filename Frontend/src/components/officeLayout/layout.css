@@ -18,14 +18,14 @@
 }
 
 /* Styling to simulate windows */
-.officeGridWrapper::before,
+/* .officeGridWrapper::before,
 .officeGridWrapper::after {
     content: "";
     position: absolute;
     width: 0;
     border-left: 0.18em solid black; 
     height: 8em; 
-}
+} */
 
 .officeGridWrapper::before {
     left: -2px;
@@ -82,7 +82,7 @@
 }
 
 /* Chair for each desk */
-.resourceGroup.skrivbord .resource::after {
+/* .resourceGroup.skrivbord .resource::after {
     content: "";
     position: absolute;
     bottom: -1.8em;
@@ -93,7 +93,7 @@
     border: 0.08em solid black;
     border-radius: 0.3em;
     z-index: -1;
-}
+} */
 
 .resourceGroup.motesrum .resource {
     border: 2px solid #ffd3a0;

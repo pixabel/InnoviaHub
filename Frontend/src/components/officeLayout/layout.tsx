@@ -71,8 +71,12 @@ const Layout = () => {
                 });
 
                 setResources(resourcesWithBookings);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError("Ett okänt fel inträffade");
+                }
             } finally {
                 setLoading(false);
             }
@@ -87,7 +91,7 @@ const Layout = () => {
 
     return (
         <div>
-            <h2 className="layoutHeader"> <i>Hovra över resurs för bokningar</i></h2>
+            <h2 className="layoutHeader">Resurs karta</h2>
             {loading && (
                 <div className="loadingContainerMyBookings">
                     <LoadingSpinner />
