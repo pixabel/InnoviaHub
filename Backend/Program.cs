@@ -95,10 +95,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+string? apiKey = Environment.GetEnvironmentVariable("API_KEY");
+
 // OpenAI Service Registration 
 builder.Services.AddHttpClient(); // så att IHttpClientFactory finns
 builder.Services.AddScoped<OpenAIRecommendationService>();
-
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<AuthService>();

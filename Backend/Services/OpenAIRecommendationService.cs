@@ -21,6 +21,7 @@ namespace Backend.Services
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new InvalidOperationException("OpenAI API key is not configured.");
 
+
             // promt only gives certain hours for recommendation and instructs to only reply with JSON
             // also instructs to avoid repeating previous recommendations
             // and to suggest different resources if user has booked or been recommended the same resource often
