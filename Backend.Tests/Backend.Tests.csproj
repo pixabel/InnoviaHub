@@ -5,10 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
  <ItemGroup>
   <PackageReference Include="coverlet.collector" Version="6.0.2" />
+  <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
   <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
   <PackageReference Include="xunit" Version="2.9.3" />
   <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
@@ -25,6 +27,13 @@
     <ProjectReference Include="..\Backend\Backend.csproj">
       <ReferenceSourceTarget></ReferenceSourceTarget>
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="IsBookingAddedTest.cs" />
+    <Compile Include="IsBookingAvailableTest.cs" />
+    <Compile Include="IsBookingDeletedTest.cs" />
+    <Compile Include="IsBookingOverlappingTest.cs" />
   </ItemGroup>
 
 </Project>
