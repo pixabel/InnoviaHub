@@ -5,6 +5,8 @@ namespace Backend.Services
 {
     public class OpenAIRecommendationService
     {
+        // Configuration to access API key and HttpClientFactory for making HTTP requests
+        // injected via dependency injection
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -17,6 +19,10 @@ namespace Backend.Services
         // method to get recommendation based on user history 
         public async Task<string> GetRecommendationAsync(object historyData)
         {
+            // Retrieve API key from configuration
+            // error handling if key is missing - should be set in appsettings.json or environment variables
+            // was having error with the key missing, thus the error handling here
+            // environment variable set in .env file for local dev and in Azure App Service settings for production
             string? apiKey = _config["OpenAI:ApiKey"];
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new InvalidOperationException("OpenAI API key is not configured.");
@@ -54,19 +60,24 @@ namespace Backend.Services
                 temperature = 0.7
             }; 
 
+            // Serialize request object to JSON for HTTP content
             var json = JsonSerializer.Serialize(requestObject);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            // Create HTTP client and set up request 
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri("https://api.openai.com/v1/");
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
+            // Send request and handle response
             var response = await client.PostAsync("chat/completions", content);
             response.EnsureSuccessStatusCode();
 
+            // Parse response to extract recommendation
             var responseString = await response.Content.ReadAsStringAsync();
 
+            // Using System.Text.Json to parse the response
             using var doc = JsonDocument.Parse(responseString);
             var recommendation = doc.RootElement
                                     .GetProperty("choices")[0]

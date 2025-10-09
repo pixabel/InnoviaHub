@@ -10,6 +10,8 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+
+// Props for the RecommendationBox component to expect
 type RecommendationBoxProps = {
   resource: string;
   date: string;
@@ -21,6 +23,9 @@ type RecommendationBoxProps = {
   onDismiss: () => void;
 };
 
+// recommendation box component
+// accepts props from parent component
+// handles booking logic and UI states
 const RecommendationBox = ({
   resource,
   date,
@@ -36,16 +41,19 @@ const RecommendationBox = ({
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const handleBook = async () => {
+    // reset states ev. err message etc
+    // shows loading state
     setBookingError(null);
     setBookingLoading(true);
 
+    // find resource object by name
     const res = resources.find(r => r.resourceName === resource);
     if (!res) {
       setBookingError("Kunde inte hitta resursen.");
       setBookingLoading(false);
       return;
     }
-
+    // gets user object 
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       setBookingError("Ingen användare hittades.");
@@ -64,10 +72,12 @@ const RecommendationBox = ({
     const startDateTime = startSweden.format();
     const endDateTime = endSweden.format();
 
+    // determine booking type based on resource name
     let bookingType = 2; 
     if (res.resourceName.toLowerCase().includes("skrivbord")) bookingType = 0;
     else if (res.resourceName.toLowerCase().includes("mötesrum")) bookingType = 1;
 
+    // send booking request to backend to create booking
     const bookingDTO = {
       userId: user.id,
       resourceId: res.id,
@@ -76,6 +86,7 @@ const RecommendationBox = ({
       endTime: endDateTime,
     };
 
+    // fetch request to backend /Booking endpoint
     try {
       const response = await fetch(`${BASE_URL}Booking`, {
         method: "POST",
@@ -83,6 +94,7 @@ const RecommendationBox = ({
         body: JSON.stringify(bookingDTO),
       });
 
+      // handles response errors
       if (!response.ok) {
         const errText = await response.text();
         setBookingError("Kunde inte boka resursen! " + errText);
@@ -90,6 +102,7 @@ const RecommendationBox = ({
         return;
       }
 
+      // on success, update states to show success message
       setSelectedResourceId(res.id);
       setSelectedResourceName(res.resourceName);
       setBookingSuccess(true);
