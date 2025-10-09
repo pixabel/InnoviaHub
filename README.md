@@ -47,7 +47,7 @@ Built with a React frontend and a .NET 9.0 backend, it offers secure authenticat
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/Dilemma98/InnoviaHub.git
+git clone https://github.com/pixabel/InnoviaHub.git
 cd InnoviaHub/Backend 
 ```
 
@@ -97,4 +97,4 @@ The frontend will be accessible at <http://localhost:5173/>.
 
 Documentation of the API endpoints is avaiable at Swagger UI:
 
-<http://localhost:5271/index.html>
+<https://backend20250901141037.azurewebsites.net/swagger/index.html>

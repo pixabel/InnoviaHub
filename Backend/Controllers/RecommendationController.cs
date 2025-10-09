@@ -8,6 +8,7 @@ namespace InnoviaHub.Controllers
     [Route("api/[controller]")]
     public class RecommendationController : ControllerBase
     {
+        // Dependency injection of the OpenAIRecommendationService
         private readonly OpenAIRecommendationService _recommendationService;
 
         public RecommendationController(OpenAIRecommendationService recommendationService)
@@ -18,6 +19,8 @@ namespace InnoviaHub.Controllers
         [HttpPost("suggest")]
         public async Task<IActionResult> GetRecommendation([FromBody] object historyData)
         {
+            // Validate input
+            // bad request if no history data is provided
             if (historyData == null)
                 return BadRequest("History data is required.");
 
@@ -30,7 +33,7 @@ namespace InnoviaHub.Controllers
 
                 try
                 {
-                    // Try to parse the AI result as JSON (should succeed if prompt is strict)
+                    // try to parse the AI result as JSON (should succeed if prompt is strict)
                     recommendation = JsonSerializer.Deserialize<JsonElement>(aiResult);
                 }
                 catch

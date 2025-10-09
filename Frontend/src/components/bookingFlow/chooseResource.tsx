@@ -98,7 +98,7 @@ const ChooseResource = ({
               : "",
         }));
 
-        // fetch recommendation with real historyData
+        // fetch recommendation with historyData
         fetch(`${BASE_URL}Recommendation/suggest`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -127,10 +127,8 @@ const ChooseResource = ({
       });
   };
 
-  // Initial fetch on mount
   useEffect(() => {
     fetchRecommendation();
-    // eslint-disable-next-line
   }, []);
 
   // Group resources
