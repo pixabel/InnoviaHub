@@ -26,7 +26,7 @@ namespace Backend.Services
             string? apiKey = _config["OpenAI:ApiKey"];
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new InvalidOperationException("OpenAI API key is not configured.");
-
+ 
 
             // promt only gives certain hours for recommendation and instructs to only reply with JSON
             // also instructs to avoid repeating previous recommendations

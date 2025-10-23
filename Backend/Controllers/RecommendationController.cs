@@ -33,7 +33,7 @@ namespace InnoviaHub.Controllers
 
                 try
                 {
-                    // try to parse the AI result as JSON (should succeed if prompt is strict)
+                    // try to parse the AI result as JSON 
                     recommendation = JsonSerializer.Deserialize<JsonElement>(aiResult);
                 }
                 catch
