@@ -50,17 +50,17 @@ builder.Services.AddAuthentication(options =>
         ),
         ValidateIssuer = false,
         ValidateAudience = false,
-        RoleClaimType = ClaimTypes.Role // 👈 viktigt
+        RoleClaimType = ClaimTypes.Role 
     };
 });
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactDev", policy =>
+    options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyMethod()
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
@@ -125,6 +125,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 }
 
+app.UseCors();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Call the timeslotSeeder
 using (var scope = app.Services.CreateScope())
@@ -136,9 +140,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // app.UseHttpsRedirection();
-app.UseCors("AllowReactDev");
-app.UseAuthentication();
-app.UseAuthorization();
+
 app.MapGet("/", () => "Backend is running 🚀");
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
