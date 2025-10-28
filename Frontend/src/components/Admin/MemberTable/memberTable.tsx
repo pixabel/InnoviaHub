@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./MemberTable.css";
+import "./memberTable.css";
 import { BASE_URL } from "../../../config";
 import LoadingSpinner from "../../loading/loadingComponent";
 
