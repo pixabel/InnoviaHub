@@ -6,11 +6,12 @@ import { BASE_URL } from "../../../config";
 import LoadingSpinner from "../../loading/loadingComponent";
 
 interface TokenPayload {
-  sub: string; // user id
+  sub: string; // user id (may be stale)
   unique_name?: string;
   given_name?: string;
   family_name?: string;
-  role?: string;
+  role?: string | string[];
+  roles?: string | string[];
   [key: string]: any;
 }
 
@@ -21,56 +22,103 @@ const Login = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  function handleLogin(event: React.FormEvent) {
+  async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
     setErrorMsg("");
     setLoading(true);
 
-    fetch(`${BASE_URL}Auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Fel användarnamn eller lösenord");
-        return res.json();
-      })
-      .then((data) => {
-        const token = data.token;
-        localStorage.setItem("token", token);
+    try {
+      const res = await fetch(`${BASE_URL}Auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-        const decoded = jwtDecode<TokenPayload>(token);
-        console.log("Decoded token:", decoded);
+      if (!res.ok) throw new Error("Fel användarnamn eller lösenord");
 
-        const user = {
+      const data = await res.json();
+      const token = data.token;
+      localStorage.setItem("token", token);
+
+      // Optional: decode for debugging
+      const decoded = jwtDecode<TokenPayload>(token);
+      console.log("Decoded token:", decoded);
+
+      // Try to get authoritative user info from backend
+      let userObj: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        isAdmin: boolean;
+      } | null = null;
+
+      try {
+        const meRes = await fetch(`${BASE_URL}Auth/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (meRes.ok) {
+          const me = await meRes.json();
+          userObj = {
+            id: me.id,
+            firstName: me.firstName ?? (decoded.given_name ?? ""),
+            lastName: me.lastName ?? (decoded.family_name ?? ""),
+            email: me.email ?? (decoded.unique_name ?? email),
+            isAdmin: !!me.isAdmin,
+          };
+        } else {
+          console.warn("/Auth/me returned", meRes.status);
+        }
+      } catch (err) {
+        console.warn("Fetching /Auth/me failed, falling back to token claims", err);
+      }
+
+      // Fallback to token-decoded info if /me failed or wasn't available
+      if (!userObj) {
+        const roleClaim =
+          decoded.role ??
+          decoded.roles ??
+          decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
+          decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"];
+
+        const hasAdminRole =
+          roleClaim === "Admin" ||
+          (Array.isArray(roleClaim) && roleClaim.includes("Admin")) ||
+          (typeof roleClaim === "string" && roleClaim.toLowerCase() === "admin");
+
+        userObj = {
           id: decoded.sub,
           firstName: decoded.given_name ?? "",
           lastName: decoded.family_name ?? "",
           email: decoded.unique_name ?? email,
-          isAdmin: decoded.role === "Admin",
+          isAdmin: hasAdminRole,
         };
+      }
 
-        localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(userObj));
 
-        // Trigger custom event för navbar
-        window.dispatchEvent(new Event("userUpdated"));
-        console.log("UserId LOGIN", user.id);
+      // Trigger custom event för navbar
+      window.dispatchEvent(new Event("userUpdated"));
+      console.log("UserId LOGIN", userObj.id);
 
-        // Clear input fields
-        setEmail("");
-        setPassword("");
+      // Clear input fields
+      setEmail("");
+      setPassword("");
 
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-        setEmail("");
-        setPassword("");
-        setErrorMsg(error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      })
+      navigate("/");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setEmail("");
+      setPassword("");
+      setErrorMsg(error.message || "Ett fel uppstod vid inloggning");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

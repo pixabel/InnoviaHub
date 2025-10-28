@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
@@ -9,6 +10,8 @@ using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using InnoviaHub.Hubs;
 using DotNetEnv;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +24,9 @@ builder.Configuration
     .AddJsonFile("appsettings.Development.json", optional: true)
     .AddEnvironmentVariables();
 
-var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+// Prefer configuration (user-secrets, appsettings, env) and fall back to Environment.GetEnvironmentVariable
+var connection = builder.Configuration["AZURE_SQL_CONNECTIONSTRING"] 
+                 ?? Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
 
 if (string.IsNullOrWhiteSpace(connection))
 {
@@ -35,6 +40,14 @@ builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<InnoviaHubDB>()
     .AddDefaultTokenProviders();
 
+// Ensure JWT_SECRET exists and throw a helpful error otherwise
+var jwtSecret = builder.Configuration["JWT_SECRET"]
+                ?? Environment.GetEnvironmentVariable("JWT_SECRET");
+if (string.IsNullOrWhiteSpace(jwtSecret))
+{
+    throw new Exception("Environment variable JWT_SECRET is missing. Set it (e.g. in .env, user-secrets, or system env) before starting the app.");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "JwtBearer";
@@ -46,7 +59,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!)
+            Encoding.ASCII.GetBytes(jwtSecret)
         ),
         ValidateIssuer = false,
         ValidateAudience = false,
@@ -68,7 +81,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
 
-    // Lägg till JWT Bearer Auth
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -98,7 +110,7 @@ builder.Services.AddSwaggerGen(c =>
 string? apiKey = Environment.GetEnvironmentVariable("API_KEY");
 
 // OpenAI Service Registration 
-builder.Services.AddHttpClient(); // så att IHttpClientFactory finns
+builder.Services.AddHttpClient(); // so IHttpClientFactory is available
 builder.Services.AddScoped<OpenAIRecommendationService>();
 builder.Configuration.AddEnvironmentVariables();
 
@@ -145,5 +157,38 @@ app.MapGet("/", () => "Backend is running 🚀");
 app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub");
 app.MapHub<ResourceHub>("/resourcehub");
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    // Log environment variable and named connection string
+    var az = config["AZURE_SQL_CONNECTIONSTRING"];
+    var connStrDefault = config.GetConnectionString("DefaultConnection");
+    logger.LogInformation("CONFIG AZURE_SQL_CONNECTIONSTRING: {Az}", az ?? "<null>");
+    logger.LogInformation("CONFIG ConnectionStrings:DefaultConnection: {Def}", connStrDefault ?? "<null>");
+
+    // Log actual DB connection string from DbContext
+    try
+    {
+        var db = scope.ServiceProvider.GetService<InnoviaHubDB>();
+        if (db != null)
+        {
+            var connStr = db.Database.GetDbConnection().ConnectionString;
+            logger.LogInformation("Connected to DB (Program.cs): {Conn}", connStr);
+        }
+        else
+        {
+            logger.LogWarning("InnoviaHubDB service not resolved; cannot log connection string.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to read DB connection string");
+    }
+}
+
 
 app.Run();
