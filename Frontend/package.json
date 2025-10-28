@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "serve -s dist -l $PORT"
+
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
@@ -29,6 +31,7 @@
     "react-router-config": "^5.1.1",
     "react-router-dom": "^7.8.2",
     "react-toastify": "^11.0.5",
+    "serve": "^14.2.5",
     "yup": "^1.7.0"
   },
   "devDependencies": {
