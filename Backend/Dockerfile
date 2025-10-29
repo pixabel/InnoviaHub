@@ -1,23 +1,22 @@
-# Build stage: .NET 8 SDK
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Build stage: .NET 9 SDK
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-# Copy csproj(s) and restore without cache to avoid using any stale cached references
+# Copy csproj(s) and restore
 COPY *.csproj ./
-RUN dotnet restore --no-cache
+RUN dotnet restore
 
-# Copy the rest of the source and publish
+# Copy source and publish
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Runtime stage: .NET 8 runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Runtime stage: .NET 9 runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# Listen on port 5000 (App Platform should route to this port)
+# Listen on port 5000
 ENV ASPNETCORE_URLS=http://+:5000
 
-# Copy published output
 COPY --from=build /app/out ./
 
 EXPOSE 5000

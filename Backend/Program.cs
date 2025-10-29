@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 using Backend.Data;
 using InnoviaHub.Models;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using InnoviaHub.Hubs;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
