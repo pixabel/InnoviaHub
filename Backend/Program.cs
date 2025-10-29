@@ -145,10 +145,6 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// ------ NOTE: removed temporary CORS/debug middlewares that manually set headers ------
-// Those manual middlewares can be misleading in production and can be bypassed depending
-// on platform/hosting. The built-in CORS middleware will handle preflights and responses.
-
 // Swagger
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
