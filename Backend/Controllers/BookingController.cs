@@ -135,36 +135,44 @@ namespace InnoviaHub.Controllers
         [HttpGet("ResourceAvailability")]
         public ActionResult GetResourceAvailability()
         {
-            TimeZoneInfo swedishTimeZone;
             try
             {
-                swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
-            }
-            catch
-            {
-                return StatusCode(500, "Could not find the Swedish time zone on this system.");
-            }
+                TimeZoneInfo swedishTimeZone;
+                try
+                {
+                    swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+                }
+                catch
+                {
+                    return StatusCode(500, "Could not find the Swedish time zone on this system.");
+                }
 
-            var nowInSweden = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishTimeZone);
+                var nowInSweden = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishTimeZone);
 
-            var resources = _context.Resources
-                .Include(r => r.Timeslots)
-                .ToList();
+                var resources = _context.Resources
+                    .Include(r => r.Timeslots)
+                    .ToList();
 
-            var availability = resources
-                .GroupBy(r => r.ResourceType)
-                .ToDictionary(
-                    g => g.Key.ToString(),
-                    g => g.Count(r =>
-                        !_context.Bookings.Any(b =>
-                            b.ResourceId == r.ResourceId &&
-                            b.StartTime <= nowInSweden &&
-                            b.EndTime > nowInSweden
+                var availability = resources
+                    .GroupBy(r => r.ResourceType)
+                    .ToDictionary(
+                        g => g.Key.ToString(),
+                        g => g.Count(r =>
+                            !_context.Bookings.Any(b =>
+                                b.ResourceId == r.ResourceId &&
+                                b.StartTime <= nowInSweden &&
+                                b.EndTime > nowInSweden
+                            )
                         )
-                    )
-                );
+                    );
 
-            return Ok(availability);
+                return Ok(availability);
+            }
+            catch (Exception ex)
+            {
+                // Return exception details in response for immediate debugging (temporary)
+                return Problem(detail: ex.ToString(), statusCode: 500);
+            }
         }
 
     }
