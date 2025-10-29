@@ -215,6 +215,7 @@ using (var scope = app.Services.CreateScope())
 // Map endpoints
 app.MapGet("/", () => "Backend is running 🚀");
 app.MapGet("/health", () => Results.Ok("Healthy"));
+app.MapGet("/__debug/ping", () => { Console.WriteLine("DEBUG: /__debug/ping hit"); return Results.Text("pong"); });
 app.MapControllers();
 
 app.MapHub<BookingHub>("/bookinghub").RequireCors("AllowWebApp");
