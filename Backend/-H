@@ -1,0 +1,9 @@
+HTTP/1.1 405 Method Not Allowed
+Content-Length: 0
+Content-Type: text/plain
+Date: Wed, 29 Oct 2025 10:40:50 GMT
+Server: Microsoft-IIS/10.0
+Set-Cookie: ARRAffinity=fe859415a0add86931412a514d3c22aed5e682285755a9fb04c051ab1bc7e187;Path=/;HttpOnly;Secure;Domain=backend20250901141037.azurewebsites.net
+Set-Cookie: ARRAffinitySameSite=fe859415a0add86931412a514d3c22aed5e682285755a9fb04c051ab1bc7e187;Path=/;HttpOnly;SameSite=None;Secure;Domain=backend20250901141037.azurewebsites.net
+X-Powered-By: ASP.NET
+
