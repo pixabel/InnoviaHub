@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using InnoviaHub.Hubs;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +70,6 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = ClaimTypes.Role
     };
 
-    // Allow retrieving access token from query string for SignalR WebSocket requests
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -86,7 +86,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Read frontend origin and credential flag from environment
+// Frontend origin / credentials
 var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"]
                      ?? Environment.GetEnvironmentVariable("FRONTEND_ORIGIN")
                      ?? "https://innoviahub-8him5.ondigitalocean.app";
@@ -95,19 +95,17 @@ var allowCredentials = (builder.Configuration["FRONTEND_ALLOW_CREDENTIALS"]
                        ?? Environment.GetEnvironmentVariable("FRONTEND_ALLOW_CREDENTIALS")
                        ?? "true").ToLower() == "true";
 
-// Support multiple origins separated by , or ; (optional)
 var origins = frontendOrigin.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                             .Select(s => s.Trim())
                             .ToArray();
 
-// CORS policy
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebApp", policy =>
     {
         if (origins.Length == 1 && origins[0] == "*")
         {
-            // No credentials allowed with wildcard
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         }
         else
@@ -124,14 +122,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Swagger (kept commented out in your original)
-// builder.Services.AddSwaggerGen(...);
-
-// OpenAI Service
+// OpenAI and app services
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<OpenAIRecommendationService>();
-
-// App Services
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminUserService>();
@@ -145,6 +138,35 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+// ----------------- Exception Handling Middleware -----------------
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Unhandled exception while processing request {Method} {Path}", context.Request.Method, context.Request.Path);
+
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+
+        var payload = new
+        {
+            error = ex.Message,
+            stack = ex.StackTrace, // remove in production
+            path = context.Request.Path,
+            method = context.Request.Method
+        };
+
+        var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
+        await context.Response.WriteAsync(json);
+    }
+});
+// ------------------------------------------------------------------
+
 // Swagger
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -157,10 +179,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseRouting();
-
-// Apply the named CORS policy BEFORE authentication/authorization and before MapHub
 app.UseCors("AllowWebApp");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -191,6 +210,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Map endpoints
 app.MapGet("/", () => "Backend is running 🚀");
 app.MapGet("/health", () => Results.Ok("Healthy"));
 app.MapControllers();
@@ -198,5 +218,4 @@ app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub").RequireCors("AllowWebApp");
 app.MapHub<ResourceHub>("/resourcehub").RequireCors("AllowWebApp");
 
-var loggerMain = app.Services.GetRequiredService<ILogger<Program>>();
 app.Run();
