@@ -1,8 +1,8 @@
 // For live
 
 // For development
-export const BASE_URL = "http://localhost:5271/api/";
+const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5271";
+export const BASE_URL = `${apiBase.replace(/\/+$/, "")}/api/`;
 
-export const IOT_API_BASE = "http://localhost:5101";
-export const TENANT_ID = "ffdc3cc6-4bb5-41cc-a403-80cc927c43ab";
-export const SIGNALR_HUB_URL = "http://localhost:5103/realtime";
+const signalrBase = import.meta.env.VITE_SIGNALR_URL || `${apiBase.replace(/\/+$/, "")}/bookinghub`;
+export const SIGNALR_HUB_URL = signalrBase;

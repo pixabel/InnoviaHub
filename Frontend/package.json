@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve -s dist -l $PORT"
-
+    "start": "serve -s dist -l $PORT",
+    "start:backend": "dotnet Backend.dll"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

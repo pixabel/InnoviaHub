@@ -360,6 +360,57 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    var origin = context.Request.Headers["Origin"].ToString();
+
+    // Log every request so we can verify requests reach the app
+    logger.LogInformation("Incoming {Method} {Path} Origin={Origin}", context.Request.Method, context.Request.Path, origin);
+
+    if (context.Request.Method == HttpMethods.Options)
+    {
+        logger.LogInformation("OPTIONS preflight for {Path} from {Origin}", context.Request.Path, origin);
+
+        // Add ACAO if missing (use your exact frontend origin instead of "*" in production)
+        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+        {
+            var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"]
+                                 ?? Environment.GetEnvironmentVariable("FRONTEND_ORIGIN")
+                                 ?? "https://innoviahub-8him5.ondigitalocean.app";
+
+            context.Response.Headers["Access-Control-Allow-Origin"] = frontendOrigin == "*" ? "*" : frontendOrigin;
+            context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
+            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+            context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+
+            context.Response.StatusCode = StatusCodes.Status204NoContent;
+            return; // short-circuit preflight with headers
+        }
+    }
+
+    // Ensure responses have ACAO header for debugging (helps test quickly)
+    context.Response.OnStarting(() =>
+    {
+        try
+        {
+            var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"]
+                                 ?? Environment.GetEnvironmentVariable("FRONTEND_ORIGIN")
+                                 ?? "https://innoviahub-8him5.ondigitalocean.app";
+
+            if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+            {
+                context.Response.Headers["Access-Control-Allow-Origin"] = frontendOrigin == "*" ? "*" : frontendOrigin;
+                context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+            }
+        }
+        catch { }
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
+
 // Swagger
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
