@@ -17,14 +17,16 @@ namespace InnoviaHub.Controllers
         private readonly InnoviaHubDB _context;
         private readonly BookingService _bookingService;
         private readonly IHubContext<BookingHub> _hubContext;
+        private readonly ILogger<BookingController> _logger;
 
 
 
-        public BookingController(InnoviaHubDB context, BookingService bookingService, IHubContext<BookingHub> hubContext)
+        public BookingController(InnoviaHubDB context, BookingService bookingService, IHubContext<BookingHub> hubContext, ILogger<BookingController> logger)
         {
             _context = context;
             _bookingService = bookingService;
             _hubContext = hubContext;
+            _logger = logger;
 
         }
 
@@ -170,10 +172,22 @@ namespace InnoviaHub.Controllers
             }
             catch (Exception ex)
             {
-                // Return exception details in response for immediate debugging (temporary)
-                return Problem(detail: ex.ToString(), statusCode: 500);
-            }
-        }
+                // Log full exception (appears in DigitalOcean runtime logs)
+                _logger.LogError(ex, "ResourceAvailability failed");
 
+                // Also write to console so doctl log streaming definitely captures it
+                Console.WriteLine("DEBUG ResourceAvailability exception:");
+                Console.WriteLine(ex.ToString());
+
+                // Return plain-text body with the full exception for immediate debugging (temporary)
+                return new ContentResult
+                {
+                    Content = ex.ToString(),
+                    ContentType = "text/plain",
+                    StatusCode = 500
+                };
+            }
+
+        }
     }
 }
