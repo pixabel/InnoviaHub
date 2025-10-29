@@ -1,202 +1,3 @@
-// using Microsoft.AspNetCore.Identity;
-// using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-// using Microsoft.EntityFrameworkCore;
-// using Backend.Services;
-// using Backend.Data;
-// using InnoviaHub.Models;
-// using Microsoft.IdentityModel.Tokens;
-// using System.Text;
-// using System.Security.Claims;
-// using Microsoft.OpenApi.Models;
-// using InnoviaHub.Hubs;
-// using DotNetEnv;
-// using Microsoft.Extensions.Configuration;
-// using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-// var builder = WebApplication.CreateBuilder(args);
-
-// if (builder.Environment.IsDevelopment())
-// {
-//     DotNetEnv.Env.Load();
-// }
-
-// builder.Configuration
-//     .AddJsonFile("appsettings.Development.json", optional: true)
-//     .AddEnvironmentVariables();
-
-// // Prefer configuration (user-secrets, appsettings, env) and fall back to Environment.GetEnvironmentVariable
-// var connection = builder.Configuration["AZURE_SQL_CONNECTIONSTRING"] 
-//                  ?? Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-
-// if (string.IsNullOrWhiteSpace(connection))
-// {
-//     throw new Exception("Connection string 'AZURE_SQL_CONNECTIONSTRING' is missing.");
-// }
-
-// builder.Services.AddDbContext<InnoviaHubDB>(options =>
-//     options.UseSqlServer(connection));
-
-// builder.Services.AddIdentity<User, IdentityRole>()
-//     .AddEntityFrameworkStores<InnoviaHubDB>()
-//     .AddDefaultTokenProviders();
-
-// // Ensure JWT_SECRET exists and throw a helpful error otherwise
-// var jwtSecret = builder.Configuration["JWT_SECRET"]
-//                 ?? Environment.GetEnvironmentVariable("JWT_SECRET");
-// if (string.IsNullOrWhiteSpace(jwtSecret))
-// {
-//     throw new Exception("Environment variable JWT_SECRET is missing. Set it (e.g. in .env, user-secrets, or system env) before starting the app.");
-// }
-
-// builder.Services.AddAuthentication(options =>
-// {
-//     options.DefaultAuthenticateScheme = "JwtBearer";
-//     options.DefaultChallengeScheme = "JwtBearer";
-// })
-// .AddJwtBearer("JwtBearer", options =>
-// {
-//     options.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         ValidateIssuerSigningKey = true,
-//         IssuerSigningKey = new SymmetricSecurityKey(
-//             Encoding.ASCII.GetBytes(jwtSecret)
-//         ),
-//         ValidateIssuer = false,
-//         ValidateAudience = false,
-//         RoleClaimType = ClaimTypes.Role 
-//     };
-// });
-
-// builder.Services.AddCors(options =>
-// {
-//     options.AddDefaultPolicy(policy =>
-//     {
-//         policy.AllowAnyOrigin()
-//               .AllowAnyHeader()
-//               .AllowAnyMethod();
-//     });
-// });
-
-// builder.Services.AddSwaggerGen(c =>
-// {
-//     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
-
-//     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-//     {
-//         Name = "Authorization",
-//         Type = SecuritySchemeType.ApiKey,
-//         Scheme = "Bearer",
-//         BearerFormat = "JWT",
-//         In = ParameterLocation.Header,
-//         Description = "Skriv 'Bearer' [mellanslag] och sedan din token.\n\nExempel: \"Bearer eyJhbGciOi...\""
-//     });
-
-//     c.AddSecurityRequirement(new OpenApiSecurityRequirement
-//     {
-//         {
-//             new OpenApiSecurityScheme
-//             {
-//                 Reference = new OpenApiReference
-//                 {
-//                     Type = ReferenceType.SecurityScheme,
-//                     Id = "Bearer"
-//                 }
-//             },
-//             new string[] {}
-//         }
-//     });
-// });
-
-// string? apiKey = Environment.GetEnvironmentVariable("API_KEY");
-
-// // OpenAI Service Registration 
-// builder.Services.AddHttpClient(); // so IHttpClientFactory is available
-// builder.Services.AddScoped<OpenAIRecommendationService>();
-// builder.Configuration.AddEnvironmentVariables();
-
-// builder.Services.AddScoped<BookingService>();
-// builder.Services.AddScoped<AuthService>();
-// builder.Services.AddScoped<AdminUserService>();
-// builder.Services.AddScoped<AdminBookingService>();
-// builder.Services.AddScoped<AdminResourceService>();
-// builder.Services.AddControllers();
-// builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddAuthorization();
-// builder.Services.AddSignalR();
-
-// var app = builder.Build();
-
-// if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI(options =>
-//     {
-//         options.SwaggerEndpoint("/swagger/v1/swagger.json", "InnoviaHub API V1");
-//         options.RoutePrefix = "swagger";
-//     });
-
-// }
-
-// app.UseCors();
-
-// app.UseAuthentication();
-// app.UseAuthorization();
-
-// // Call the timeslotSeeder
-// using (var scope = app.Services.CreateScope())
-// {
-//     var context = scope.ServiceProvider.GetRequiredService<InnoviaHubDB>();
-
-//     // Seed new timeslots
-//     TimeslotsSeeder.SeedTimeslots(context);
-// }
-
-// // app.UseHttpsRedirection();
-
-// app.MapGet("/", () => "Backend is running 🚀");
-// app.MapControllers();
-// app.MapHub<BookingHub>("/bookinghub");
-// app.MapHub<ResourceHub>("/resourcehub");
-
-
-// using (var scope = app.Services.CreateScope())
-// {
-//     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-//     var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-
-//     // Log environment variable and named connection string
-//     var az = config["AZURE_SQL_CONNECTIONSTRING"];
-//     var connStrDefault = config.GetConnectionString("DefaultConnection");
-//     logger.LogInformation("CONFIG AZURE_SQL_CONNECTIONSTRING: {Az}", az ?? "<null>");
-//     logger.LogInformation("CONFIG ConnectionStrings:DefaultConnection: {Def}", connStrDefault ?? "<null>");
-
-//     // Log actual DB connection string from DbContext
-//     try
-//     {
-//         var db = scope.ServiceProvider.GetService<InnoviaHubDB>();
-//         if (db != null)
-//         {
-//             var connStr = db.Database.GetDbConnection().ConnectionString;
-//             logger.LogInformation("Connected to DB (Program.cs): {Conn}", connStr);
-//         }
-//         else
-//         {
-//             logger.LogWarning("InnoviaHubDB service not resolved; cannot log connection string.");
-//         }
-//     }
-//     catch (Exception ex)
-//     {
-//         logger.LogError(ex, "Failed to read DB connection string");
-//     }
-// }
-
-// var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var p) ? p : 5271;
-// app.Urls.Add($"http://0.0.0.0:{port}");
-
-// // Optional health endpoint
-// app.MapGet("/health", () => Results.Ok("Healthy"));
-
-// app.Run();
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -207,11 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
-using InnoviaHub.Hubs;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using InnoviaHub.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -294,53 +95,37 @@ var allowCredentials = (builder.Configuration["FRONTEND_ALLOW_CREDENTIALS"]
                        ?? Environment.GetEnvironmentVariable("FRONTEND_ALLOW_CREDENTIALS")
                        ?? "true").ToLower() == "true";
 
+// Support multiple origins separated by , or ; (optional)
+var origins = frontendOrigin.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => s.Trim())
+                            .ToArray();
+
 // CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebApp", policy =>
     {
-        if (frontendOrigin == "*")
+        if (origins.Length == 1 && origins[0] == "*")
         {
+            // No credentials allowed with wildcard
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         }
         else
         {
-            policy.WithOrigins(frontendOrigin).AllowAnyHeader().AllowAnyMethod();
-            if (allowCredentials) policy.AllowCredentials();
-        }
-    });
-});
+            policy.WithOrigins(origins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
 
-// Swagger
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Skriv 'Bearer' [mellanslag] och sedan din token.\n\nExempel: \"Bearer eyJhbGciOi...\""
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
+            if (allowCredentials)
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
+                policy.AllowCredentials();
+            }
         }
     });
 });
+
+// Swagger (kept commented out in your original)
+// builder.Services.AddSwaggerGen(...);
 
 // OpenAI Service
 builder.Services.AddHttpClient();
@@ -360,56 +145,9 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    var origin = context.Request.Headers["Origin"].ToString();
-
-    // Log every request so we can verify requests reach the app
-    logger.LogInformation("Incoming {Method} {Path} Origin={Origin}", context.Request.Method, context.Request.Path, origin);
-
-    if (context.Request.Method == HttpMethods.Options)
-    {
-        logger.LogInformation("OPTIONS preflight for {Path} from {Origin}", context.Request.Path, origin);
-
-        // Add ACAO if missing (use your exact frontend origin instead of "*" in production)
-        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-        {
-            var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"]
-                                 ?? Environment.GetEnvironmentVariable("FRONTEND_ORIGIN")
-                                 ?? "https://innoviahub-8him5.ondigitalocean.app";
-
-            context.Response.Headers["Access-Control-Allow-Origin"] = frontendOrigin == "*" ? "*" : frontendOrigin;
-            context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
-            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-            context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-
-            context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return; // short-circuit preflight with headers
-        }
-    }
-
-    // Ensure responses have ACAO header for debugging (helps test quickly)
-    context.Response.OnStarting(() =>
-    {
-        try
-        {
-            var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"]
-                                 ?? Environment.GetEnvironmentVariable("FRONTEND_ORIGIN")
-                                 ?? "https://innoviahub-8him5.ondigitalocean.app";
-
-            if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-            {
-                context.Response.Headers["Access-Control-Allow-Origin"] = frontendOrigin == "*" ? "*" : frontendOrigin;
-                context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-            }
-        }
-        catch { }
-        return Task.CompletedTask;
-    });
-
-    await next();
-});
+// ------ NOTE: removed temporary CORS/debug middlewares that manually set headers ------
+// Those manual middlewares can be misleading in production and can be bypassed depending
+// on platform/hosting. The built-in CORS middleware will handle preflights and responses.
 
 // Swagger
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
@@ -424,51 +162,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 app.UseRouting();
 
-// ===== TEMP DEBUG MIDDLEWARE (deploy temporarily) =====
-// This will log incoming OPTIONS requests and inject CORS headers if missing.
-// Remove this block when you've confirmed preflight responses include Access-Control-Allow-Origin.
-app.Use(async (context, next) =>
-{
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-    if (context.Request.Method == HttpMethods.Options)
-    {
-        logger.LogInformation("DEBUG OPTIONS hit: {Path} Origin: {Origin}", context.Request.Path, context.Request.Headers["Origin"].ToString());
-
-        // If ACAO not present, add headers and short-circuit
-        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-        {
-            var originHeader = frontendOrigin == "*" ? "*" : frontendOrigin;
-            context.Response.Headers["Access-Control-Allow-Origin"] = originHeader;
-            context.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS";
-            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-            if (allowCredentials) context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-
-            context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return;
-        }
-    }
-
-    // For non-OPTIONS requests, ensure ACAO is present for debugging (helps the browser accept responses)
-    if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-    {
-        context.Response.OnStarting(() =>
-        {
-            try
-            {
-                var originHeader = frontendOrigin == "*" ? "*" : frontendOrigin;
-                context.Response.Headers["Access-Control-Allow-Origin"] = originHeader;
-                if (allowCredentials) context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-            }
-            catch { /* swallowing exceptions in debug middleware */ }
-            return Task.CompletedTask;
-        });
-    }
-
-    await next();
-});
-// ===== END DEBUG MIDDLEWARE =====
-
+// Apply the named CORS policy BEFORE authentication/authorization and before MapHub
 app.UseCors("AllowWebApp");
 
 app.UseAuthentication();
@@ -508,10 +202,5 @@ app.MapControllers();
 app.MapHub<BookingHub>("/bookinghub").RequireCors("AllowWebApp");
 app.MapHub<ResourceHub>("/resourcehub").RequireCors("AllowWebApp");
 
-var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var p) ? p : 5271;
-app.Urls.Add($"http://0.0.0.0:{port}");
-
 var loggerMain = app.Services.GetRequiredService<ILogger<Program>>();
-loggerMain.LogInformation("App listening on port {Port}", port);
-
 app.Run();
