@@ -1,21 +1,25 @@
+# Build stage: .NET 8 SDK
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# copy csproj and restore
-COPY *.csproj .
-RUN dotnet restore
+# Copy csproj(s) and restore without cache to avoid using any stale cached references
+COPY *.csproj ./
+RUN dotnet restore --no-cache
 
-# copy everything else and build
-COPY . .
+# Copy the rest of the source and publish
+COPY . ./
 RUN dotnet publish -c Release -o out
 
-# final runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# Runtime stage: .NET 8 runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/out .
 
-# set environment variables
+# Listen on port 5000 (App Platform should route to this port)
 ENV ASPNETCORE_URLS=http://+:5000
+
+# Copy published output
+COPY --from=build /app/out ./
+
 EXPOSE 5000
 
 ENTRYPOINT ["dotnet", "Backend.dll"]
