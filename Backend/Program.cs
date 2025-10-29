@@ -147,16 +147,18 @@ app.Use(async (context, next) =>
     }
     catch (Exception ex)
     {
+        // Ensure exception is logged to DigitalOcean runtime logs
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Unhandled exception while processing request {Method} {Path}", context.Request.Method, context.Request.Path);
+        logger.LogError(ex, "Unhandled exception while processing {Method} {Path}", context.Request.Method, context.Request.Path);
 
+        // Return JSON with details for debugging (remove when done)
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";
 
         var payload = new
         {
             error = ex.Message,
-            stack = ex.StackTrace, // remove in production
+            stack = ex.StackTrace,
             path = context.Request.Path,
             method = context.Request.Method
         };
