@@ -190,5 +190,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+var port = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var p) ? p : 5271;
+app.Urls.Add($"http://0.0.0.0:{port}");
+
 
 app.Run();
