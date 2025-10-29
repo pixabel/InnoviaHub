@@ -137,49 +137,76 @@ namespace InnoviaHub.Controllers
         [HttpGet("ResourceAvailability")]
         public ActionResult GetResourceAvailability()
         {
+            Console.WriteLine("DEBUG: Entering ResourceAvailability");
+
             try
             {
                 TimeZoneInfo swedishTimeZone;
                 try
                 {
+                    // Prefer IANA name first then Windows fallback
                     swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
                 }
                 catch
                 {
-                    return StatusCode(500, "Could not find the Swedish time zone on this system.");
+                    try
+                    {
+                        swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+                    }
+                    catch (Exception tzEx)
+                    {
+                        Console.WriteLine("DEBUG: TimeZone lookup failed: " + tzEx);
+                        return StatusCode(500, "Could not find the Swedish time zone on this system.");
+                    }
                 }
 
                 var nowInSweden = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishTimeZone);
+                Console.WriteLine($"DEBUG: nowInSweden = {nowInSweden} (Kind={nowInSweden.Kind})");
 
+                // load resources and timeslots into memory and log counts
                 var resources = _context.Resources
                     .Include(r => r.Timeslots)
                     .ToList();
 
-                var availability = resources
-                    .GroupBy(r => r.ResourceType)
-                    .ToDictionary(
-                        g => g.Key.ToString(),
-                        g => g.Count(r =>
-                            !_context.Bookings.Any(b =>
-                                b.ResourceId == r.ResourceId &&
-                                b.StartTime <= nowInSweden &&
-                                b.EndTime > nowInSweden
-                            )
-                        )
-                    );
+                Console.WriteLine($"DEBUG: resources loaded: count={resources.Count}");
 
+                // We'll build availability and log progress
+                var availability = new Dictionary<string,int>();
+                foreach (var r in resources)
+                {
+                    try
+                    {
+                        // perform booking check with explicit UTC comparison to avoid kind issues
+                        // assume bookings stored in UTC (they appear to be saved as ToUniversalTime())
+                        var nowUtc = DateTime.UtcNow;
+
+                        // Count bookings for this resource that overlap 'nowUtc'
+                        var isBookedNow = _context.Bookings.Any(b =>
+                            b.ResourceId == r.ResourceId &&
+                            b.StartTime <= nowUtc &&
+                            b.EndTime > nowUtc
+                        );
+
+                        var key = (r.ResourceType != null) ? r.ResourceType.ToString() : "Unknown";
+                        if (!availability.ContainsKey(key)) availability[key] = 0;
+                        if (!isBookedNow) availability[key] += 1;
+                    }
+                    catch (Exception perResourceEx)
+                    {
+                        Console.WriteLine("DEBUG: exception checking bookings for resource " + r.ResourceId + ": " + perResourceEx);
+                        throw; // let outer catch handle and return details
+                    }
+                }
+
+                Console.WriteLine($"DEBUG: availability computed: {System.Text.Json.JsonSerializer.Serialize(availability)}");
                 return Ok(availability);
             }
             catch (Exception ex)
             {
-                // Log full exception (appears in DigitalOcean runtime logs)
                 _logger.LogError(ex, "ResourceAvailability failed");
-
-                // Also write to console so doctl log streaming definitely captures it
                 Console.WriteLine("DEBUG ResourceAvailability exception:");
                 Console.WriteLine(ex.ToString());
 
-                // Return plain-text body with the full exception for immediate debugging (temporary)
                 return new ContentResult
                 {
                     Content = ex.ToString(),
@@ -187,6 +214,7 @@ namespace InnoviaHub.Controllers
                     StatusCode = 500
                 };
             }
+
 
         }
     }
