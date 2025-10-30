@@ -72,7 +72,7 @@ This README explains:
 
 ---
 
-## Final publish changes
+## Final deployed changes
 
 - Fixed a critical startup crash by enabling Swagger only in Development.
 - Added robust OpenAI recommendation integration with multiple config fallbacks and graceful error handling.
