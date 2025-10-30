@@ -22,14 +22,6 @@ const SorryPage: React.FC<SorryPageProps> = ({ onRetry, message }) => {
               Försök igen
             </button>
           )}
-          <button
-            className="btn-close"
-            onClick={() => {
-              if (!onRetry) window.location.reload();
-            }}
-          >
-            Stäng / Uppdatera sidan
-          </button>
         </div>
       </div>
     </div>
