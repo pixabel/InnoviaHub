@@ -1,6 +1,6 @@
 # InnoviaHub — V2
 
-[Live demo → innoviahub-8him5.ondigitalocean.app](https://innoviahub-8him5.ondigitalocean.app/)
+[![Live demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://innoviahub-8him5.ondigitalocean.app/)
 
 ---
 
@@ -138,7 +138,6 @@ dotnet run
 cd Frontend
 npm install
 npm start
-```
 ```
 
 ---
