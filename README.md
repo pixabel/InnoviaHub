@@ -33,7 +33,7 @@ This README explains:
 ## Demo & Test Accounts
 
 - Live site (frontend + backend):  
-  <https://innoviahub-8him5.ondigitalocean.app/>
+  [![Live demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://innoviahub-8him5.ondigitalocean.app/)
 
 - Test user (for reviewers & demo):
   - Email: `user@test.com`  
