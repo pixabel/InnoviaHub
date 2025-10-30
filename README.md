@@ -1,100 +1,172 @@
-# InnoviaHub
+# InnoviaHub — V2
 
-InnoviaHub is a full-stack web application, built to streamline booking office resources and user managment.
-Built with a React frontend and a .NET 9.0 backend, it offers secure authentication, JWT-based sessions, and API endpoints for managing users and various resources.
+[Live demo → innoviahub-8him5.ondigitalocean.app](https://innoviahub-8him5.ondigitalocean.app/)
 
-## Features
+---
 
-- **User Registration & Authentication**: Secure sign-up and login with JWT tokens.
-- **Admin Controls**: Manage users and resources via dedicated admin endpoints.
-- **Resource Booking**: Users can book and manage available office resources via the dashboard.
-- **Responsive UI**: Built with React and styled with CSS modules.
+## Summary
 
-## Tech Stack
+InnoviaHub is a office resource booking and management application with real‑time updates (SignalR) and AI-powered booking recommendations (OpenAI). It supports role-based access, admin management, and optional IoT sensor telemetry.
 
-### Backend
+This README explains:
 
-- ASP.NET Core
-- SignalR
-- Sensor API
-- JWT Token
+- How the system works at a glance
+- How to run and test it locally
+- Where the main code lives
 
-### Frontend
+---
 
-- React.js
-- Fetch API
+## Table of contents
 
-### Data Management
+1. [Demo & Test Accounts](#demo--test-accounts)  
+2. [High-level system overview](#high-level-system-overview)  
+3. [Tech stack](#tech-stack)  
+4. [Run locally (quick start)](#run-locally-quick-start)  
+5. [Environment variables (summary)](#environment-variables-summary--where-to-set)  
+6. [Where to look in the codebase](#where-to-look-in-the-codebase-quick-map)  
+7. [Notes for reviewers / customer](#notes-for-reviewers--customer)
 
-- Entity Framework Core
-- SQL Server
+---
 
-### DevOps & Infrastructure
+## Demo & Test Accounts
 
-- GitHub
-- Trello
-- Azure
-- Swagger
+- Live site (frontend + backend):  
+  <https://innoviahub-8him5.ondigitalocean.app/>
 
-## Setup & Installation
+- Test user (for reviewers & demo):
+  - Email: `user@test.com`  
+  - Password: `Test123!`
 
-### Prerequisites
+- Admin account credentials will be sent to the course instructor privately.
 
-- [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
+> Tip: for demos, log in with the test user to exercise the normal user flow. Use the admin account only for management tasks.
 
-### Backend Setup
+---
 
-1. **Clone the repository:**
+## High-level system overview
+
+- Backend: ASP.NET Core Web API (C#) — handles authentication, bookings, recommendations, and SignalR hubs.  
+- Frontend: React + TypeScript — user interface, SignalR client, IoT sensor pages and booking flows.  
+- Realtime: SignalR hubs for booking events and IoT telemetry.  
+- AI: OpenAI chat completions used to generate booking recommendations.  
+- Database: Azure SQL (Entity Framework Core).  
+- Deployment: Backend runs on Azure App Service; frontend accessible on DigitalOcean (demo).
+
+---
+
+## Tech stack
+
+- Backend
+  - .NET 9 / ASP.NET Core Web API
+  - Entity Framework Core (SQL Server)
+  - SignalR (Realtime)
+  - Swashbuckle/Swagger (enabled only in Development)
+- Frontend
+  - React + TypeScript
+  - CSS modules / plain CSS for styles
+  - SignalR JavaScript client
+- Dev / Infrastructure
+  - Azure App Service (Linux) for backend hosting
+  - DigitalOcean for demo hosting
+  - Azure CLI for operational tasks
+
+---
+
+## Final publish changes
+
+- Fixed a critical startup crash by enabling Swagger only in Development.
+- Added robust OpenAI recommendation integration with multiple config fallbacks and graceful error handling.
+- Improved SignalR authentication (JWT over query string for negotiate) and CORS readiness for WebSockets.
+- Implemented an IoT "sensors unavailable" friendly page so the app works even without the sensor API.
+- Added operational guidance & Azure CLI commands for enabling websockets, setting config and tailing logs.
+
+---
+
+## Run locally (quick start)
+
+Prerequisites:
+
+- .NET SDK (matching project target, recommended 9.0)
+- Node.js and npm
+- SQL Server (local, Docker, or Azure SQL)
+- Optional: an OpenAI API key for recommendations
+
+Steps (minimal):
+
+1. Clone and switch to V2
 
 ```bash
 git clone https://github.com/pixabel/InnoviaHub.git
-cd InnoviaHub/Backend 
+cd InnoviaHub
+git checkout V2
 ```
 
-2. **Restore Dependencies**
+2. Backend: set environment variables (example, macOS/Linux)
+
+Generate a strong JWT secret (256 bits / 32 bytes) and keep it secret. You can generate one with OpenSSL, Node.js or PowerShell:
+
+- macOS / Linux (OpenSSL)
 
 ```bash
+openssl rand -hex 32
+# Example output: 9f2c... (64 hex characters)
+```
+
+Store the generated hex string securely and set it as the `JWT_SECRET` environment variable before starting the app:
+
+macOS / Linux example:
+
+```bash
+export JWT_SECRET="paste_the_hex_value_here"
+export AZURE_SQL_CONNECTIONSTRING="Server=InnoviaHub;Initial Catalog=InnoviaHub;User ID=sqladmin;Password=ServerTest123!;"
+export OpenAI__ApiKey="REDACTED-replace-with-your-apikey"
+```
+
+> Security note: never commit secrets to source control. For production, store secrets securely (Azure App Service settings, Azure Key Vault, or similar) and use Managed Identity where possible.
+
+3. Start backend
+
+```bash
+cd Backend
 dotnet restore
-```
-
-3. **Build the project:**
-
-```bash
-dotnet build
-```
-
-4. **Run the application:**
-
-```bash
 dotnet run
 ```
 
-The backend will be accessible at <http://localhost:5271>.
-
-### Frontend Setup
-
-1. **Navigate to the frontend directory:**
+4. Frontend
 
 ```bash
-cd ../Frontend
-```
-
-2. **Install dependencies:**
-
-```bash
+cd Frontend
 npm install
+npm start
+```
 ```
 
-3. **Start the development server:**
+---
 
-```bash
-npm run dev
-```
+## Environment variables (summary / where to set)
 
-The frontend will be accessible at <http://localhost:5173/>.
+Backend (important):
 
-### API Documentation
+- `AZURE_SQL_CONNECTIONSTRING` — SQL Server connection string (e.g. Azure SQL)
+- `JWT_SECRET` — string used to sign JWTs
+- `OpenAI:ApiKey` — OpenAI key. In Azure App Service, set `OpenAI__ApiKey`. (Also supported: `OPENAI_API_KEY` or `API_KEY` as fallbacks.)
+- `FRONTEND_ORIGIN`, `FRONTEND_ALLOW_CREDENTIALS` — CORS config for frontend origin
 
-Documentation of the API endpoints is avaiable at Swagger UI:
+---
 
-<https://backend20250901141037.azurewebsites.net/swagger/index.html>
+## Where to look in the codebase (quick map)
+
+- Backend entry: `Backend/Program.cs`
+- DB context & seeding: `Backend/Data/InnoviaHubDB.cs`, `Backend/Data/TimeslotsSeeder.cs`
+- Recommendation service: `Backend/Services/OpenAIRecommendationService.cs`
+- SignalR hubs: `Backend/Hubs/BookingHub.cs`, `Backend/Hubs/ResourceHub.cs`
+- Frontend IoT components: `Frontend/src/components/IoT/IotDeviceList.tsx`, `SorryPage.tsx`
+- Frontend entry: `Frontend/src/index.tsx`
+
+---
+
+## Notes for reviewers / customer
+
+- Admin credentials are not published for security reasons — they were sent to the course instructor.  
+
+---
