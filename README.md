@@ -1,13 +1,8 @@
 # InnoviaHub — V2
 
+## Live Demo
+
 [![Live demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://innoviahub-8him5.ondigitalocean.app/)
-
-<a href="https://innoviahub-8him5.ondigitalocean.app/" target="_blank" rel="noopener noreferrer">
-  Live demo → InnoviaHub
-</a>
-
-[Live demo → InnoviaHub](https://innoviahub-8him5.ondigitalocean.app/)  
-<sub>innoviahub-8him5.ondigitalocean.app</sub>
 
 ---
 
