@@ -269,3 +269,53 @@
     font-size: 0.97em;
   }
 }
+
+.sorry-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+
+.sorry-card {
+  max-width: 720px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  padding: 24px;
+  text-align: center;
+  font-family: inherit;
+}
+
+.sorry-card h2 {
+  margin: 0 0 12px 0;
+}
+
+.sorry-detail {
+  color: #666;
+  margin-top: 6px;
+}
+
+.sorry-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-retry, .btn-close {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f6f6f6;
+  cursor: pointer;
+}
+
+.btn-retry:hover {
+  background: #eef7ff;
+  border-color: #b6defb;
+}
+
+.btn-close:hover {
+  background: #fff0f0;
+}

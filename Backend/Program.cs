@@ -136,9 +136,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
 
+// Register Swagger only in Development (prevents middleware/runtime mismatch in Production)
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "InnoviaHub API",
+            Version = "v1",
+            Description = "API for InnoviaHub"
+        });
+    });
+}
+
 var app = builder.Build();
 
-// ----------------- Exception Handling Middleware -----------------
+// Global exception handling middleware for JSON responses
+// This ensures exceptions are logged and returned as JSON
 app.Use(async (context, next) =>
 {
     try
@@ -147,30 +162,40 @@ app.Use(async (context, next) =>
     }
     catch (Exception ex)
     {
-        // Ensure exception is logged to DigitalOcean runtime logs
+        // Ensure exception is logged to DigitalOcean / App Service runtime logs
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Unhandled exception while processing {Method} {Path}", context.Request.Method, context.Request.Path);
 
-        // Return JSON with details for debugging (remove when done)
+        // Return detailed JSON only in Development. In Production return a generic error.
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";
 
-        var payload = new
+        if (app.Environment.IsDevelopment())
         {
-            error = ex.Message,
-            stack = ex.StackTrace,
-            path = context.Request.Path,
-            method = context.Request.Method
-        };
-
-        var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
-        await context.Response.WriteAsync(json);
+            var payload = new
+            {
+                error = ex.Message,
+                stack = ex.StackTrace,
+                path = context.Request.Path,
+                method = context.Request.Method
+            };
+            var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
+            await context.Response.WriteAsync(json);
+        }
+        else
+        {
+            var payload = new
+            {
+                error = "An internal server error occurred."
+            };
+            var json = JsonSerializer.Serialize(payload);
+            await context.Response.WriteAsync(json);
+        }
     }
 });
-// ------------------------------------------------------------------
 
-// Swagger
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+// Swagger middleware ONLY in Development
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>

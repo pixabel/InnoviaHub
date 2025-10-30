@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./IoTDeviceList.css";
 import { useIoTSignalR } from "./useIoTSignalR";
+import SorryPage from "./IoTSorry";
 
 // Types
 interface Device {
@@ -52,44 +53,58 @@ const IoTDeviceList: React.FC = () => {
   const [loadingMeasurements, setLoadingMeasurements] = useState<Record<string, boolean>>({});
   const [measurementTypeFilter, setMeasurementTypeFilter] = useState<"all" | "temperature" | "co2">("all");
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [apiUnavailable, setApiUnavailable] = useState(false);
 
-  // Fetch devices on mount
-  useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:5101/api/tenants/${TENANT_GUID}/devices`
-        );
-        const data = await res.json();
-        setDevices(data);
-      } catch (error) {
-        console.error("Error fetching devices:", error);
-      } finally {
-        setLoading(false);
+  // Fetch devices (callable for retry)
+  const fetchDevices = useCallback(async () => {
+    setLoading(true);
+    setApiUnavailable(false);
+    try {
+      const res = await fetch(
+        `http://localhost:5101/api/tenants/${TENANT_GUID}/devices`
+      );
+      if (!res.ok) {
+        throw new Error(`API returned ${res.status}`);
       }
-    };
-    fetchDevices();
+      const data = await res.json();
+      setDevices(data);
+    } catch (error) {
+      console.error("Error fetching devices:", error);
+      // mark API unavailable so we can show the sorry page
+      setDevices([]);
+      setApiUnavailable(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchDevices();
+  }, [fetchDevices]);
 
   // Fetch measurements for a device by id (GUID)
   const fetchMeasurements = async (deviceId: string) => {
     setLoadingMeasurements(prev => ({ ...prev, [deviceId]: true }));
     const to = new Date();
-    const from = new Date(to.getTime() - 60 * 60 * 1000); 
+    const from = new Date(to.getTime() - 60 * 60 * 1000);
     const url = `http://localhost:5104/portal/${TENANT_GUID}/devices/${deviceId}/measurements?from=${from.toISOString()}&to=${to.toISOString()}`;
     try {
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Measurements API returned ${res.status}`);
+      }
       const data = await res.json();
       setMeasurements(prev => {
         const existing = prev[deviceId] || [];
         const all = [...data.measurements, ...existing];
         // Deduplicate by time+type+value
         const deduped = Array.from(
-          new Map(all.map(m => [`${m.time}_${m.type}_${m.value}`, m])).values()
+          new Map(all.map((m: Measurement) => [`${m.time}_${m.type}_${m.value}`, m])).values()
         );
         return { ...prev, [deviceId]: deduped };
       });
     } catch (error) {
+      console.error("Error fetching measurements for", deviceId, error);
       setMeasurements(prev => ({ ...prev, [deviceId]: [] }));
     } finally {
       setLoadingMeasurements(prev => ({ ...prev, [deviceId]: false }));
@@ -101,6 +116,7 @@ const IoTDeviceList: React.FC = () => {
     setExpanded(prev => ({ ...prev, [device.id]: !prev[device.id] }));
     if (!expanded[device.id]) fetchMeasurements(device.id);
   };
+
   // Real-time measurement handler
   const handleRealtimeMeasurement = useCallback(
     (m: {
@@ -149,7 +165,23 @@ const IoTDeviceList: React.FC = () => {
 
   useIoTSignalR(handleRealtimeMeasurement, TENANT_SLUG, handleAlertReceived);
 
+  // Retry handler for SorryPage
+  const handleRetry = () => {
+    setApiUnavailable(false);
+    fetchDevices();
+  };
+
   if (loading) return <p className="loadingContainerDevices">Laddar sensorer...</p>;
+
+  // If API is unavailable, show the SorryPage
+  if (apiUnavailable) {
+    return (
+      <SorryPage
+        onRetry={handleRetry}
+        message="Sensor-API:n är inte distribuerad för projektet. Du kan försöka igen eller fortsätta utan sensorer."
+      />
+    );
+  }
 
   return (
     <div className="device-list">
